@@ -1,0 +1,44 @@
+import React from "react";
+import { Navbar as BootstrapNavbar, Nav, Container } from "react-bootstrap";
+import { Link } from "react-router-dom";
+import logo from "../Assets/logo.svg"; // Uncomment if you want to use the logo
+import "./Navbar.css"; // Custom CSS for styling
+
+const CustomNavbar = () => {
+  return (
+    <>
+      {/* Main Navbar */}
+      <BootstrapNavbar bg="light" variant="light" expand="lg" sticky="top" className="main-navbar">
+        <Container>
+          <BootstrapNavbar.Brand as={Link} to="/" className="d-flex align-items-center">
+            {/* Uncomment if using logo */}
+            {/* <img src={logo} alt="Fitnesstan Logo" style={{ height: '50px', marginRight: '10px' }} /> */}
+            Fitnesstan
+          </BootstrapNavbar.Brand>
+          <BootstrapNavbar.Toggle aria-controls="basic-navbar-nav" />
+          <BootstrapNavbar.Collapse id="basic-navbar-nav" className="justify-content-end">
+            <Nav>
+              <Link to="/register" className="button" data-text="Awesome">
+                <span className="actual-text">&nbsp;Sign Up&nbsp;</span>
+                <span aria-hidden="true" className="hover-text">&nbsp;Login&nbsp;</span>
+              </Link>
+            </Nav>
+          </BootstrapNavbar.Collapse>
+        </Container>
+      </BootstrapNavbar>
+
+      {/* Secondary Links Section */}
+      <div className="links-section">
+        <Container>
+          <Nav className="justify-content-center">
+            <Nav.Link as={Link} to="/">Home</Nav.Link>
+            <Nav.Link as={Link} to="/features">Features</Nav.Link>
+            <Nav.Link as={Link} to="/supplements">Supplements</Nav.Link>
+          </Nav>
+        </Container>
+      </div>
+    </>
+  );
+};
+
+export default CustomNavbar;

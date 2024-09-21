@@ -11,6 +11,7 @@ const Register = () => {
 
   return (
     <>
+    <div className="register-page">
     <div className={`container ${isSignUp ? 'right-panel-active' : ''}`} id="container">
       <div className="form-container sign-up-container">
         <form action="signup">
@@ -56,6 +57,7 @@ const Register = () => {
           </div>
         </div>
       </div>
+    </div>
     </div>
     </>
   );
