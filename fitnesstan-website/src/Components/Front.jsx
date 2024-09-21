@@ -9,7 +9,7 @@ function Front() {
     <>
       <Navbar />
       <Routes>
-        <Route path="/" element={<HomePage />} />
+        <Route path="/" element={<HomePage />}/>
         <Route path="/features" element={<FeaturesPage />} />
       </Routes>
     </>

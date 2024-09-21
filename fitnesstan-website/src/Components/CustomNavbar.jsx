@@ -1,7 +1,7 @@
 import React from "react";
 import { Navbar as BootstrapNavbar, Nav, Container } from "react-bootstrap";
 import { Link } from "react-router-dom";
-import logo from "../Assets/logo.svg"; // Uncomment if you want to use the logo
+// import logo from "../Assets/logo.svg"; // Uncomment if you want to use the logo
 import "./Navbar.css"; // Custom CSS for styling
 
 const CustomNavbar = () => {
