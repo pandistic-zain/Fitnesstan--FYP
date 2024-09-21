@@ -61,6 +61,10 @@
     --fs-size: 1.5em;
     letter-spacing: 3px;
     text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
     font-size: var(--fs-size);
     font-family: "Arial";
     position: relative;

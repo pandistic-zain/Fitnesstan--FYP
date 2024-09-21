@@ -16,32 +16,26 @@ const NavBar = () => {
         className="main-navbar"
       >
         <Container>
-        <Navbar.Brand as={Link} to="/" className="d-flex align-items-center">
-        {/* <img
+          <Navbar.Brand as={Link} to="/" className="d-flex align-items-center">
+            {/* <img
           src={logo}
           alt="Fitnesstan Logo"
           style={{ height: '50px', marginRight: '10px' }} // Adjust the size as needed
         /> */}
-        Fitnesstan
-      </Navbar.Brand>
+            Fitnesstan
+          </Navbar.Brand>
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
           <Navbar.Collapse
             id="basic-navbar-nav"
             className="justify-content-end"
           >
-            {/* Login/Sign Up buttons */}
             <Nav>
-              <button
-                className="button"
-                as={Link}
-                to="/login"
-                data-text="Awesome"
-              >
+              <Link to="/register" className="button" data-text="Awesome">
                 <span className="actual-text">&nbsp;Sign Up&nbsp;</span>
                 <span aria-hidden="true" className="hover-text">
                   &nbsp;Login&nbsp;
                 </span>
-              </button>
+              </Link>
             </Nav>
           </Navbar.Collapse>
         </Container>
