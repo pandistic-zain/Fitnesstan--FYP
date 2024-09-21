@@ -1,135 +1,333 @@
 /* Hero Section */
 .hero-section {
-    background-image: url("../../Assets/banner bg.jpg");
-    background-size: cover;     /* Ensures the image covers the section fully */
-    background-repeat: no-repeat; /* Prevents the image from repeating */
-    background-position: center;  /* Centers the image */
-    padding: 80px 0;
+  background-image: url("../../Assets/banner bg.jpg");
+  background-size: cover; /* Ensures the image covers the section fully */
+  background-repeat: no-repeat; /* Prevents the image from repeating */
+  background-position: center; /* Centers the image */
+  padding: 80px 0;
+}
+
+.hero-section h1 {
+  font-size: 3rem;
+  font-weight: bold;
+}
+
+.hero-section p {
+  font-size: 1.2rem;
+  margin-bottom: 20px;
+}
+
+button {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+  outline: none;
+  border: 0;
+  vertical-align: middle;
+  text-decoration: none;
+  background: transparent;
+  padding: 0;
+  font-size: inherit;
+  font-family: inherit;
+}
+
+button.learn-more {
+  width: 12rem;
+  height: auto;
+}
+
+button.learn-more .circle {
+  transition: all 0.45s cubic-bezier(0.65, 0, 0.076, 1);
+  position: relative;
+  display: block;
+  margin: 0;
+  width: 3rem;
+  height: 3rem;
+  background: #00401A;
+  border-radius: 1.625rem;
+}
+
+button.learn-more .circle .icon {
+  transition: all 0.45s cubic-bezier(0.65, 0, 0.076, 1);
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  margin: auto;
+  background: #fff;
+}
+
+button.learn-more .circle .icon.arrow {
+  transition: all 0.45s cubic-bezier(0.65, 0, 0.076, 1);
+  left: 0.625rem;
+  width: 1.125rem;
+  height: 0.125rem;
+  background: none;
+}
+
+button.learn-more .circle .icon.arrow::before {
+  position: absolute;
+  content: "";
+  top: -0.29rem;
+  right: 0.0625rem;
+  width: 0.625rem;
+  height: 0.625rem;
+  border-top: 0.125rem solid #fff;
+  border-right: 0.125rem solid #fff;
+  transform: rotate(45deg);
+}
+
+button.learn-more .button-text {
+  transition: all 0.45s cubic-bezier(0.65, 0, 0.076, 1);
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 0.75rem 0;
+  margin: 0 0 0 1.85rem;
+  color: #00401A;
+  font-weight: 700;
+  line-height: 1.6;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+button:hover .circle {
+  width: 100%;
+}
+
+button:hover .circle .icon.arrow {
+  background: #fff;
+  transform: translate(1rem, 0);
+}
+
+button:hover .button-text {
+  color: #fff;
+}
+
+/* Features Section */
+.featuresSection {
+  background-color: #f9f9f9; /* Light background color */
+  padding: 50px 20px; /* Padding around the section */
+  text-align: center; /* Center text */
+}
+
+.sectionTitle {
+  font-size: 2.5rem; /* Larger font for the heading */
+  margin-bottom: 40px; /* Space below the heading */
+  color: #28a745; /* Green color for heading */
+}
+
+.featureCol {
+  display: flex; /* Flexbox for alignment */
+  justify-content: center; /* Center content */
+  margin-bottom: 30px; /* Space below columns */
+}
+
+.featureCard {
+  background-color: white; /* White background for cards */
+  border-radius: 10px; /* Rounded corners */
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+  padding: 20px; /* Padding inside cards */
+  width: 100%; /* Full width */
+  max-width: 250px; /* Max width for cards */
+  transition: transform 0.3s; /* Smooth transformation on hover */
+}
+
+.featureCard h5 {
+  font-size: 1.5rem; /* Font size for feature title */
+  margin: 15px 0; /* Space above and below the title */
+  color: #333; /* Dark color for title */
+}
+
+.featureCard p {
+  font-size: 1rem; /* Font size for feature description */
+  color: #666; /* Grey color for text */
+}
+
+.featureCard:hover {
+  transform: translateY(-5px); /* Lift effect on hover */
+}
+
+.featureIcon {
+  font-size: 2rem; /* Size for the feature icons */
+  color: #28a745; /* Green color for icons */
+  margin-bottom: 10px; /* Space below icons */
+}
+
+/* Media Query for responsiveness */
+@media (max-width: 768px) {
+  .sectionTitle {
+    font-size: 2rem; /* Smaller font size for mobile */
   }
-  
-  .hero-section h1 {
-    font-size: 3rem;
-    font-weight: bold;
+
+  .featureCard {
+    max-width: 100%; /* Full width for mobile */
+    margin: 0 auto; /* Center on mobile */
   }
-  
-  .hero-section p {
-    font-size: 1.2rem;
-    margin-bottom: 20px;
-  }
-  
-  .cta-button {
-    padding: 10px 20px;
-    font-size: 1.1rem;
-  }
-  
-  /* Features Section */
-  .features-section {
-    background-color: #fff;
-    padding: 60px 0;
-  }
-  
-  .features-section h2 {
-    text-align: center;
-    margin-bottom: 40px;
-  }
-  
-  .feature-card {
-    padding: 20px;
-    text-align: center;
-    border: 1px solid #e3e3e3;
-    border-radius: 8px;
-    transition: transform 0.3s ease;
-  }
-  
-  .feature-card:hover {
-    transform: scale(1.05);
-  }
-  
-  /* Supplement Section */
-  .supplement-section {
-    background-color: #f1f1f1;
-    padding: 60px 0;
-  }
-  
-  .supplement-section h2 {
-    text-align: center;
-    margin-bottom: 40px;
-  }
-  
-  .supplement-section ul {
-    list-style-type: none;
-    padding: 0;
-  }
-  
-  .supplement-section ul li {
-    margin: 10px 0;
-    font-size: 1.1rem;
-  }
-  
-  /* Testimonials Section */
-  .testimonials-section {
-    background-color: #fff;
-    padding: 60px 0;
-  }
-  
-  .testimonials-section h2 {
-    text-align: center;
-    margin-bottom: 40px;
-  }
-  
-  .testimonial-card {
-    padding: 20px;
-    text-align: center;
-    background-color: #f8f9fa;
-    border-radius: 8px;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-    margin-bottom: 20px;
-  }
-  
-  .testimonial-card p {
-    font-style: italic;
-  }
-  
-  .testimonial-card h4 {
-    margin-top: 10px;
-    font-weight: bold;
-  }
-  /* Contact Us Section */
+}
+
+/* Supplement Section */
+.supplement-section {
+  background-color: #00401A;
+  padding: 60px 0;
+}
+
+.supplement-section h2 {
+  color: #ffffff;
+  text-align: center;
+  margin-bottom: 40px;
+}
+.supplement-section h3 {
+  color: #ffffff;
+}
+
+.supplement-section ul {
+  list-style-type: none;
+  color: #ffffff;
+  padding: 0;
+}
+
+.supplement-section ul li {
+  color: #ffffff;
+  margin: 10px 0;
+  font-size: 1.1rem;
+}
+
+/* Testimonials Section */
+.testimonials-section {
+  background-color: #fff;
+  padding: 60px 0;
+}
+
+.testimonials-section h2 {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.testimonial-card {
+  padding: 20px;
+  text-align: center;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+}
+
+.testimonial-card p {
+  font-style: italic;
+}
+
+.testimonial-card h4 {
+  margin-top: 10px;
+  font-weight: bold;
+}
+/* Contact Us Section */
 .contact-section {
-    background-color: #f9f9f9;
-    padding: 60px 0;
-  }
-  
-  .contact-section h2 {
-    text-align: center;
-    margin-bottom: 40px;
-  }
-  
-  .contact-form {
-    max-width: 600px;
-    margin: 0 auto;
-  }
-  
-  .contact-form input,
-  .contact-form textarea {
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 15px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-  }
-  
-  .contact-form button {
-    background-color: #28a745;
-    color: white;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-  }
-  
-  .contact-form button:hover {
-    background-color: #218838;
-  }
-  
+  background-color: #00401A;
+  ;
+  padding: 60px 0;
+}
+
+.contact-section h2 {
+  color: #ffffff;
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.contact-form {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.contact-form input,
+.contact-form textarea {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.contact-form button {
+  background-color: #28a745;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.contact-form button:hover {
+  background-color: #218838;
+}
+.give-feedback-section {
+  background-color: #ffffff; /* Light background */
+  padding: 50px 20px; /* Increased padding for more space */
+  text-align: center;
+}
+
+.give-feedback-section h2 {
+  font-size: 2rem; /* Larger font for the heading */
+  margin-bottom: 20px; /* Space below the heading */
+}
+
+.give-feedback-section p {
+  font-size: 1.2rem; /* Slightly larger font for the paragraph */
+  margin-bottom: 30px; /* Space below the paragraph */
+}
+
+.feedback-form {
+  max-width: 600px; /* Limit form width */
+  margin: 0 auto; /* Center the form */
+}
+
+.feedback-form .form-group {
+  margin-bottom: 25px; /* More space between fields */
+}
+
+.feedback-form label {
+  font-weight: bold; /* Bold labels for better readability */
+  display: block; /* Make labels block elements */
+  margin: 8px; /* Space below labels */
+  font-size: 1rem; /* Consistent font size */
+}
+
+.feedback-form input,
+.feedback-form textarea {
+  width: 100%; /* Full width fields */
+  padding: 12px; /* Increased padding inside fields */
+  border: 1px solid #ccc; /* Light border */
+  border-radius: 5px; /* Rounded corners */
+  transition: border-color 0.3s; /* Smooth border transition */
+  font-size: 1rem; /* Consistent font size */
+}
+
+.feedback-form input:focus,
+.feedback-form textarea:focus {
+  border-color: #28a745 !important; /* Green border on focus */
+  outline: none; /* Remove default outline */
+}
+.feedback-form input:active,
+.feedback-form textarea:active {
+  border-color: #28a745 !important; /* Green border on focus */
+  outline: none; /* Remove default outline */
+}
+
+.submit-button {
+  background-color: #28a745 !important; /* Green background */
+  color: white;
+  margin-top: 20px !important;
+  padding: 12px 25px; /* Increased padding for button */
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.3s; /* Add transform for scale effect */
+  font-size: 1rem; /* Consistent font size */
+}
+
+.submit-button:hover {
+  background-color: #218838; /* Darker green on hover */
+  transform: scale(1.05); /* Slightly enlarge on hover */
+}

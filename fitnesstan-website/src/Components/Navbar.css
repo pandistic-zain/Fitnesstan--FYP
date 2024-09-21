@@ -40,6 +40,9 @@
     color: #32fe7d; /* Lighten the color on hover */
     text-decoration: underline; /* Add underline on hover */
 }
+.links-section .nav-link.active {
+  color: #32fe7d !important; /* Set the active color */
+}s
 
 /* Button Styles */
 /* === removing default button style ===*/
