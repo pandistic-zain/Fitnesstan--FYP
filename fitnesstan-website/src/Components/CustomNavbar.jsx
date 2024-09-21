@@ -1,8 +1,8 @@
 import React from "react";
 import { Navbar as BootstrapNavbar, Nav, Container } from "react-bootstrap";
 import { Link } from "react-router-dom";
-// import logo from "../Assets/logo.svg"; // Uncomment if you want to use the logo
-import "./Navbar.css"; // Custom CSS for styling
+import logo from "../Assets/Fitnesstan.png"; 
+import "./Navbar.css"; 
 
 const CustomNavbar = () => {
   return (
@@ -12,8 +12,7 @@ const CustomNavbar = () => {
         <Container>
           <BootstrapNavbar.Brand as={Link} to="/" className="d-flex align-items-center">
             {/* Uncomment if using logo */}
-            {/* <img src={logo} alt="Fitnesstan Logo" style={{ height: '50px', marginRight: '10px' }} /> */}
-            Fitnesstan
+            <img src={logo} alt="Fitnesstan Logo" />
           </BootstrapNavbar.Brand>
           <BootstrapNavbar.Toggle aria-controls="basic-navbar-nav" />
           <BootstrapNavbar.Collapse id="basic-navbar-nav" className="justify-content-end">

@@ -10,16 +10,12 @@
     padding: 0 20px; /* Adding padding for spacing */
 }
 
-/* Space for the logo */
-.navbar-brand {
-    font-size: 1.8rem; /* Increased logo size */
-    font-weight: bold;
-    color: #00401A; /* Pakistani green for branding */
+.navbar-brand img {
+  height: 35px; /* Adjust height as needed */
+  width: auto;  /* Keeps aspect ratio, or set a fixed width if preferred */
+  max-width: 100%; /* Ensures the image scales properly in responsive views */
 }
 
-.navbar-brand:hover {
-    color: #006400 !important; /* Darker green for hover effect */
-}
 
 /* Links Section */
 .links-section {
