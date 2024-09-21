@@ -1,27 +1,56 @@
-import React from 'react';
-import { Navbar, Nav, Button, Container } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
-import './Navbar.css'; // Importing custom CSS
+import React from "react";
+import { Navbar, Nav, Button, Container } from "react-bootstrap";
+import { Link } from "react-router-dom";
+import logo from "../Assets/logo.svg";
+import "./Navbar.css"; // Custom CSS for styling
 
 const NavBar = () => {
   return (
-    <Navbar bg="light" variant="light" expand="lg" className="custom-navbar" sticky="top">
-      <Container>
-        {/* Logo/Brand */}
-        <Navbar.Brand as={Link} to="/">
-          <img 
-            src="/path-to-your-logo/logo.png" 
-            alt="Fitnesstan Logo" 
-            className="navbar-logo"
-          />
-          Fitnesstan
-        </Navbar.Brand>
+    <>
+      {/* Main Navbar */}
+      <Navbar
+        bg="light"
+        variant="light"
+        expand="lg"
+        sticky="top"
+        className="main-navbar"
+      >
+        <Container>
+        <Navbar.Brand as={Link} to="/" className="d-flex align-items-center">
+        {/* <img
+          src={logo}
+          alt="Fitnesstan Logo"
+          style={{ height: '50px', marginRight: '10px' }} // Adjust the size as needed
+        /> */}
+        Fitnesstan
+      </Navbar.Brand>
+          <Navbar.Toggle aria-controls="basic-navbar-nav" />
+          <Navbar.Collapse
+            id="basic-navbar-nav"
+            className="justify-content-end"
+          >
+            {/* Login/Sign Up buttons */}
+            <Nav>
+              <button
+                className="button"
+                as={Link}
+                to="/login"
+                data-text="Awesome"
+              >
+                <span className="actual-text">&nbsp;Sign Up&nbsp;</span>
+                <span aria-hidden="true" className="hover-text">
+                  &nbsp;Login&nbsp;
+                </span>
+              </button>
+            </Nav>
+          </Navbar.Collapse>
+        </Container>
+      </Navbar>
 
-        {/* Collapsible Menu */}
-        <Navbar.Toggle aria-controls="basic-navbar-nav" />
-        <Navbar.Collapse id="basic-navbar-nav">
-          {/* Links with Pakistani Flag Colors */}
-          <Nav className="ml-auto nav-links">
+      {/* Secondary Links Section */}
+      <div className="links-section">
+        <Container>
+          <Nav className="justify-content-center">
             <Nav.Link as={Link} to="/">
               Home
             </Nav.Link>
@@ -31,18 +60,10 @@ const NavBar = () => {
             <Nav.Link as={Link} to="/supplements">
               Supplements
             </Nav.Link>
-
-            {/* Login/Sign Up buttons */}
-            <Button as={Link} to="/login" className="mx-2" variant="outline-primary">
-              Login
-            </Button>
-            <Button as={Link} to="/signup" variant="primary">
-              Sign Up
-            </Button>
           </Nav>
-        </Navbar.Collapse>
-      </Container>
-    </Navbar>
+        </Container>
+      </div>
+    </>
   );
 };
 

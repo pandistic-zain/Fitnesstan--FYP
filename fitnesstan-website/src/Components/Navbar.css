@@ -1,40 +1,97 @@
-/* Custom navbar styles */
+/* Main Navbar Styles */
+.main-navbar {
+    height: 80px; /* Height for the main navbar */
+    background-color: #fff; /* Light background */
+    border-bottom: 1px solid #ccc; /* Subtle bottom border */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Soft shadow for depth */
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px; /* Adding padding for spacing */
+}
 
-/* Light-colored background */
-.custom-navbar {
-    background-color: #fff !important;
-    height: 80px; /* Increase height */
-    border-bottom: 2px solid #ccc; /* Adds a subtle border */
-  }
-  
-  /* Logo Styling */
-  .navbar-logo {
-    height: 50px;
-    width: auto;
-    margin-right: 10px;
-  }
-  
-  /* Nav Links with Pakistani Flag Colors */
-  .nav-links .nav-link {
-    background-color: #008000; /* Green */
+/* Space for the logo */
+.navbar-brand {
+    font-size: 1.8rem; /* Increased logo size */
+    font-weight: bold;
+    color: #00401A; /* Pakistani green for branding */
+}
+
+.navbar-brand:hover {
+    color: #006400 !important; /* Darker green for hover effect */
+}
+
+/* Links Section */
+.links-section {
+    height: 30px; /* Slightly increased height for better readability */
+    background-color: #00401A; /* Pakistani green */
+    padding: 5px 15px; /* Added side padding for better link spacing */
+    display: flex;
+    align-items: center; /* Vertically center the links */
+}
+
+.links-section .nav-link {
     color: white;
-    padding: 8px 15px;
-    border-radius: 5px;
-    margin-right: 10px;
+    margin: 0 15px;
+    font-size: 1rem;
+    position: relative; /* Allow the use of pseudo-elements for hover effect */
+    transition: color 0.3s ease-in-out; /* Smooth transition on hover */
+}
+
+.links-section .nav-link:hover {
+    color: #f8f9fa; /* Lighten the color on hover */
+    text-decoration: underline; /* Add underline on hover */
+}
+
+/* Button Styles */
+/* === removing default button style ===*/
+.button {
+    margin: 0;
+    height: auto;
+    background: transparent;
+    padding: 0;
+    border: none;
+    cursor: pointer;
   }
   
-  .nav-links .nav-link:hover {
-    background-color: #004d00; /* Darker green on hover */
-    color: #fff;
+  /* Join Us button styling */
+  .button {
+    --text-stroke-color:#00401A;
+    --animation-color: #00401A;
+    --fs-size: 1.5em;
+    letter-spacing: 3px;
+    text-decoration: none;
+    font-size: var(--fs-size);
+    font-family: "Arial";
+    position: relative;
+    text-transform: uppercase;
+    color: #00401A;
+    -webkit-text-stroke: 1px var(--text-stroke-color);
   }
   
-  /* Button Styles */
-  .mx-2 {
-    margin-right: 10px;
+  /* this is the text, when you hover on button */
+  .hover-text {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    box-sizing: border-box;
+    content: attr(data-text);
+    color: #ffff;
+    background-color:var(--animation-color);
+    border-radius: 10px;
+    width: 0%;
+    inset: 0;
+    border: 3px solid var(--animation-color);
+    overflow: hidden;
+    transition: 0.5s;
+    -webkit-text-stroke: 1px var(--animation-color);
   }
   
-  /* Hide admin panel link */
-  .admin-link {
-    display: none;
+  /* hover */
+  .button:hover .hover-text {
+    width: 100%;
+    filter: drop-shadow(0 0 23px var(--animation-color));
   }
   
