@@ -46,7 +46,7 @@
   }
   
   .socialIcons a:hover {
-    color: #00ff99 !important; /* Light green on hover */
+    color: #00ff99; /* Light green on hover */
   }
   
   .divider {
