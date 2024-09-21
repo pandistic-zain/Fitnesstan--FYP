@@ -8,7 +8,7 @@ const CustomNavbar = () => {
   return (
     <>
       {/* Main Navbar */}
-      <BootstrapNavbar bg="light" variant="light" expand="lg" sticky="top" className="main-navbar">
+      <BootstrapNavbar bg="light" variant="light" expand="lg"  className="main-navbar">
         <Container>
           <BootstrapNavbar.Brand as={Link} to="/" className="d-flex align-items-center">
             {/* Uncomment if using logo */}
@@ -28,7 +28,7 @@ const CustomNavbar = () => {
       </BootstrapNavbar>
 
       {/* Secondary Links Section */}
-      <div className="links-section">
+      <div className="links-section ">
         <Container>
           <Nav className="justify-content-center">
             <Nav.Link as={Link} to="/">Home</Nav.Link>

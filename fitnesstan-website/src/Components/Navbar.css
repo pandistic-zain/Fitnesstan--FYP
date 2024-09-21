@@ -23,11 +23,13 @@
 
 /* Links Section */
 .links-section {
-    height: 30px; /* Slightly increased height for better readability */
-    background-color: #00401A; /* Pakistani green */
-    padding: 5px 15px; /* Added side padding for better link spacing */
-    display: flex;
-    align-items: center; /* Vertically center the links */
+  height: var(--links-section-height, 30px);
+  background-color: var(--pakistan-green, #00401A);
+  padding: 0.5rem 1.5rem; /* 5px and 15px converted to rem units */
+  display: flex;
+  align-items: center;
+  position: sticky;
+  top: 0;
 }
 
 .links-section .nav-link {
@@ -58,7 +60,7 @@
   .button {
     --text-stroke-color:#00401A;
     --animation-color: #00401A;
-    --fs-size: 1.5em;
+    --fs-size: 1.3em;
     letter-spacing: 3px;
     text-decoration: none;
     display: flex;

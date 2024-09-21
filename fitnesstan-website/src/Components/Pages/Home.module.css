@@ -1,0 +1,135 @@
+/* Hero Section */
+.hero-section {
+    background-image: url("../../Assets/banner bg.jpg");
+    background-size: cover;     /* Ensures the image covers the section fully */
+    background-repeat: no-repeat; /* Prevents the image from repeating */
+    background-position: center;  /* Centers the image */
+    padding: 80px 0;
+  }
+  
+  .hero-section h1 {
+    font-size: 3rem;
+    font-weight: bold;
+  }
+  
+  .hero-section p {
+    font-size: 1.2rem;
+    margin-bottom: 20px;
+  }
+  
+  .cta-button {
+    padding: 10px 20px;
+    font-size: 1.1rem;
+  }
+  
+  /* Features Section */
+  .features-section {
+    background-color: #fff;
+    padding: 60px 0;
+  }
+  
+  .features-section h2 {
+    text-align: center;
+    margin-bottom: 40px;
+  }
+  
+  .feature-card {
+    padding: 20px;
+    text-align: center;
+    border: 1px solid #e3e3e3;
+    border-radius: 8px;
+    transition: transform 0.3s ease;
+  }
+  
+  .feature-card:hover {
+    transform: scale(1.05);
+  }
+  
+  /* Supplement Section */
+  .supplement-section {
+    background-color: #f1f1f1;
+    padding: 60px 0;
+  }
+  
+  .supplement-section h2 {
+    text-align: center;
+    margin-bottom: 40px;
+  }
+  
+  .supplement-section ul {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  .supplement-section ul li {
+    margin: 10px 0;
+    font-size: 1.1rem;
+  }
+  
+  /* Testimonials Section */
+  .testimonials-section {
+    background-color: #fff;
+    padding: 60px 0;
+  }
+  
+  .testimonials-section h2 {
+    text-align: center;
+    margin-bottom: 40px;
+  }
+  
+  .testimonial-card {
+    padding: 20px;
+    text-align: center;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+  }
+  
+  .testimonial-card p {
+    font-style: italic;
+  }
+  
+  .testimonial-card h4 {
+    margin-top: 10px;
+    font-weight: bold;
+  }
+  /* Contact Us Section */
+.contact-section {
+    background-color: #f9f9f9;
+    padding: 60px 0;
+  }
+  
+  .contact-section h2 {
+    text-align: center;
+    margin-bottom: 40px;
+  }
+  
+  .contact-form {
+    max-width: 600px;
+    margin: 0 auto;
+  }
+  
+  .contact-form input,
+  .contact-form textarea {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+  
+  .contact-form button {
+    background-color: #28a745;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .contact-form button:hover {
+    background-color: #218838;
+  }
+  
