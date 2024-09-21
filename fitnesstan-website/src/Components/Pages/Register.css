@@ -2,10 +2,10 @@
 @import url("https://fonts.googleapis.com/css?family=Montserrat:400,800");
 
 .register-page {
-  * {
-    box-sizing: border-box;
-  }
-
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   body {
     margin: 0; /* Reset margin to avoid any unwanted spacing */
     background: #f6f5f7;
@@ -16,16 +16,7 @@
     font-family: "Montserrat", sans-serif;
     height: 100vh; /* Full height of the viewport */
   }
-  #container {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    /* Optional: add this if you have a wrapper for the form */
-    background-color: #ffffff; /* Background color for the form container */
-    border-radius: 10px; /* Rounded corners */
-    box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22); /* Shadow for depth */
-    padding: 20px; /* Add some padding for aesthetics */
-  }
+
 
   h1 {
     font-weight: bold;

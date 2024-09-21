@@ -15,7 +15,7 @@ const Register = () => {
     <div className={`container ${isSignUp ? 'right-panel-active' : ''}`} id="container">
       <div className="form-container sign-up-container">
         <form action="signup">
-          <h1>Create Account</h1>
+          <h1>SIGN UP</h1>
           <div className="social-container">
             <a href="#" className="social"><i className="fab fa-facebook-f"></i></a>
             <a href="#" className="social"><i className="fab fa-google-plus-g"></i></a>
@@ -30,7 +30,7 @@ const Register = () => {
       </div>
       <div className="form-container sign-in-container">
         <form action="login">
-          <h1>Sign in</h1>
+          <h1>LOGIN</h1>
           <div className="social-container">
             <a href="#" className="social"><i className="fab fa-facebook-f"></i></a>
             <a href="#" className="social"><i className="fab fa-google-plus-g"></i></a>
@@ -40,7 +40,7 @@ const Register = () => {
           <input type="email" name="email" placeholder="Email" required />
           <input type="password" name="password" placeholder="Password" required />
           <a href="#">Forgot your password?</a>
-          <button type="submit">Login In</button>
+          <button type="submit">Login</button>
         </form>
       </div>
       <div className="overlay-container">
@@ -48,7 +48,7 @@ const Register = () => {
           <div className="overlay-panel overlay-left">
             <h1>Welcome Back!</h1>
             <p>To keep connected with us please login with your personal info</p>
-            <button className="ghost" onClick={handleToggle}>Sign In</button>
+            <button className="ghost" onClick={handleToggle}>Login</button>
           </div>
           <div className="overlay-panel overlay-right">
             <h1>Hello, Friend!</h1>
