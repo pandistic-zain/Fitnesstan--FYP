@@ -1,0 +1,63 @@
+.footer {
+    background-color: #01411C; /* Pakistan Green */
+    color: white;
+    padding: 20px 0; /* Reduced height */
+    margin-top: 50px;
+  }
+  
+  .footerRow {
+    display: flex;
+    justify-content: space-between; /* Align items in a row */
+  }
+  
+  .footer h5 {
+    color: #fff;
+    margin-bottom: 15px;
+  }
+  
+  .footer p {
+    color: #ddd;
+  }
+  
+  .contactInfo {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .contactInfo li {
+    margin-bottom: 8px;
+    color: #fff;
+  }
+  
+  .contactInfo li svg {
+    margin-right: 10px;
+  }
+  
+  .iconContainer {
+    display: flex;
+    justify-content: center; /* Center the social icons */
+    gap: 15px; /* Spacing between icons */
+  }
+  
+  .socialIcons a {
+    color: white !important;
+    font-size: 24px;
+    transition: color 0.3s;
+  }
+  
+  .socialIcons a:hover {
+    color: #00ff99 !important; /* Light green on hover */
+  }
+  
+  .divider {
+    border-top: 1px solid #ddd;
+    margin-top: 20px;
+    margin-bottom: 20px;
+  }
+  
+  .footer p {
+    margin-top: 10px;
+    font-size: 14px;
+    color: #ddd;
+  }
+  
