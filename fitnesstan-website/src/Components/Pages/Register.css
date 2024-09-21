@@ -6,6 +6,10 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  background-image: url("../../Assets/banner bg.jpg");
+  background-size: cover;     /* Ensures the image covers the section fully */
+  background-repeat: no-repeat; /* Prevents the image from repeating */
+  background-position: center;
   body {
     margin: 0; /* Reset margin to avoid any unwanted spacing */
     background: #f6f5f7;

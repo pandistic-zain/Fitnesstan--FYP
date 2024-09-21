@@ -37,7 +37,7 @@
 }
 
 .links-section .nav-link:hover {
-    color: #f8f9fa; /* Lighten the color on hover */
+    color: #32fe7d; /* Lighten the color on hover */
     text-decoration: underline; /* Add underline on hover */
 }
 
