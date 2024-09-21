@@ -49,7 +49,7 @@ const Footer = () => {
 
             <ul className={styles.socailmedia}>
               <li>
-                <a href="https://www.facebook.com/people/Zain-Ul-Abideen/pfbid0FA2yfbArz8XUWCG3RCW5phCZzwf6JykdWXcVLFbuJi2ztj8pVXagrYbJskGfywwzl/" target="_blank">
+                <a href="https://www.facebook.com/people/Zain-Ul-Abideen/pfbid0FA2yfbArz8XUWCG3RCW5phCZzwf6JykdWXcVLFbuJi2ztj8pVXagrYbJskGfywwzl/" target="_blank" rel="noopener noreferrer">
                   <svg
                     viewBox="0 0 10.712 20"
                     height="20"
@@ -66,7 +66,7 @@ const Footer = () => {
               </li>
 
               <li>
-                <a href="https://www.instagram.com/fit._.zain/" target="_blank">
+                <a href="https://www.instagram.com/fit._.zain/" target="_blank" rel="noopener noreferrer">
                   <svg
                     viewBox="0 0 20 20"
                     height="20"
@@ -119,7 +119,7 @@ const Footer = () => {
               </li>
 
               <li>
-                <a href="https://www.linkedin.com/in/zain-ul-abideen-b9215a283/" target="_blank">
+                <a href="https://www.linkedin.com/in/zain-ul-abideen-b9215a283/" target="_blank" rel="noopener noreferrer">
                   <svg
                     viewBox="0 0 20 20"
                     height="20"
@@ -153,7 +153,7 @@ const Footer = () => {
               </li>
 
               <li>
-                <a href="https://www.snapchat.com/add/zain.gallery?share_id=Y-6Fv4VUUmo&locale=en-US" target="_blank">
+                <a href="https://www.snapchat.com/add/zain.gallery?share_id=Y-6Fv4VUUmo&locale=en-US" target="_blank" rel="noopener noreferrer">
                   <svg
                     viewBox="0 0 19.838 18.6"
                     height="18.6"
@@ -190,7 +190,7 @@ const Footer = () => {
               </li>
 
               <li>
-                <a href="https://www.tiktok.com/@pandistic._.zain?_t=8punaLQ6HdC&_r=1" target="_blank">
+                <a href="https://www.tiktok.com/@pandistic._.zain?_t=8punaLQ6HdC&_r=1" target="_blank" rel="noopener noreferrer">
                   <svg
                     viewBox="0 0 19.738 22.466"
                     height="22.466"
@@ -211,7 +211,7 @@ const Footer = () => {
               </li>
 
               <li>
-                <a href="https://x.com/pandistic_zayn" target="_blank">
+                <a href="https://x.com/pandistic_zayn" target="_blank" rel="noopener noreferrer">
                   <svg
                     viewBox="0 0 23.06 18"
                     height="18"
