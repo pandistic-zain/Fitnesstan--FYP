@@ -1,0 +1,40 @@
+/* Custom navbar styles */
+
+/* Light-colored background */
+.custom-navbar {
+    background-color: #fff !important;
+    height: 80px; /* Increase height */
+    border-bottom: 2px solid #ccc; /* Adds a subtle border */
+  }
+  
+  /* Logo Styling */
+  .navbar-logo {
+    height: 50px;
+    width: auto;
+    margin-right: 10px;
+  }
+  
+  /* Nav Links with Pakistani Flag Colors */
+  .nav-links .nav-link {
+    background-color: #008000; /* Green */
+    color: white;
+    padding: 8px 15px;
+    border-radius: 5px;
+    margin-right: 10px;
+  }
+  
+  .nav-links .nav-link:hover {
+    background-color: #004d00; /* Darker green on hover */
+    color: #fff;
+  }
+  
+  /* Button Styles */
+  .mx-2 {
+    margin-right: 10px;
+  }
+  
+  /* Hide admin panel link */
+  .admin-link {
+    display: none;
+  }
+  
