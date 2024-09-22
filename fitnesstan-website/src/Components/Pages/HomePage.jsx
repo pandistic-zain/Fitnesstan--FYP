@@ -10,13 +10,13 @@ import {
   FaLock,
   FaChartLine,
 } from "react-icons/fa";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 import headerImg from "../../Assets/header-img.svg";
 
 const HomePage = () => {
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
   const handleExploreButtonClick = () => {
-    navigate('/features'); 
+    navigate("/features");
   };
   return (
     <div className={styles["home-page"]}>
@@ -67,8 +67,11 @@ const HomePage = () => {
                 <FaDumbbell className={styles.featureIcon} />
                 <h5>Personalized Workouts</h5>
                 <p>
-                  AI-powered workout plans tailored to your fitness goals and
-                  medical conditions.
+                  Experience AI-driven workout plans that consider your fitness
+                  goals, medical conditions, and workout intensity. Our approach
+                  incorporates a balanced push-pull mechanism to ensure optimal
+                  muscle engagement and recovery for a well-rounded fitness
+                  journey.
                 </p>
               </div>
             </Col>
@@ -88,15 +91,16 @@ const HomePage = () => {
                 <FaAppleAlt className={styles.featureIcon} />
                 <h5>Nutrient Plan</h5>
                 <p>
-                  Custom meal plans and supplement suggestions based on your
-                  dietary needs.
+                  Choose from our chart what you want to eat, and we’ll
+                  calculate the macronutrients and your dietary needs to create
+                  a custom meal plan just for you.
                 </p>
               </div>
             </Col>
           </Row>
           <div className={styles.horizontalDivider}></div>
 
-          {/* Feature 3: Diabetes True Type Diet Plan */}
+          {/* Feature 3: Diabetes True Diet Plan */}
           <Row className={styles.featureRow}>
             <Col md={5} className={styles.featureImageCol}>
               <div className={styles.featureImage}>
@@ -110,8 +114,13 @@ const HomePage = () => {
             <Col md={5} className={styles.featureTextCol}>
               <div className={styles.featureCard}>
                 <FaHeartbeat className={styles.featureIcon} />
-                <h5>Diabetes True Type Diet Plan</h5>
-                <p>Specialized diet plans crafted for people with diabetes.</p>
+                <h5>Diabetes Diet Plans</h5>
+                <p>
+                  Our diet plans are specially designed for people with
+                  diabetes. They help you manage your blood sugar while enjoying
+                  tasty meals. Plus, we provide dietary supplements to ensure
+                  you meet your macronutrient needs.
+                </p>
               </div>
             </Col>
           </Row>
@@ -184,7 +193,10 @@ const HomePage = () => {
 
           {/* Blurry Effect and Button */}
           <div className={styles.blurryEffect}>
-            <button className={styles.detailButton} onClick={handleExploreButtonClick}>
+            <button
+              className={styles.detailButton}
+              onClick={handleExploreButtonClick}
+            >
               Explore Detailed Features
             </button>
           </div>
@@ -217,8 +229,7 @@ const HomePage = () => {
       </section>
 
       {/* Testimonials Section */}
-      <section className={styles["testimonials-section"]}  id="testimonials">
-
+      <section className={styles["testimonials-section"]} id="testimonials">
         <Container>
           <h2>What Our Users Say</h2>
           <Row>
@@ -252,8 +263,7 @@ const HomePage = () => {
         </Container>
       </section>
       {/* Contact Us Section */}
-      <section className={styles["contact-section"]}  id="contact">
-
+      <section className={styles["contact-section"]} id="contact">
         <Container>
           <h2>Contact Us</h2>
           <form className={styles["contact-form"]}>
@@ -277,8 +287,7 @@ const HomePage = () => {
         </Container>
       </section>
       {/* Give Feedback Section */}
-      <section className={styles["give-feedback-section"]}  id="give-feedback">
-
+      <section className={styles["give-feedback-section"]} id="give-feedback">
         <Container>
           <h2>Give Us Your Feedback</h2>
           <p>
