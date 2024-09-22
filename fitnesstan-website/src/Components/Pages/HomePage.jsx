@@ -142,8 +142,10 @@ const HomePage = () => {
                 <FaCapsules className={styles.featureIcon} />
                 <h5>Supplement Support Plan</h5>
                 <p>
-                  Expert recommendations on the best supplements for your
-                  fitness journey.
+                  Our Supplement Support Plan provides AI-driven recommendations
+                  for dietary supplements, approved by certified fitness
+                  trainers. Enhance your health and optimize your performance
+                  with expert-backed choices tailored to your fitness goals.
                 </p>
               </div>
             </Col>
@@ -163,8 +165,9 @@ const HomePage = () => {
                 <FaLock className={styles.featureIcon} />
                 <h5>Data Privacy</h5>
                 <p>
-                  We ensure the highest standards of data privacy to safeguard
-                  your information.
+                  We prioritize your data privacy, ensuring your information is
+                  securely stored. Any use of your data will be done with your
+                  explicit consent, respecting your preferences at all times.
                 </p>
               </div>
             </Col>
@@ -186,7 +189,11 @@ const HomePage = () => {
               <div className={styles.featureCard}>
                 <FaChartLine className={styles.featureIcon} />
                 <h5>Progress Tracking</h5>
-                <p>Track your fitness journey with detailed analytics.</p>
+                <p>
+                  Monitor your fitness journey with detailed weekly analytics.
+                  Each plan will be reevaluated weekly to ensure it aligns with
+                  your evolving goals and progress.
+                </p>
               </div>
             </Col>
           </Row>

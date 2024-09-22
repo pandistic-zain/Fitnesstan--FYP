@@ -146,9 +146,9 @@ button:hover .button-text {
   max-width: 400px;
   border-radius: 12px;
   padding: 30px;
-  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 6px 15px rgb(7, 77, 7);
   text-align: center;
-  transform: translate(100px, 80px); /* Moved more towards the right with more downward translation */
+  transform: translate(100px, 80px); 
 }
 
 .featureIcon {
