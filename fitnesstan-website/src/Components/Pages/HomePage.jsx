@@ -10,9 +10,14 @@ import {
   FaLock,
   FaChartLine,
 } from "react-icons/fa";
+import { useNavigate } from 'react-router-dom';
 import headerImg from "../../Assets/header-img.svg";
 
 const HomePage = () => {
+  const navigate = useNavigate(); 
+  const handleExploreButtonClick = () => {
+    navigate('/features'); // Redirect to "/features"
+  };
   return (
     <div className={styles["home-page"]}>
       {/* Hero Section */}
@@ -179,7 +184,7 @@ const HomePage = () => {
 
           {/* Blurry Effect and Button */}
           <div className={styles.blurryEffect}>
-            <button className={styles.detailButton}>
+            <button className={styles.detailButton} onClick={handleExploreButtonClick}>
               Explore Detailed Features
             </button>
           </div>
