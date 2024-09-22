@@ -148,7 +148,7 @@ button:hover .button-text {
   padding: 30px;
   box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
   text-align: center;
-  transform: translate(50px, 80px); /* Moved more towards the right with more downward translation */
+  transform: translate(100px, 80px); /* Moved more towards the right with more downward translation */
 }
 
 .featureIcon {
@@ -173,7 +173,7 @@ button:hover .button-text {
 .verticalDivider {
   border: 1px solid #006400;
   border-radius: 20px;
-  width: 1px; 
+  width: 1px !important; 
   height: 100%;
   background-color: #006400; /* Pakistani green */
   position: absolute;
