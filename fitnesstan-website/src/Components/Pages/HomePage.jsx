@@ -2,14 +2,21 @@ import React from "react";
 import { Container, Row, Col, Button } from "react-bootstrap";
 // import { Link } from 'react-router-dom';
 import styles from "./Home.module.css"; // Custom CSS for styling
-import { FaDumbbell, FaHeartbeat, FaAppleAlt, FaLaptop } from "react-icons/fa";
+import {
+  FaDumbbell,
+  FaHeartbeat,
+  FaAppleAlt,
+  FaCapsules,
+  FaLock,
+  FaChartLine,
+} from "react-icons/fa";
 import headerImg from "../../Assets/header-img.svg";
 
 const HomePage = () => {
   return (
     <div className={styles["home-page"]}>
       {/* Hero Section */}
-      <section className={styles["hero-section"]}>
+      <section className={styles["hero-section"]} id="home">
         <Container>
           <Row className="align-items-center">
             <Col lg={6}>
@@ -35,11 +42,22 @@ const HomePage = () => {
       </section>
 
       {/* Features Section */}
-      <section className={styles.featuresSection}>
+      <section className={styles.featuresSection} id="features">
         <Container>
-          <h2 className={styles.sectionTitle}>Why Choose Fitnesstan?</h2>
-          <Row>
-            <Col md={3} className={styles.featureCol}>
+          <h2 className={styles.sectionTitle}>Why Choose Fitistan?</h2>
+
+          {/* Feature 1: Personalized Workouts */}
+          <Row className={styles.featureRow}>
+            <Col md={5} className={styles.featureImageCol}>
+              <div className={styles.featureImage}>
+                <img
+                  src="path/to/workout-image.jpg"
+                  alt="Personalized Workouts"
+                />
+              </div>
+            </Col>
+            <div className={styles.verticalDivider}></div>
+            <Col md={5} className={styles.featureTextCol}>
               <div className={styles.featureCard}>
                 <FaDumbbell className={styles.featureIcon} />
                 <h5>Personalized Workouts</h5>
@@ -49,45 +67,127 @@ const HomePage = () => {
                 </p>
               </div>
             </Col>
+          </Row>
+          <div className={styles.horizontalDivider}></div>
 
-            <Col md={3} className={styles.featureCol}>
-              <div className={styles.featureCard}>
-                <FaHeartbeat className={styles.featureIcon} />
-                <h5>Health Tracking</h5>
-                <p>
-                  Track your health metrics like heart rate, calories burned,
-                  and more.
-                </p>
+          {/* Feature 2: Nutrient Plan */}
+          <Row className={styles.featureRow}>
+            <Col md={5} className={styles.featureImageCol}>
+              <div className={styles.featureImage}>
+                <img src="path/to/nutrition-image.jpg" alt="Nutrient Plan" />
               </div>
             </Col>
-
-            <Col md={3} className={styles.featureCol}>
+            <div className={styles.verticalDivider}></div>
+            <Col md={5} className={styles.featureTextCol}>
               <div className={styles.featureCard}>
                 <FaAppleAlt className={styles.featureIcon} />
-                <h5>Nutrition Guidance</h5>
+                <h5>Nutrient Plan</h5>
                 <p>
                   Custom meal plans and supplement suggestions based on your
                   dietary needs.
                 </p>
               </div>
             </Col>
+          </Row>
+          <div className={styles.horizontalDivider}></div>
 
-            <Col md={3} className={styles.featureCol}>
+          {/* Feature 3: Diabetes True Type Diet Plan */}
+          <Row className={styles.featureRow}>
+            <Col md={5} className={styles.featureImageCol}>
+              <div className={styles.featureImage}>
+                <img
+                  src="path/to/diabetes-diet-image.jpg"
+                  alt="Diabetes True Type Diet Plan"
+                />
+              </div>
+            </Col>
+            <div className={styles.verticalDivider}></div>
+            <Col md={5} className={styles.featureTextCol}>
               <div className={styles.featureCard}>
-                <FaLaptop className={styles.featureIcon} />
-                <h5>Online Access</h5>
+                <FaHeartbeat className={styles.featureIcon} />
+                <h5>Diabetes True Type Diet Plan</h5>
+                <p>Specialized diet plans crafted for people with diabetes.</p>
+              </div>
+            </Col>
+          </Row>
+          <div className={styles.horizontalDivider}></div>
+
+          {/* Feature 4: Supplement Support Plan */}
+          <Row className={styles.featureRow}>
+            <Col md={5} className={styles.featureImageCol}>
+              <div className={styles.featureImage}>
+                <img
+                  src="path/to/supplement-image.jpg"
+                  alt="Supplement Support Plan"
+                />
+              </div>
+            </Col>
+            <div className={styles.verticalDivider}></div>
+            <Col md={5} className={styles.featureTextCol}>
+              <div className={styles.featureCard}>
+                <FaCapsules className={styles.featureIcon} />
+                <h5>Supplement Support Plan</h5>
                 <p>
-                  Access your plans anytime, anywhere, on any device with our
-                  web and mobile app.
+                  Expert recommendations on the best supplements for your
+                  fitness journey.
                 </p>
               </div>
             </Col>
           </Row>
+          <div className={styles.horizontalDivider}></div>
+
+          {/* Feature 5: Data Privacy */}
+          <Row className={styles.featureRow}>
+            <Col md={5} className={styles.featureImageCol}>
+              <div className={styles.featureImage}>
+                <img src="path/to/data-privacy-image.jpg" alt="Data Privacy" />
+              </div>
+            </Col>
+            <div className={styles.verticalDivider}></div>
+            <Col md={5} className={styles.featureTextCol}>
+              <div className={styles.featureCard}>
+                <FaLock className={styles.featureIcon} />
+                <h5>Data Privacy</h5>
+                <p>
+                  We ensure the highest standards of data privacy to safeguard
+                  your information.
+                </p>
+              </div>
+            </Col>
+          </Row>
+          <div className={styles.horizontalDivider}></div>
+
+          {/* Feature 6: Progress Tracking */}
+          <Row className={styles.featureRow}>
+            <Col md={5} className={styles.featureImageCol}>
+              <div className={styles.featureImage}>
+                <img
+                  src="path/to/progress-tracking-image.jpg"
+                  alt="Progress Tracking"
+                />
+              </div>
+            </Col>
+            <div className={styles.verticalDivider}></div>
+            <Col md={5} className={styles.featureTextCol}>
+              <div className={styles.featureCard}>
+                <FaChartLine className={styles.featureIcon} />
+                <h5>Progress Tracking</h5>
+                <p>Track your fitness journey with detailed analytics.</p>
+              </div>
+            </Col>
+          </Row>
+
+          {/* Blurry Effect and Button */}
+          <div className={styles.blurryEffect}>
+            <button className={styles.detailButton}>
+              Explore Detailed Features
+            </button>
+          </div>
         </Container>
       </section>
 
       {/* Supplement Section */}
-      <section className={styles["supplement-section"]}>
+      <section className={styles["supplement-section"]} id="supplements">
         <Container>
           <h2>Supplements: Pros & Cons</h2>
           <Row>
@@ -112,7 +212,8 @@ const HomePage = () => {
       </section>
 
       {/* Testimonials Section */}
-      <section className={styles["testimonials-section"]}>
+      <section className={styles["testimonials-section"]}  id="testimonials">
+
         <Container>
           <h2>What Our Users Say</h2>
           <Row>
@@ -146,7 +247,8 @@ const HomePage = () => {
         </Container>
       </section>
       {/* Contact Us Section */}
-      <section className={styles["contact-section"]}>
+      <section className={styles["contact-section"]}  id="contact">
+
         <Container>
           <h2>Contact Us</h2>
           <form className={styles["contact-form"]}>
@@ -170,7 +272,8 @@ const HomePage = () => {
         </Container>
       </section>
       {/* Give Feedback Section */}
-      <section className={styles["give-feedback-section"]}>
+      <section className={styles["give-feedback-section"]}  id="give-feedback">
+
         <Container>
           <h2>Give Us Your Feedback</h2>
           <p>

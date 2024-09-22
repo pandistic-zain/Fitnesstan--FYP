@@ -104,67 +104,116 @@ button:hover .circle .icon.arrow {
 button:hover .button-text {
   color: #fff;
 }
-
-/* Features Section */
+/* Feature section */
 .featuresSection {
-  background-color: #f9f9f9; /* Light background color */
-  padding: 50px 20px; /* Padding around the section */
-  text-align: center; /* Center text */
+  padding: 60px 0;
+  background-color: #f7f7f7;
+  position: relative;
 }
 
 .sectionTitle {
-  font-size: 2.5rem; /* Larger font for the heading */
-  margin-bottom: 40px; /* Space below the heading */
-  color: #28a745; /* Green color for heading */
+  font-size: 2.8rem;
+  text-align: center;
+  margin-bottom: 40px;
+  color: #222;
+  font-weight: bold;
 }
 
-.featureCol {
-  display: flex; /* Flexbox for alignment */
-  justify-content: center; /* Center content */
-  margin-bottom: 30px; /* Space below columns */
+.featureRow {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 60px;
+  position: relative;
+}
+
+.featureImageCol,
+.featureTextCol {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 45%;
+}
+
+.featureImage img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 12px;
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
 }
 
 .featureCard {
-  background-color: white; /* White background for cards */
-  border-radius: 10px; /* Rounded corners */
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Subtle shadow */
-  padding: 20px; /* Padding inside cards */
-  width: 100%; /* Full width */
-  max-width: 250px; /* Max width for cards */
-  transition: transform 0.3s; /* Smooth transformation on hover */
-}
-
-.featureCard h5 {
-  font-size: 1.5rem; /* Font size for feature title */
-  margin: 15px 0; /* Space above and below the title */
-  color: #333; /* Dark color for title */
-}
-
-.featureCard p {
-  font-size: 1rem; /* Font size for feature description */
-  color: #666; /* Grey color for text */
-}
-
-.featureCard:hover {
-  transform: translateY(-5px); /* Lift effect on hover */
+  background-color: white;
+  max-width: 400px;
+  border-radius: 12px;
+  padding: 30px;
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  transform: translate(50px, 80px); /* Moved more towards the right with more downward translation */
 }
 
 .featureIcon {
-  font-size: 2rem; /* Size for the feature icons */
-  color: #28a745; /* Green color for icons */
-  margin-bottom: 10px; /* Space below icons */
+  font-size: 50px;
+  color: #28a745;
+  margin-bottom: 20px;
 }
 
-/* Media Query for responsiveness */
-@media (max-width: 768px) {
-  .sectionTitle {
-    font-size: 2rem; /* Smaller font size for mobile */
-  }
+.featureTextCol h5 {
+  font-size: 1.8rem;
+  margin-bottom: 10px;
+  color: #333;
+  font-weight: 600;
+}
 
-  .featureCard {
-    max-width: 100%; /* Full width for mobile */
-    margin: 0 auto; /* Center on mobile */
-  }
+.featureTextCol p {
+  font-size: 1.1rem;
+  color: #666;
+  line-height: 1.6;
+}
+
+.verticalDivider {
+  border: 1px solid #006400;
+  border-radius: 20px;
+  width: 1px; 
+  height: 100%;
+  background-color: #006400; /* Pakistani green */
+  position: absolute;
+  left: 50%;
+  top: 0;
+  transform: translateX(-50%);
+}
+
+.horizontalDivider {
+  height: 2px;
+  background-color: #006400;
+  margin: 100px 0;
+}
+
+.blurryEffect {
+  width: 100%;
+  height: 150px;
+  background: rgba(0, 128, 0, 0.6); /* Pakistani green with transparency */
+  backdrop-filter: blur(15px);
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.detailButton {
+  padding: 15px 30px;
+  font-size: 1.2rem;
+  color: #fff;
+  background-color: #28a745;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.detailButton:hover {
+  background-color: #218838;
 }
 
 /* Supplement Section */
