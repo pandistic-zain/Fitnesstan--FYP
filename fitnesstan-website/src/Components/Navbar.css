@@ -37,16 +37,21 @@
     transition: color 0.3s ease-in-out; /* Smooth transition on hover */
 }
 
-.links-section .nav-link:hover {
-    color: #32fe7d; /* Lighten the color on hover */
-    text-decoration: underline; /* Add underline on hover */
+.links-section .nav-link {
+  color: #ffffff; /* Default link color */
 }
-.links-section .nav-link.active {
-  color: #32fe7d !important; /* Set the active color */
+
+.links-section .nav-link:focus {
+  outline: none; 
+  color: #a0e7ba; 
+}
+
+.links-section .nav-link:hover {
+  color: #67ff9e; 
+  text-decoration: underline; 
 }
 
 /* Button Styles */
-/* === removing default button style ===*/
 .button {
     margin: 0;
     height: auto;
