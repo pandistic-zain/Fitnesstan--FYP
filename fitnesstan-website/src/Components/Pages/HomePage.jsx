@@ -16,7 +16,7 @@ import headerImg from "../../Assets/header-img.svg";
 const HomePage = () => {
   const navigate = useNavigate(); 
   const handleExploreButtonClick = () => {
-    navigate('/features'); // Redirect to "/features"
+    navigate('/features'); 
   };
   return (
     <div className={styles["home-page"]}>
