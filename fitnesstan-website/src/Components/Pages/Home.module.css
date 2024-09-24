@@ -107,14 +107,14 @@ button:hover .button-text {
 /* Feature section */
 .featuresSection {
   padding: 60px 0;
-  background-color: #f7f7f7;
+  background-color: #ffffff;
   position: relative;
 }
 
 .sectionTitle {
   font-size: 2.8rem;
   text-align: center;
-  margin-bottom: 40px;
+  margin-bottom: 50px;
   color: #222;
   font-weight: bold;
 }
@@ -135,47 +135,47 @@ button:hover .button-text {
 }
 
 .featureImage img {
-  max-width: 100%;
+  max-width: 400px;
   height: auto;
   border-radius: 12px;
-  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+  transform: translateY(-20px);
 }
 
 .featureCard {
-  background-color: white;
+  background-color: #00401A;
   max-width: 400px;
   border-radius: 12px;
   padding: 30px;
-  box-shadow: 0 6px 15px rgb(7, 77, 7);
+  box-shadow: 0 10px 25px rgb(7, 77, 7);
   text-align: center;
-  transform: translate(100px, 80px); 
+  transform: translate(150px, 100px); 
 }
 
 .featureIcon {
   font-size: 50px;
-  color: #28a745;
+  color: #ffffff;
   margin-bottom: 20px;
 }
 
 .featureTextCol h5 {
   font-size: 1.8rem;
   margin-bottom: 10px;
-  color: #333;
+  color: #ffffff;
   font-weight: 600;
 }
 
 .featureTextCol p {
   font-size: 1.1rem;
-  color: #666;
+  color: #b4b4b4;
   line-height: 1.6;
 }
 
 .verticalDivider {
-  border: 1px solid #006400;
+  border: 1px solid #00401A;
   border-radius: 20px;
   width: 1px !important; 
   height: 100%;
-  background-color: #006400; /* Pakistani green */
+  background-color: #00401A; /* Pakistani green */
   position: absolute;
   left: 50%;
   top: 0;
@@ -185,7 +185,7 @@ button:hover .button-text {
 .horizontalDivider {
   height: 2px;
   background-color: #006400;
-  margin: 100px 0;
+  margin: 120px 0;
 }
 
 .blurryEffect {

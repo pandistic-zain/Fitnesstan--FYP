@@ -1,6 +1,12 @@
 import React from "react";
 import { Container, Row, Col, Button } from "react-bootstrap";
 // import { Link } from 'react-router-dom';
+import workoutImage from "../../Assets/workout-image.jpg";
+import nutrientImage from "../../Assets/nutrition-image.jpg";
+import DiabetesDietImage from "../../Assets/diabetes-diet-image.jpg";
+import SupplementsImage from "../../Assets/supplement-image.jpg";
+import DataPrivacyImage from "../../Assets/data-privacy-image.jpg";
+import ProgressTrackingImage from "../../Assets/progress-tracking-image.jpg";
 import styles from "./Home.module.css"; // Custom CSS for styling
 import {
   FaDumbbell,
@@ -49,16 +55,13 @@ const HomePage = () => {
       {/* Features Section */}
       <section className={styles.featuresSection} id="features">
         <Container>
-          <h2 className={styles.sectionTitle}>Why Choose Fitistan?</h2>
+          <h2 className={styles.sectionTitle}>Why Choose Fitnesstan?</h2>
 
           {/* Feature 1: Personalized Workouts */}
           <Row className={styles.featureRow}>
             <Col md={5} className={styles.featureImageCol}>
               <div className={styles.featureImage}>
-                <img
-                  src="path/to/workout-image.jpg"
-                  alt="Personalized Workouts"
-                />
+                <img src={workoutImage} alt="Personalized Workouts" />
               </div>
             </Col>
             <div className={styles.verticalDivider}></div>
@@ -82,7 +85,7 @@ const HomePage = () => {
           <Row className={styles.featureRow}>
             <Col md={5} className={styles.featureImageCol}>
               <div className={styles.featureImage}>
-                <img src="path/to/nutrition-image.jpg" alt="Nutrient Plan" />
+                <img src={nutrientImage} alt="Nutrient Plan" />
               </div>
             </Col>
             <div className={styles.verticalDivider}></div>
@@ -91,9 +94,10 @@ const HomePage = () => {
                 <FaAppleAlt className={styles.featureIcon} />
                 <h5>Nutrient Plan</h5>
                 <p>
-                  Choose from our chart what you want to eat, and we’ll
-                  calculate the macronutrients and your dietary needs to create
-                  a custom meal plan just for you.
+                  Choose your foods from our chart, and we'll calculate the
+                  macronutrients and dietary needs. We'll then create a custom
+                  meal plan tailored to your goals, ensuring both enjoyment and
+                  optimal nutrition.
                 </p>
               </div>
             </Col>
@@ -105,7 +109,7 @@ const HomePage = () => {
             <Col md={5} className={styles.featureImageCol}>
               <div className={styles.featureImage}>
                 <img
-                  src="path/to/diabetes-diet-image.jpg"
+                  src={DiabetesDietImage}
                   alt="Diabetes True Type Diet Plan"
                 />
               </div>
@@ -131,7 +135,7 @@ const HomePage = () => {
             <Col md={5} className={styles.featureImageCol}>
               <div className={styles.featureImage}>
                 <img
-                  src="path/to/supplement-image.jpg"
+                  src={SupplementsImage}
                   alt="Supplement Support Plan"
                 />
               </div>
@@ -156,7 +160,7 @@ const HomePage = () => {
           <Row className={styles.featureRow}>
             <Col md={5} className={styles.featureImageCol}>
               <div className={styles.featureImage}>
-                <img src="path/to/data-privacy-image.jpg" alt="Data Privacy" />
+                <img src={DataPrivacyImage} alt="Data Privacy" />
               </div>
             </Col>
             <div className={styles.verticalDivider}></div>
@@ -179,7 +183,7 @@ const HomePage = () => {
             <Col md={5} className={styles.featureImageCol}>
               <div className={styles.featureImage}>
                 <img
-                  src="path/to/progress-tracking-image.jpg"
+                  src={ProgressTrackingImage}
                   alt="Progress Tracking"
                 />
               </div>
