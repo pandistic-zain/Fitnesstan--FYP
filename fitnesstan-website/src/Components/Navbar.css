@@ -85,7 +85,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    font-weight: bold;
+    font-weight:bolder;
     box-sizing: border-box;
     content: attr(data-text);
     color: #ffff;
