@@ -255,17 +255,21 @@ button:hover .button-text {
   background-color: #ff0000;
   padding-top: 20px;
   padding-bottom: 30px;
-  
+  position: relative; /* Add this line */
+  overflow: hidden; /* Add this line */
 }
+
 .supplement-section::after {
   content: "";
   position: absolute;
-  bottom: 0;
+  bottom: 0; /* Ensure this line is already present */
   left: 0;
   width: 100%;
-  height: 1000px; /* Increased height for testing */
+  height: 1500px; /* Change this to the desired height */
   background-image: url("../../Assets/ShadowBottomWhite.png");
+  background-size: cover; /* Add this line */
   z-index: 2;
+  pointer-events: none; 
 }
 .section-title {
   color: #ffffff;
@@ -353,7 +357,46 @@ p {
   border: 1px solid #ffffff;
 }
 
+.horizontalDividerFinalSupplements {
+  height: 3px;
+  background-color: #ff0000;
+  z-index: 5; /* Increased z-index to ensure it's above other elements */
+  margin-top: 30px;
+  position: relative; /* Make sure it's positioned correctly */
+}
+.supplementcomicbutton {
+  display: inline-block; /* Ensure button is treated as block for centering */
+  padding: 10px 20px;
+  font-size: 24px;
+  font-weight: 600;
+  text-align: center;
+  text-decoration: none;
+  color: #ff0000;
+  background-color: #ffffff;
+  border: 2px solid #ff0000;
+  border-radius: 10px;
+  box-shadow: 5px 5px 0px #ff0000;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  z-index: 6;
+  margin: 20px auto; /* Center the button */
+  width: auto; /* Maintain button size */
+}
 
+/* Ensure the button hover/active states are the same */
+.supplementcomicbutton:hover {
+  background-color: #ff0000;
+  color: #ffffff;
+  border: 2px solid #000000;
+  box-shadow: 5px 5px 0px #000000;
+}
+
+.supplementcomicbutton:active {
+  background-color: #fcf414; /* Adjusted for better visibility */
+  box-shadow: none;
+  color: #000000;
+  transform: translateY(4px);
+}
 /* Testimonials Section */
 .testimonials-section {
   background-color: #fff;
