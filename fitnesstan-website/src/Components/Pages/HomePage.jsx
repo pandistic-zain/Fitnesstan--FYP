@@ -33,8 +33,10 @@ const HomePage = () => {
             <Col lg={6}>
               <h1>Welcome to Fitnesstan</h1>
               <p>
-                Your personalized fitness journey starts here. Get tailored
-                workout and diet plans just for you.
+                Welcome to Fitnesstan, the app designed to transform your fitness
+                goals into reality! Whether you're a beginner or a seasoned
+                athlete, our platform offers tailored workout and diet plans
+                crafted just for you.
               </p>
               <button className={styles["learn-more"]}>
                 <span className={styles["circle"]} aria-hidden="true">

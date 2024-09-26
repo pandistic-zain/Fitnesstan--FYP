@@ -32,6 +32,7 @@ button {
 }
 
 button.learn-more {
+  margin-top: 10px;
   width: 12rem;
   height: auto;
 }
