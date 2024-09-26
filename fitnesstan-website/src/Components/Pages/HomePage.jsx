@@ -88,6 +88,10 @@ const HomePage = () => {
   const handleExploreButtonClick = () => {
     navigate("/features");
   };
+  const handleLearnButtonClick = () => {
+    navigate("/supplements");
+  };
+  // eslint-disable-next-line no-unused-vars
   const [currentSupplement, setCurrentSupplement] = useState(
     supplementsData[0]
   ); // Default to first supplement
@@ -272,7 +276,7 @@ const HomePage = () => {
               className={styles.comicbutton}
               onClick={handleExploreButtonClick}
             >
-              Learn More!
+              Explore More!
             </button>
           </div>
           <div className={styles.horizontalDividerFinal}></div>
@@ -318,6 +322,18 @@ const HomePage = () => {
               <div className={styles["divider"]} />
             </div>
           ))}
+          <div
+            className="supplement-button-container"
+            style={{ textAlign: "center", margin: "40px 0" }}
+          >
+            <button
+              className={styles.supplementcomicbutton}
+              onClick={handleLearnButtonClick}
+            >
+              Explore More!
+            </button>
+          </div>
+          <div className={styles.horizontalDividerFinalSupplements}></div>
         </Container>
       </section>
 
