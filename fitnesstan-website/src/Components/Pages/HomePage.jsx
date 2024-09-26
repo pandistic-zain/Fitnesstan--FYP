@@ -21,36 +21,67 @@ import headerImg from "../../Assets/header-image.png";
 
 const supplementsData = [
   {
-    name: "Protein Powder",
+    name: "MyProtein Impact Whey Protein",
     overview:
-      "Protein powder is a popular supplement used to help build muscle and improve recovery.",
+      "MyProtein Impact Whey Protein is a premium quality protein supplement designed to aid muscle growth and recovery.",
     benefits: [
-      "Supports muscle growth",
-      "Improves workout performance",
-      "Boosts recovery after training",
+      "Supports muscle growth by providing a high-quality source of protein with essential amino acids.",
+      "Improves workout performance by delivering nutrients crucial for energy and endurance.",
+      "Boosts recovery after training, enabling quicker return to high-intensity workouts.",
     ],
     drawbacks: [
-      "Possible side effects",
-      "Not a substitute for proper diet",
-      "Needs proper research before consumption",
+      "Possible side effects include mild digestive discomfort for some users.",
+      "Not a substitute for a well-balanced diet and should complement overall nutrition.",
+      "Should be researched thoroughly before consumption to understand proper dosages.",
     ],
   },
   {
-    name: "Creatine",
+    name: "MuscleTech Creatine",
     overview:
-      "Creatine is known for enhancing strength and high-intensity performance.",
+      "MuscleTech Creatine is known for enhancing strength and high-intensity performance.",
     benefits: [
-      "Increases muscle mass",
-      "Improves strength",
-      "Enhances recovery",
+      "Increases muscle mass by promoting water retention in muscle cells.",
+      "Improves strength by replenishing ATP levels during workouts.",
+      "Enhances recovery by reducing muscle cell damage.",
     ],
     drawbacks: [
-      "May cause digestive issues",
-      "Requires proper hydration",
-      "Can lead to weight gain",
+      "May cause digestive issues, particularly when taken in high doses.",
+      "Requires proper hydration to prevent cramping and dehydration.",
+      "Can lead to weight gain due to increased water retention.",
+    ],
+  },
+  {
+    name: "BSN BCAA (Branched-Chain Amino Acids)",
+    overview:
+      "BSN BCAAs are essential nutrients that the body obtains from proteins found in food.",
+    benefits: [
+      "Reduces muscle soreness and fatigue during intense workouts.",
+      "Supports muscle recovery by decreasing muscle protein breakdown.",
+      "Helps preserve lean muscle mass during calorie-restricted diets.",
+    ],
+    drawbacks: [
+      "May not provide additional benefits if protein intake is already sufficient.",
+      "Can cause gastrointestinal discomfort in some users.",
+      "Possible interactions with certain medications, so consulting a doctor is advised.",
+    ],
+  },
+  {
+    name: "Optimum Nutrition Serious Mass",
+    overview:
+      "Optimum Nutrition Serious Mass is a high-calorie mass gainer designed to help individuals gain weight and muscle mass.",
+    benefits: [
+      "Provides 1,250 calories per serving to support rapid weight gain.",
+      "Includes a blend of proteins and carbohydrates to fuel workouts and recovery.",
+      "Fortified with vitamins and minerals to support overall health during bulking.",
+    ],
+    drawbacks: [
+      "May cause digestive discomfort if consumed too quickly or in large quantities.",
+      "High calorie content can lead to unwanted fat gain if not managed properly.",
+      "Some users may find the taste too sweet or artificial.",
     ],
   },
 ];
+
 
 const HomePage = () => {
   const navigate = useNavigate();
