@@ -1,4 +1,4 @@
-import React from "react";
+import {React,useState} from "react";
 import { Container, Row, Col, Button } from "react-bootstrap";
 // import { Link } from 'react-router-dom';
 import workoutImage from "../../Assets/workout-image.jpg";
@@ -19,11 +19,45 @@ import {
 import { useNavigate } from "react-router-dom";
 import headerImg from "../../Assets/header-image.png";
 
+const supplementsData = [
+  {
+    name: 'Protein Powder',
+    overview: 'Protein powder is a popular supplement used to help build muscle and improve recovery.',
+    benefits: [
+      'Supports muscle growth',
+      'Improves workout performance',
+      'Boosts recovery after training',
+    ],
+    drawbacks: [
+      'Possible side effects',
+      'Not a substitute for proper diet',
+      'Needs proper research before consumption',
+    ],
+  },
+  {
+    name: 'Creatine',
+    overview: 'Creatine is known for enhancing strength and high-intensity performance.',
+    benefits: [
+      'Increases muscle mass',
+      'Improves strength',
+      'Enhances recovery',
+    ],
+    drawbacks: [
+      'May cause digestive issues',
+      'Requires proper hydration',
+      'Can lead to weight gain',
+    ],
+  },
+  // Add more supplements as needed
+];
+
+
 const HomePage = () => {
   const navigate = useNavigate();
   const handleExploreButtonClick = () => {
     navigate("/features");
   };
+  const [currentSupplement, setCurrentSupplement] = useState(supplementsData[0]); // Default to first supplement
   return (
     <div className={styles["home-page"]}>
       {/* Hero Section */}
@@ -213,39 +247,36 @@ const HomePage = () => {
       </section>
 
       {/* Supplement Section */}
-      {/* Supplement Section */}
-<section className={styles["supplement-section"]} id="supplements">
-  <Container>
-    <h2>Targeted Supplements</h2>
-    <h3>Supplement Overview</h3>
-    <p>
-      Targeted supplements can help enhance your fitness goals by providing specific nutrients that may be lacking in your diet. They play a crucial role in optimizing performance and recovery.
-    </p>
-    <Row>
-      <Col md={6}>
-        <div className={styles["benefits-card"]}>
-          <h3>Benefits of Supplements</h3>
-          <ul>
-            <li>Supports muscle growth</li>
-            <li>Improves workout performance</li>
-            <li>Boosts recovery after training</li>
-          </ul>
-        </div>
-      </Col>
-      <Col md={6}>
-        <div className={styles["drawbacks-card"]}>
-          <h3>Drawbacks of Supplements</h3>
-          <ul>
-            <li>Possible side effects</li>
-            <li>Not a substitute for proper diet</li>
-            <li>Needs proper research before consumption</li>
-          </ul>
-        </div>
-      </Col>
-    </Row>
-    <hr className={styles["divider"]} />
-  </Container>
-</section>
+      <section className={styles["supplement-section"]} id="supplements">
+      <Container>
+        <h2 className={styles["section-title"]}>Targeted Supplements</h2>
+        <h4>{currentSupplement.name}</h4> {/* Dynamic supplement name */}
+        <p>{currentSupplement.overview}</p> {/* Dynamic overview based on supplement name */}
+        <Row>
+          <Col md={6}>
+            <div className={styles["benefits-card"]}>
+              <h3>Benefits of {currentSupplement.name}</h3>
+              <ul>
+                {currentSupplement.benefits.map((benefit, index) => (
+                  <li key={index}>{benefit}</li>
+                ))}
+              </ul>
+            </div>
+          </Col>
+          <Col md={6}>
+            <div className={styles["drawbacks-card"]}>
+              <h3>Drawbacks of {currentSupplement.name}</h3>
+              <ul>
+                {currentSupplement.drawbacks.map((drawback, index) => (
+                  <li key={index}>{drawback}</li>
+                ))}
+              </ul>
+            </div>
+          </Col>
+        </Row>
+        <hr className={styles["divider"]} />
+      </Container>
+    </section>
 
       {/* Testimonials Section */}
       <section className={styles["testimonials-section"]} id="testimonials">
