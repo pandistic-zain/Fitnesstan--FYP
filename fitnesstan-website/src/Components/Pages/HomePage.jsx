@@ -1,5 +1,5 @@
 import { React, useState } from "react";
-import { Container, Row, Col, Button } from "react-bootstrap";
+import { Container, Row, Col } from "react-bootstrap";
 // import { Link } from 'react-router-dom';
 import workoutImage from "../../Assets/workout-image.jpg";
 import nutrientImage from "../../Assets/nutrition-image.jpg";
@@ -81,7 +81,29 @@ const supplementsData = [
     ],
   },
 ];
-
+const testimonialsData = [
+  {
+    message: "Fitnesstan helped me achieve my fitness goals faster than ever!",
+    author: "Sarah Johnson",
+  },
+  {
+    message:
+      "The personalized plans really made a difference in my daily routine.",
+    author: "Michael Smith",
+  },
+  {
+    message: "Highly recommend this app for anyone serious about fitness!",
+    author: "Emily Davis",
+  },
+  {
+    message: "A fantastic app with amazing AI trainers. I'm so impressed!",
+    author: "James Brown",
+  },
+  {
+    message: "The nutrition and workout plans are exactly what I needed!",
+    author: "Jessica Wilson",
+  },
+];
 
 const HomePage = () => {
   const navigate = useNavigate();
@@ -94,7 +116,9 @@ const HomePage = () => {
   // eslint-disable-next-line no-unused-vars
   const [currentSupplement, setCurrentSupplement] = useState(
     supplementsData[0]
-  ); // Default to first supplement
+  );
+  // eslint-disable-next-line no-unused-vars
+  const [testimonials, setTestimonials] = useState(testimonialsData);
   return (
     <div className={styles["home-page"]}>
       {/* Hero Section */}
@@ -336,40 +360,20 @@ const HomePage = () => {
           <div className={styles.horizontalDividerFinalSupplements}></div>
         </Container>
       </section>
+      {/* testimonials Section */}
+      <section className={styles.testimonialsSection}  id="testimonials">
 
-      {/* Testimonials Section */}
-      <section className={styles["testimonials-section"]} id="testimonials">
-        <Container>
-          <h2>What Our Users Say</h2>
-          <Row>
-            <Col md={4}>
-              <div className={styles["testimonial-card"]}>
-                <p>
-                  "Fitnesstan helped me achieve my fitness goals faster than
-                  ever!"
-                </p>
-                <h4>- User 1</h4>
-              </div>
-            </Col>
-            <Col md={4}>
-              <div className={styles["testimonial-card"]}>
-                <p>
-                  "The personalized plans really made a difference in my daily
-                  routine."
-                </p>
-                <h4>- User 2</h4>
-              </div>
-            </Col>
-            <Col md={4}>
-              <div className={styles["testimonial-card"]}>
-                <p>
-                  "Highly recommend this app for anyone serious about fitness!"
-                </p>
-                <h4>- User 3</h4>
-              </div>
-            </Col>
-          </Row>
-        </Container>
+        <h2 className={styles.sectionTitle}>What Our Users Say !!!</h2>
+        <div className={styles.testimonialRow}>
+          {testimonialsData.map((testimonial, index) => (
+            <div className={styles.card} key={index}>
+              <div className={styles.bg}></div>
+              <div className={styles.blob}></div>
+              <p className={styles.testimonialText}>{testimonial.message}</p>
+              <p className={styles.testimonialAuthor}>- {testimonial.author}</p>
+            </div>
+          ))}
+        </div>
       </section>
       {/* Contact Us Section */}
       <section className={styles["contact-section"]} id="contact">
@@ -389,9 +393,7 @@ const HomePage = () => {
                 <textarea rows="4" placeholder="Your Message"></textarea>
               </Col>
             </Row>
-            <Button type="submit" className={styles["cta-button"]}>
-              Send Message
-            </Button>
+            <button type="submit">Send Message</button>
           </form>
         </Container>
       </section>
