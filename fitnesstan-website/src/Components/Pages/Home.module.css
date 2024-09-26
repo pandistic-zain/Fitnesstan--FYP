@@ -206,7 +206,7 @@ button:hover .button-text {
 }
 
 .horizontalDividerFinal {
-  height: 2px;
+  height: 3px;
   background-color: #ffffff;
   z-index: 5; /* Increased z-index to ensure it's above other elements */
   margin-top: 30px;
