@@ -84,6 +84,7 @@ const CustomNavbar = () => {
       </BootstrapNavbar>
 
       {/* Secondary Links Section */}
+      {location.pathname === "/" && (
       <div className="links-section ">
         <Container>
           <Nav className="justify-content-center">
@@ -130,6 +131,7 @@ const CustomNavbar = () => {
           </Nav>
         </Container>
       </div>
+        )}
     </>
   );
 };

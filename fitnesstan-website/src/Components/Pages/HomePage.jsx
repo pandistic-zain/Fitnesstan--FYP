@@ -91,6 +91,7 @@ const HomePage = () => {
   const handleLearnButtonClick = () => {
     navigate("/supplements");
   };
+  // eslint-disable-next-line no-unused-vars
   const [currentSupplement, setCurrentSupplement] = useState(
     supplementsData[0]
   ); // Default to first supplement
