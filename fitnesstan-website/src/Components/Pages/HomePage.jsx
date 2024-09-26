@@ -50,7 +50,6 @@ const supplementsData = [
       "Can lead to weight gain",
     ],
   },
-  // Add more supplements as needed
 ];
 
 const HomePage = () => {
@@ -254,36 +253,40 @@ const HomePage = () => {
         <Container>
           <h1 className={styles["section-title"]}>"Targeted Supplements"</h1>
           <hr className={styles["divider"]} />
-          <h4>{currentSupplement.name}</h4> {/* Dynamic supplement name */}
-          <h6>{currentSupplement.overview}</h6>
-          <Row>
-            <Col md={6}>
-              <div className={styles["book"]}>
-                <ul>
-                  {currentSupplement.benefits.map((benefit, index) => (
-                    <li key={index}>{benefit}</li>
-                  ))}
-                </ul>
 
-                <div className={styles["cover"]}>
-                  <p>Benefits of {currentSupplement.name}</p>
-                </div>
-              </div>
-            </Col>
-            <Col md={6}>
-              <div className={styles["book"]}>
-                <ul>
-                  {currentSupplement.drawbacks.map((drawback, index) => (
-                    <li key={index}>{drawback}</li>
-                  ))}
-                </ul>
-                <div className={styles["cover"]}>
-                  <p>Drawbacks of {currentSupplement.name}</p>
-                </div>
-              </div>
-            </Col>
-          </Row>
-          <div className={styles["divider"]} />
+          {supplementsData.map((supplement, index) => (
+            <div key={index}>
+              <h4>{supplement.name}</h4> {/* Supplement name */}
+              <h6>{supplement.overview}</h6> {/* Supplement overview */}
+              <Row>
+                <Col md={6}>
+                  <div className={styles["book"]}>
+                    <ul>
+                      {supplement.benefits.map((benefit, index) => (
+                        <li key={index}>{benefit}</li>
+                      ))}
+                    </ul>
+                    <div className={styles["cover"]}>
+                      <p>Benefits of {supplement.name}</p>
+                    </div>
+                  </div>
+                </Col>
+                <Col md={6}>
+                  <div className={styles["book"]}>
+                    <ul>
+                      {supplement.drawbacks.map((drawback, index) => (
+                        <li key={index}>{drawback}</li>
+                      ))}
+                    </ul>
+                    <div className={styles["cover"]}>
+                      <p>Drawbacks of {supplement.name}</p>
+                    </div>
+                  </div>
+                </Col>
+              </Row>
+              <div className={styles["divider"]} />
+            </div>
+          ))}
         </Container>
       </section>
 
