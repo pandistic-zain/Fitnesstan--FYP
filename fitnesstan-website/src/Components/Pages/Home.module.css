@@ -248,29 +248,51 @@ button:hover .button-text {
 
 /* Supplement Section */
 .supplement-section {
-  background-color: #ff0000;
+  background-color: #ff0000; /* Base color */
   padding: 60px 0;
+  color: #ffffff; /* Text color */
 }
 
 .supplement-section h2 {
-  color: #ffffff;
   text-align: center;
-  margin-bottom: 40px;
+  margin-bottom: 20px; /* Reduced space for better layout */
+  font-size: 2.5rem; /* Adjusted size */
 }
+
 .supplement-section h3 {
-  color: #ffffff;
+  text-align: center;
+  margin-top: 20px; /* Add margin for separation */
+  font-size: 1.8rem; /* Adjusted size */
+}
+
+.supplement-section p {
+  text-align: center;
+  margin-bottom: 30px; /* Spacing below paragraph */
+  font-size: 1.1rem;
+}
+
+.benefits-card, .drawbacks-card {
+  background-color: rgba(255, 255, 255, 0.1); /* Semi-transparent white */
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 20px;
 }
 
 .supplement-section ul {
   list-style-type: none;
-  color: #ffffff;
   padding: 0;
 }
 
 .supplement-section ul li {
-  color: #ffffff;
   margin: 10px 0;
   font-size: 1.1rem;
+}
+
+.divider {
+  border: none;
+  height: 1px;
+  background-color: #ffffff; /* Divider color */
+  margin: 40px 0; /* Spacing above and below the divider */
 }
 
 /* Testimonials Section */

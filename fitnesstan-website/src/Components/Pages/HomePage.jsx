@@ -213,29 +213,39 @@ const HomePage = () => {
       </section>
 
       {/* Supplement Section */}
-      <section className={styles["supplement-section"]} id="supplements">
-        <Container>
-          <h2>Supplements: Pros & Cons</h2>
-          <Row>
-            <Col md={6}>
-              <h3>Benefits of Supplements</h3>
-              <ul>
-                <li>Supports muscle growth</li>
-                <li>Improves workout performance</li>
-                <li>Boosts recovery after training</li>
-              </ul>
-            </Col>
-            <Col md={6}>
-              <h3>Drawbacks of Supplements</h3>
-              <ul>
-                <li>Possible side effects</li>
-                <li>Not a substitute for proper diet</li>
-                <li>Needs proper research before consumption</li>
-              </ul>
-            </Col>
-          </Row>
-        </Container>
-      </section>
+      {/* Supplement Section */}
+<section className={styles["supplement-section"]} id="supplements">
+  <Container>
+    <h2>Targeted Supplements</h2>
+    <h3>Supplement Overview</h3>
+    <p>
+      Targeted supplements can help enhance your fitness goals by providing specific nutrients that may be lacking in your diet. They play a crucial role in optimizing performance and recovery.
+    </p>
+    <Row>
+      <Col md={6}>
+        <div className={styles["benefits-card"]}>
+          <h3>Benefits of Supplements</h3>
+          <ul>
+            <li>Supports muscle growth</li>
+            <li>Improves workout performance</li>
+            <li>Boosts recovery after training</li>
+          </ul>
+        </div>
+      </Col>
+      <Col md={6}>
+        <div className={styles["drawbacks-card"]}>
+          <h3>Drawbacks of Supplements</h3>
+          <ul>
+            <li>Possible side effects</li>
+            <li>Not a substitute for proper diet</li>
+            <li>Needs proper research before consumption</li>
+          </ul>
+        </div>
+      </Col>
+    </Row>
+    <hr className={styles["divider"]} />
+  </Container>
+</section>
 
       {/* Testimonials Section */}
       <section className={styles["testimonials-section"]} id="testimonials">
