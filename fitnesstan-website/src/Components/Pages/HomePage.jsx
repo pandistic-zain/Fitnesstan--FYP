@@ -1,4 +1,4 @@
-import {React,useState} from "react";
+import { React, useState } from "react";
 import { Container, Row, Col, Button } from "react-bootstrap";
 // import { Link } from 'react-router-dom';
 import workoutImage from "../../Assets/workout-image.jpg";
@@ -21,43 +21,46 @@ import headerImg from "../../Assets/header-image.png";
 
 const supplementsData = [
   {
-    name: 'Protein Powder',
-    overview: 'Protein powder is a popular supplement used to help build muscle and improve recovery.',
+    name: "Protein Powder",
+    overview:
+      "Protein powder is a popular supplement used to help build muscle and improve recovery.",
     benefits: [
-      'Supports muscle growth',
-      'Improves workout performance',
-      'Boosts recovery after training',
+      "Supports muscle growth",
+      "Improves workout performance",
+      "Boosts recovery after training",
     ],
     drawbacks: [
-      'Possible side effects',
-      'Not a substitute for proper diet',
-      'Needs proper research before consumption',
+      "Possible side effects",
+      "Not a substitute for proper diet",
+      "Needs proper research before consumption",
     ],
   },
   {
-    name: 'Creatine',
-    overview: 'Creatine is known for enhancing strength and high-intensity performance.',
+    name: "Creatine",
+    overview:
+      "Creatine is known for enhancing strength and high-intensity performance.",
     benefits: [
-      'Increases muscle mass',
-      'Improves strength',
-      'Enhances recovery',
+      "Increases muscle mass",
+      "Improves strength",
+      "Enhances recovery",
     ],
     drawbacks: [
-      'May cause digestive issues',
-      'Requires proper hydration',
-      'Can lead to weight gain',
+      "May cause digestive issues",
+      "Requires proper hydration",
+      "Can lead to weight gain",
     ],
   },
   // Add more supplements as needed
 ];
-
 
 const HomePage = () => {
   const navigate = useNavigate();
   const handleExploreButtonClick = () => {
     navigate("/features");
   };
-  const [currentSupplement, setCurrentSupplement] = useState(supplementsData[0]); // Default to first supplement
+  const [currentSupplement, setCurrentSupplement] = useState(
+    supplementsData[0]
+  ); // Default to first supplement
   return (
     <div className={styles["home-page"]}>
       {/* Hero Section */}
@@ -67,10 +70,10 @@ const HomePage = () => {
             <Col lg={6}>
               <h1>Welcome to Fitnesstan</h1>
               <p>
-                Welcome to Fitnesstan, the app designed to transform your fitness
-                goals into reality! Whether you're a beginner or a seasoned
-                athlete, our platform offers tailored workout and diet plans
-                crafted just for you.
+                Welcome to Fitnesstan, the app designed to transform your
+                fitness goals into reality! Whether you're a beginner or a
+                seasoned athlete, our platform offers tailored workout and diet
+                plans crafted just for you.
               </p>
               <button className={styles["learn-more"]}>
                 <span className={styles["circle"]} aria-hidden="true">
@@ -248,35 +251,41 @@ const HomePage = () => {
 
       {/* Supplement Section */}
       <section className={styles["supplement-section"]} id="supplements">
-      <Container>
-        <h2 className={styles["section-title"]}>Targeted Supplements</h2>
-        <h4>{currentSupplement.name}</h4> {/* Dynamic supplement name */}
-        <p>{currentSupplement.overview}</p> {/* Dynamic overview based on supplement name */}
-        <Row>
-          <Col md={6}>
-            <div className={styles["benefits-card"]}>
-              <h3>Benefits of {currentSupplement.name}</h3>
-              <ul>
-                {currentSupplement.benefits.map((benefit, index) => (
-                  <li key={index}>{benefit}</li>
-                ))}
-              </ul>
-            </div>
-          </Col>
-          <Col md={6}>
-            <div className={styles["drawbacks-card"]}>
-              <h3>Drawbacks of {currentSupplement.name}</h3>
-              <ul>
-                {currentSupplement.drawbacks.map((drawback, index) => (
-                  <li key={index}>{drawback}</li>
-                ))}
-              </ul>
-            </div>
-          </Col>
-        </Row>
-        <hr className={styles["divider"]} />
-      </Container>
-    </section>
+        <Container>
+          <h1 className={styles["section-title"]}>"Targeted Supplements"</h1>
+          <hr className={styles["divider"]} />
+          <h4>{currentSupplement.name}</h4> {/* Dynamic supplement name */}
+          <h6>{currentSupplement.overview}</h6>
+          <Row>
+            <Col md={6}>
+              <div className={styles["book"]}>
+                <ul>
+                  {currentSupplement.benefits.map((benefit, index) => (
+                    <li key={index}>{benefit}</li>
+                  ))}
+                </ul>
+
+                <div className={styles["cover"]}>
+                  <p>Benefits of {currentSupplement.name}</p>
+                </div>
+              </div>
+            </Col>
+            <Col md={6}>
+              <div className={styles["book"]}>
+                <ul>
+                  {currentSupplement.drawbacks.map((drawback, index) => (
+                    <li key={index}>{drawback}</li>
+                  ))}
+                </ul>
+                <div className={styles["cover"]}>
+                  <p>Drawbacks of {currentSupplement.name}</p>
+                </div>
+              </div>
+            </Col>
+          </Row>
+          <div className={styles["divider"]} />
+        </Container>
+      </section>
 
       {/* Testimonials Section */}
       <section className={styles["testimonials-section"]} id="testimonials">
