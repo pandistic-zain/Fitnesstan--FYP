@@ -1,4 +1,4 @@
-import {React,useState} from "react";
+import { React, useState } from "react";
 import { Container, Row, Col, Button } from "react-bootstrap";
 // import { Link } from 'react-router-dom';
 import workoutImage from "../../Assets/workout-image.jpg";
@@ -21,34 +21,65 @@ import headerImg from "../../Assets/header-image.png";
 
 const supplementsData = [
   {
-    name: 'Protein Powder',
-    overview: 'Protein powder is a popular supplement used to help build muscle and improve recovery.',
+    name: "MyProtein Impact Whey Protein",
+    overview:
+      "MyProtein Impact Whey Protein is a premium quality protein supplement designed to aid muscle growth and recovery.",
     benefits: [
-      'Supports muscle growth',
-      'Improves workout performance',
-      'Boosts recovery after training',
+      "Supports muscle growth by providing a high-quality source of protein with essential amino acids.",
+      "Improves workout performance by delivering nutrients crucial for energy and endurance.",
+      "Boosts recovery after training, enabling quicker return to high-intensity workouts.",
     ],
     drawbacks: [
-      'Possible side effects',
-      'Not a substitute for proper diet',
-      'Needs proper research before consumption',
+      "Possible side effects include mild digestive discomfort for some users.",
+      "Not a substitute for a well-balanced diet and should complement overall nutrition.",
+      "Should be researched thoroughly before consumption to understand proper dosages.",
     ],
   },
   {
-    name: 'Creatine',
-    overview: 'Creatine is known for enhancing strength and high-intensity performance.',
+    name: "MuscleTech Creatine",
+    overview:
+      "MuscleTech Creatine is known for enhancing strength and high-intensity performance.",
     benefits: [
-      'Increases muscle mass',
-      'Improves strength',
-      'Enhances recovery',
+      "Increases muscle mass by promoting water retention in muscle cells.",
+      "Improves strength by replenishing ATP levels during workouts.",
+      "Enhances recovery by reducing muscle cell damage.",
     ],
     drawbacks: [
-      'May cause digestive issues',
-      'Requires proper hydration',
-      'Can lead to weight gain',
+      "May cause digestive issues, particularly when taken in high doses.",
+      "Requires proper hydration to prevent cramping and dehydration.",
+      "Can lead to weight gain due to increased water retention.",
     ],
   },
-  // Add more supplements as needed
+  {
+    name: "BSN BCAA (Branched-Chain Amino Acids)",
+    overview:
+      "BSN BCAAs are essential nutrients that the body obtains from proteins found in food.",
+    benefits: [
+      "Reduces muscle soreness and fatigue during intense workouts.",
+      "Supports muscle recovery by decreasing muscle protein breakdown.",
+      "Helps preserve lean muscle mass during calorie-restricted diets.",
+    ],
+    drawbacks: [
+      "May not provide additional benefits if protein intake is already sufficient.",
+      "Can cause gastrointestinal discomfort in some users.",
+      "Possible interactions with certain medications, so consulting a doctor is advised.",
+    ],
+  },
+  {
+    name: "Optimum Nutrition Serious Mass",
+    overview:
+      "Optimum Nutrition Serious Mass is a high-calorie mass gainer designed to help individuals gain weight and muscle mass.",
+    benefits: [
+      "Provides 1,250 calories per serving to support rapid weight gain.",
+      "Includes a blend of proteins and carbohydrates to fuel workouts and recovery.",
+      "Fortified with vitamins and minerals to support overall health during bulking.",
+    ],
+    drawbacks: [
+      "May cause digestive discomfort if consumed too quickly or in large quantities.",
+      "High calorie content can lead to unwanted fat gain if not managed properly.",
+      "Some users may find the taste too sweet or artificial.",
+    ],
+  },
 ];
 
 
@@ -57,7 +88,9 @@ const HomePage = () => {
   const handleExploreButtonClick = () => {
     navigate("/features");
   };
-  const [currentSupplement, setCurrentSupplement] = useState(supplementsData[0]); // Default to first supplement
+  const [currentSupplement, setCurrentSupplement] = useState(
+    supplementsData[0]
+  ); // Default to first supplement
   return (
     <div className={styles["home-page"]}>
       {/* Hero Section */}
@@ -67,10 +100,10 @@ const HomePage = () => {
             <Col lg={6}>
               <h1>Welcome to Fitnesstan</h1>
               <p>
-                Welcome to Fitnesstan, the app designed to transform your fitness
-                goals into reality! Whether you're a beginner or a seasoned
-                athlete, our platform offers tailored workout and diet plans
-                crafted just for you.
+                Welcome to Fitnesstan, the app designed to transform your
+                fitness goals into reality! Whether you're a beginner or a
+                seasoned athlete, our platform offers tailored workout and diet
+                plans crafted just for you.
               </p>
               <button className={styles["learn-more"]}>
                 <span className={styles["circle"]} aria-hidden="true">
@@ -248,35 +281,45 @@ const HomePage = () => {
 
       {/* Supplement Section */}
       <section className={styles["supplement-section"]} id="supplements">
-      <Container>
-        <h2 className={styles["section-title"]}>Targeted Supplements</h2>
-        <h4>{currentSupplement.name}</h4> {/* Dynamic supplement name */}
-        <p>{currentSupplement.overview}</p> {/* Dynamic overview based on supplement name */}
-        <Row>
-          <Col md={6}>
-            <div className={styles["benefits-card"]}>
-              <h3>Benefits of {currentSupplement.name}</h3>
-              <ul>
-                {currentSupplement.benefits.map((benefit, index) => (
-                  <li key={index}>{benefit}</li>
-                ))}
-              </ul>
+        <Container>
+          <h1 className={styles["section-title"]}>"Targeted Supplements"</h1>
+          <hr className={styles["divider"]} />
+
+          {supplementsData.map((supplement, index) => (
+            <div key={index}>
+              <h4>{supplement.name}</h4> {/* Supplement name */}
+              <h6>{supplement.overview}</h6> {/* Supplement overview */}
+              <Row>
+                <Col md={6}>
+                  <div className={styles["book"]}>
+                    <ul>
+                      {supplement.benefits.map((benefit, index) => (
+                        <li key={index}>{benefit}</li>
+                      ))}
+                    </ul>
+                    <div className={styles["cover"]}>
+                      <p>Benefits of {supplement.name}</p>
+                    </div>
+                  </div>
+                </Col>
+                <Col md={6}>
+                  <div className={styles["book"]}>
+                    <ul>
+                      {supplement.drawbacks.map((drawback, index) => (
+                        <li key={index}>{drawback}</li>
+                      ))}
+                    </ul>
+                    <div className={styles["cover"]}>
+                      <p>Drawbacks of {supplement.name}</p>
+                    </div>
+                  </div>
+                </Col>
+              </Row>
+              <div className={styles["divider"]} />
             </div>
-          </Col>
-          <Col md={6}>
-            <div className={styles["drawbacks-card"]}>
-              <h3>Drawbacks of {currentSupplement.name}</h3>
-              <ul>
-                {currentSupplement.drawbacks.map((drawback, index) => (
-                  <li key={index}>{drawback}</li>
-                ))}
-              </ul>
-            </div>
-          </Col>
-        </Row>
-        <hr className={styles["divider"]} />
-      </Container>
-    </section>
+          ))}
+        </Container>
+      </section>
 
       {/* Testimonials Section */}
       <section className={styles["testimonials-section"]} id="testimonials">

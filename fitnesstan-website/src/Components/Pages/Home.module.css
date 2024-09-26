@@ -1,3 +1,7 @@
+
+html{
+  scroll-behavior: smooth;
+}
 /* Hero Section */
 .hero-section {
   background-image: url("../../Assets/mainBannerBg.svg");
@@ -249,10 +253,20 @@ button:hover .button-text {
 /* Supplement Section */
 .supplement-section {
   background-color: #ff0000;
-  padding-top: 10px;
+  padding-top: 20px;
   padding-bottom: 30px;
+  
 }
-
+.supplement-section::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 1000px; /* Increased height for testing */
+  background-image: url("../../Assets/ShadowBottomWhite.png");
+  z-index: 2;
+}
 .section-title {
   color: #ffffff;
   text-align: center;
@@ -261,35 +275,84 @@ button:hover .button-text {
 
 .supplement-section h4 {
   color: #ffffff;
+  font-size:xx-large;
+  font-weight: bold;
+  font-style: italic;
 }
-.supplement-section h3 {
-  color: #780f0f;
+.supplement-section h1 {
+  color: #ffffff;
+  font-style: italic;
+}
+.supplement-section h6 {
+  margin-top: 15px;
+  margin-bottom: 30px;
+  transform: translateX(30px);
+  color: #ffffff;
+  font-style:oblique;
 }
 
 .supplement-section ul {
-  list-style-type: none;
-  color: #ff0000;
-  padding: 0;
+  list-style-type: disc; 
+  padding-left: 20px;               
 }
 
 .supplement-section ul li {
-  color: #ff0000;
+  color: #000000;
   margin: 10px 0;
   font-size: 1.1rem;
+  font-style: oblique;
+  font-weight: bold;
+  margin-left: 30px;
 }
 
-.benefits-card, .drawbacks-card {
-  background-color: #ffffff; /* Change this to your preferred color */
-  padding: 20px;
-  border-radius: 8px;
-  color: #000000;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 1);
+/* Book-like flip card style */
+.book {
+  position: relative;
+  border-radius: 20px;
+  width: 100%;
+  min-height: 300px; /* Minimum height set to 300px */
+  height: auto; /* Adjust height based on content */
+  background-color: rgb(255, 255, 255);
+  box-shadow: 1px 1px 12px #ffffff;
+  transform-style: preserve-3d;
+  perspective: 2000px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  margin-bottom: 30px;
+}
+
+.cover {
+  position: absolute;
+  background-color: #ff0000;
+  width: 100%;
+  height: 100%;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.5s;
+  transform-origin: left;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 1px 1px 12px #ffffff;
+}
+
+.book:hover .cover {
+  transform: rotateY(-80deg); /* Flips on hover */
+}
+
+p {
+  font-size: 20px;
+  font-weight: bolder;
 }
 
 .divider {
   margin-top: 30px;
-  border: 1px solid #ffffff; 
+  margin-bottom: 20px;
+  border: 1px solid #ffffff;
 }
+
 
 /* Testimonials Section */
 .testimonials-section {
