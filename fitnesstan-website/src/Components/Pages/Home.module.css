@@ -274,6 +274,7 @@ button:hover .button-text {
 .section-title {
   color: #ffffff;
   text-align: center;
+  font-weight: bolder;
   margin: 20px 0; /* Reduced margin from top */
 }
 
