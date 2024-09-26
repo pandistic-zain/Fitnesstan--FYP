@@ -1,6 +1,6 @@
 /* Hero Section */
 .hero-section {
-  background-image: url("../../Assets/banner bg.jpg");
+  background-image: url("../../Assets/mainBannerBg.svg");
   background-size: cover; /* Ensures the image covers the section fully */
   background-repeat: no-repeat; /* Prevents the image from repeating */
   background-position: center; /* Centers the image */
@@ -43,7 +43,7 @@ button.learn-more .circle {
   margin: 0;
   width: 3rem;
   height: 3rem;
-  background: #00401A;
+  background: #ff0000;
   border-radius: 1.625rem;
 }
 
@@ -85,7 +85,7 @@ button.learn-more .button-text {
   bottom: 0;
   padding: 0.75rem 0;
   margin: 0 0 0 1.85rem;
-  color: #00401A;
+  color: #ff0000;
   font-weight: 700;
   line-height: 1.6;
   text-align: center;
@@ -104,11 +104,26 @@ button:hover .circle .icon.arrow {
 button:hover .button-text {
   color: #fff;
 }
-/* Feature section */
+/* Features Section */
 .featuresSection {
+  display: flex; /* Ensure flex is applied to the section */
+  flex-direction: column; /* Stack elements vertically */
+  align-items: center; /* Center items horizontally */
   padding: 60px 0;
   background-color: #ffffff;
   position: relative;
+  overflow: hidden;
+}
+
+.featuresSection::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 1000px; /* Increased height for testing */
+  background-image: url("../../Assets/ShadowBottomRed.png");
+  z-index: 2;
 }
 
 .sectionTitle {
@@ -138,17 +153,19 @@ button:hover .button-text {
   max-width: 400px;
   height: auto;
   border-radius: 12px;
-  transform: translateY(-20px);
 }
 
 .featureCard {
-  background-color: #00401A;
+  background-color: #ff0000;
   max-width: 400px;
   border-radius: 12px;
   padding: 30px;
-  box-shadow: 0 10px 25px rgb(7, 77, 7);
+  box-shadow: 0 10px 25px rgb(77, 7, 7);
   text-align: center;
-  transform: translate(150px, 100px); 
+  z-index: 1;
+  transform: translateX(
+    150px
+  ); /* Corrected property for smoother translation */
 }
 
 .featureIcon {
@@ -166,16 +183,16 @@ button:hover .button-text {
 
 .featureTextCol p {
   font-size: 1.1rem;
-  color: #b4b4b4;
+  color: #000000;
   line-height: 1.6;
 }
 
 .verticalDivider {
-  border: 1px solid #00401A;
+  border: 1px solid #ff0000; /* Make this consistent with the red theme */
   border-radius: 20px;
-  width: 1px !important; 
+  width: 1px !important;
   height: 100%;
-  background-color: #00401A; /* Pakistani green */
+  background-color: #ff0000; /* Fixed the comment "Pakistani green" mismatch */
   position: absolute;
   left: 50%;
   top: 0;
@@ -184,41 +201,53 @@ button:hover .button-text {
 
 .horizontalDivider {
   height: 2px;
-  background-color: #006400;
+  background-color: #ff0000;
   margin: 120px 0;
 }
 
-.blurryEffect {
-  width: 100%;
-  height: 150px;
-  background: rgba(0, 128, 0, 0.6); /* Pakistani green with transparency */
-  backdrop-filter: blur(15px);
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+.horizontalDividerFinal {
+  height: 2px;
+  background-color: #ffffff;
+  z-index: 5; /* Increased z-index to ensure it's above other elements */
+  margin-top: 30px;
+  position: relative; /* Make sure it's positioned correctly */
 }
-
-.detailButton {
-  padding: 15px 30px;
-  font-size: 1.2rem;
+.comicbutton {
+  display: inline-block; /* Ensure button is treated as block for centering */
+  padding: 10px 20px;
+  font-size: 24px;
+  font-weight: 600;
+  text-align: center;
+  text-decoration: none;
   color: #fff;
-  background-color: #28a745;
-  border: none;
-  border-radius: 5px;
+  background-color: #ff0000;
+  border: 2px solid #ffffff;
+  border-radius: 10px;
+  box-shadow: 5px 5px 0px #ffffff;
+  transition: all 0.3s ease;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  z-index: 6;
+  margin: 20px auto; /* Center the button */
+  width: auto; /* Maintain button size */
 }
 
-.detailButton:hover {
-  background-color: #218838;
+/* Ensure the button hover/active states are the same */
+.comicbutton:hover {
+  background-color: #fff;
+  color: #ff0000;
+  border: 2px solid #000000;
+  box-shadow: 5px 5px 0px #000000;
+}
+
+.comicbutton:active {
+  background-color: #fcf414; /* Adjusted for better visibility */
+  box-shadow: none;
+  transform: translateY(4px);
 }
 
 /* Supplement Section */
 .supplement-section {
-  background-color: #00401A;
+  background-color: #ff0000;
   padding: 60px 0;
 }
 
@@ -273,8 +302,7 @@ button:hover .button-text {
 }
 /* Contact Us Section */
 .contact-section {
-  background-color: #00401A;
-  ;
+  background-color: #ff0000;
   padding: 60px 0;
 }
 
@@ -299,7 +327,7 @@ button:hover .button-text {
 }
 
 .contact-form button {
-  background-color: #28a745;
+  background-color: #ff0000;
   color: white;
   padding: 10px 20px;
   border: none;
@@ -309,7 +337,7 @@ button:hover .button-text {
 }
 
 .contact-form button:hover {
-  background-color: #218838;
+  background-color: #3e0606;
 }
 .give-feedback-section {
   background-color: #ffffff; /* Light background */
@@ -355,17 +383,17 @@ button:hover .button-text {
 
 .feedback-form input:focus,
 .feedback-form textarea:focus {
-  border-color: #28a745 !important; /* Green border on focus */
+  border-color: #ff0000 !important; /* Green border on focus */
   outline: none; /* Remove default outline */
 }
 .feedback-form input:active,
 .feedback-form textarea:active {
-  border-color: #28a745 !important; /* Green border on focus */
+  border-color: #ff0000 !important; /* Green border on focus */
   outline: none; /* Remove default outline */
 }
 
 .submit-button {
-  background-color: #28a745 !important; /* Green background */
+  background-color: #ff0000 !important; /* Green background */
   color: white;
   margin-top: 20px !important;
   padding: 12px 25px; /* Increased padding for button */
@@ -377,6 +405,6 @@ button:hover .button-text {
 }
 
 .submit-button:hover {
-  background-color: #218838; /* Darker green on hover */
+  background-color: #400404; /* Darker green on hover */
   transform: scale(1.05); /* Slightly enlarge on hover */
 }

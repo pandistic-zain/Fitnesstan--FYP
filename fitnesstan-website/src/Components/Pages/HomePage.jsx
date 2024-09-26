@@ -17,7 +17,7 @@ import {
   FaChartLine,
 } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
-import headerImg from "../../Assets/header-img.svg";
+import headerImg from "../../Assets/header-image.png";
 
 const HomePage = () => {
   const navigate = useNavigate();
@@ -134,10 +134,7 @@ const HomePage = () => {
           <Row className={styles.featureRow}>
             <Col md={5} className={styles.featureImageCol}>
               <div className={styles.featureImage}>
-                <img
-                  src={SupplementsImage}
-                  alt="Supplement Support Plan"
-                />
+                <img src={SupplementsImage} alt="Supplement Support Plan" />
               </div>
             </Col>
             <div className={styles.verticalDivider}></div>
@@ -182,10 +179,7 @@ const HomePage = () => {
           <Row className={styles.featureRow}>
             <Col md={5} className={styles.featureImageCol}>
               <div className={styles.featureImage}>
-                <img
-                  src={ProgressTrackingImage}
-                  alt="Progress Tracking"
-                />
+                <img src={ProgressTrackingImage} alt="Progress Tracking" />
               </div>
             </Col>
             <div className={styles.verticalDivider}></div>
@@ -201,16 +195,18 @@ const HomePage = () => {
               </div>
             </Col>
           </Row>
-
-          {/* Blurry Effect and Button */}
-          <div className={styles.blurryEffect}>
+          <div
+            className="button-container"
+            style={{ textAlign: "center", margin: "40px 0" }}
+          >
             <button
-              className={styles.detailButton}
+              className={styles.comicbutton}
               onClick={handleExploreButtonClick}
             >
-              Explore Detailed Features
+              Learn More!
             </button>
           </div>
+          <div className={styles.horizontalDividerFinal}></div>
         </Container>
       </section>
 

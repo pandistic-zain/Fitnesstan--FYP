@@ -20,7 +20,7 @@
 /* Links Section */
 .links-section {
   height: var(--links-section-height, 30px);
-  background-color: var(--pakistan-green, #00401A);
+  background-color: var(--pakistan-green, #ff0000);
   padding: 0.5rem 1.5rem; /* 5px and 15px converted to rem units */
   display: flex;
   align-items: center;
@@ -43,11 +43,11 @@
 
 .links-section .nav-link:focus {
   outline: none; 
-  color: #a0e7ba; 
+  color: #350202; 
 }
 
 .links-section .nav-link:hover {
-  color: #67ff9e; 
+  color: #6e1515; 
   text-decoration: underline; 
 }
 
@@ -63,8 +63,8 @@
   
   /* Join Us button styling */
   .button {
-    --text-stroke-color:#00401A;
-    --animation-color: #00401A;
+    --text-stroke-color:#ff0000;
+    --animation-color: #ff0000;
     --fs-size: 1.3em;
     letter-spacing: 3px;
     text-decoration: none;
@@ -75,7 +75,7 @@
     font-size: var(--fs-size);
     position: relative;
     text-transform: uppercase;
-    color: #00401A;
+    color: #ff0000;
     -webkit-text-stroke: 1px var(--text-stroke-color);
   }
   
