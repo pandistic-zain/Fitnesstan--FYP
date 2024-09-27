@@ -281,5 +281,10 @@
 
 /* Hover effect for the parent (group) */
 .front:hover .button-background {
-  width: 100px; /* Equivalent to group-hover:w-[184px] */
+  width: 120px; /* Equivalent to group-hover:w-[184px] */
+}
+.button-text{
+  font-size: 16px;
+  margin-left: 10px;
+  text-align: center;
 }

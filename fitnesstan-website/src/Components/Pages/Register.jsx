@@ -13,7 +13,7 @@ const Register = () => {
       <div className="register-page">
         <div className="GoBack">
           <div class="scene">
-              <span class="side front">
+              <span class="side front" >
                 <div className="button-background">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -31,7 +31,7 @@ const Register = () => {
                   ></path>
                 </svg>
                 </div>
-                Go Back
+                <div className="button-text">Go Back</div>
               </span>
           </div>
         </div>
