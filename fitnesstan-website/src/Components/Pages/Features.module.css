@@ -1,0 +1,99 @@
+.featurePage {
+    padding: 20px;
+    position: relative;
+  }
+  
+  /* Back to Home Link (Top) */
+  .backToHomeTop {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    font-size: 18px;
+    text-decoration: none;
+    color: #ff0000; /* Theme color */
+  }
+  
+  /* Back to Home Link (Bottom) */
+  .backToHomeBottom {
+    display: block;
+    text-align: center;
+    margin-top: 40px;
+    font-size: 18px;
+    text-decoration: none;
+    color: #ff0000; /* Theme color */
+  }
+  
+  /* Section Title */
+  .sectionTitle {
+    text-align: center;
+    font-size: 36px;
+    color: #333;
+    margin-bottom: 40px;
+  }
+  
+  /* Feature Row (Left Image, Right Text) */
+  .featureRowLeft {
+    display: flex;
+    flex-direction: row;
+    margin-bottom: 60px;
+  }
+  
+  .featureRowRight {
+    display: flex;
+    flex-direction: row-reverse;
+    margin-bottom: 60px;
+  }
+  
+  .featureImageCol {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .featureImage {
+    max-width: 100%;
+    height: auto;
+    border-radius: 10px;
+  }
+  
+  .featureTextCol {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  
+  .featureTitle {
+    font-size: 28px;
+    color: #333;
+    margin-bottom: 20px;
+  }
+  
+  .featureDescription {
+    font-size: 18px;
+    color: #666;
+    line-height: 1.6;
+  }
+  
+  /* Horizontal Divider */
+  .featureDivider {
+    border: 1px solid #ddd;
+    margin: 20px 0;
+  }
+  
+  /* Back to Top Button */
+  .scrollTopButton {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: #ff0000; /* Theme color */
+    color: #ffffff; /* Theme color */
+    border-radius: 50px;
+  }
+  
+  /* Colors: Maintain theme */
+  .featureIcon {
+    margin-right: 10px;
+    color: #ff0000; /* Theme color */
+  }
+  

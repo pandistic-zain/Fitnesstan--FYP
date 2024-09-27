@@ -113,14 +113,21 @@ const testimonialsData = [
 const HomePage = () => {
   const navigate = useNavigate();
   const handleExploreButtonClick = () => {
-    navigate("/features");
+    navigate('/features'); 
+    scrollTop();
   };
   const handleLearnButtonClick = () => {
     navigate("/supplements");
+    scrollTop();
   };
   const handleRegisterRedirect = () => {
-    navigate('/register'); // Navigate to the register page
+    navigate('/register'); 
+    scrollTop();
   };
+  const scrollTop = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
   // eslint-disable-next-line no-unused-vars
   const [currentSupplement, setCurrentSupplement] = useState(
     supplementsData[0]
