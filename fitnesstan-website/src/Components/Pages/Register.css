@@ -6,13 +6,15 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  background-image: url("../../Assets/banner bg.jpg");
+  background-image: url("../../Assets/bannerBg.png");
   background-size: cover;     /* Ensures the image covers the section fully */
   background-repeat: no-repeat; /* Prevents the image from repeating */
   background-position: center;
+  position: relative; /* Add this line to make it the reference point for absolute positioning */
+
   body {
     margin: 0; /* Reset margin to avoid any unwanted spacing */
-    background: #f6f5f7;
+    background: #ffffff;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -28,8 +30,8 @@
   }
 
   p {
-    font-size: 14px;
-    font-weight: 100;
+    font-size: 13px;
+    font-weight: 400;
     line-height: 20px;
     letter-spacing: 0.5px;
     margin: 20px 0 30px;
@@ -48,8 +50,8 @@
 
   button {
     border-radius: 20px;
-    border: 1px solid #0ad11b;
-    background-color: #0ad11b;
+    border: 1px solid #ff0000;
+    background-color: #ff0000;
     color: #ffffff;
     font-size: 12px;
     font-weight: bold;
@@ -94,7 +96,8 @@
   .container {
     background-color: #fff;
     border-radius: 10px;
-    box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
+    box-shadow: -15px 30px 60px rgba(0, 0, 0, 0.5), -10px 20px 20px rgba(0, 0, 0, 0.4);
+
     position: relative;
     overflow: hidden;
     width: 768px;
@@ -163,8 +166,8 @@
 
   .overlay {
     background: #075500;
-    background: -webkit-linear-gradient(to right, #55ff2b, #075500);
-    background: linear-gradient(to right, #55ff2b, #075500);
+    background: -webkit-linear-gradient(to right, #ff0000, #740000);
+    background: linear-gradient(to right, #ff0000, #740000);
     background-repeat: no-repeat;
     background-size: cover;
     background-position: 0 0;
@@ -227,4 +230,46 @@
     height: 40px;
     width: 40px;
   }
+}.GoBack {
+  position: absolute;
+  top: 40px;
+  left: 30px; 
+}
+
+.go-back-button {
+  background-color: white; /* Button background color */
+  text-align: center; /* Center text */
+  width: 192px; /* Equivalent to w-48 */
+  height: 56px; /* Equivalent to h-14 */
+  border-radius: 1rem; /* Equivalent to rounded-2xl */
+  position: relative; /* Relative positioning */
+  color: black; /* Text color */
+  font-size: 1.25rem; /* Equivalent to text-xl */
+  font-weight: 600; /* Equivalent to font-semibold */
+  cursor: pointer; /* Change cursor on hover */
+  overflow: hidden; /* Hide overflow */
+}
+
+.button-background {
+  background-color: #38b2a5; /* Equivalent to bg-green-400 */
+  border-radius: 1rem; /* Rounded corners */
+  height: 3rem; /* Height of the background */
+  width: 25%; /* Initial width */
+  display: flex; /* Flexbox layout */
+  align-items: center; /* Center items vertically */
+  justify-content: center; /* Center items horizontally */
+  position: absolute; /* Positioning */
+  left: 0; /* Align to left */
+  top: 4px; /* Adjusted positioning */
+  z-index: 10; /* Layering */
+  transition: width 0.5s; /* Transition for width */
+}
+
+.go-back-button:hover .button-background {
+  width: 115px; /* Width on hover (equivalent to 184px - adjust as needed) */
+}
+
+.go-back-text {
+  transform: translateX(8px); /* Move the text to the right */
+  margin-left: 8px; /* Space between icon and text */
 }
