@@ -11,9 +11,10 @@ const Footer = () => {
           <Col md={4}>
             <h5>About Fitnesstan</h5>
             <p>
-              Your AI-powered fitness companion, offering personalized workout
-              and diet plans while considering medical conditions. Start your
-              fitness journey today!
+              Fitnesstan is your AI-powered fitness companion, offering
+              personalized workouts, dietary supplements, nutrition advice and
+              tailored guidance, including for diabetics. It’s more than just
+              fitness—combining health, nutrition, and well-being in one place.
             </p>
           </Col>
 
@@ -21,13 +22,13 @@ const Footer = () => {
             <h5>Contact Us</h5>
             <ul className={styles.contactInfo}>
               <li>
-                <FaMapMarkerAlt /> 123 Fitness Street, Lahore, Pakistan
+                <FaMapMarkerAlt /> Riphah I-14 Campus, Islamabad, Pakistan
               </li>
               <li>
-                <FaPhone /> +92 300 1234567
+                <FaPhone /> +92 344 6558870
               </li>
               <li>
-                <FaEnvelope /> info@fitnesstan.com
+                <FaEnvelope /> pandistic.zain@gmail.com
               </li>
             </ul>
           </Col>
@@ -36,7 +37,14 @@ const Footer = () => {
             <h5>Certifications/Partners</h5>
             <p>
               We collaborate with top fitness organizations to provide the best
-              services. <strong>Certified by XYZ Fitness Authority</strong>
+              services. We have partnered with{" "}
+              <strong>Fitness Arena Gym</strong>, located in G-6, Islamabad,
+              where <strong>Mr. Mamoon Ur Rehman</strong> has assisted us in
+              nutritionist-related works. He is an{" "}
+              <strong>
+                ISSA certified Personal Trainer, Nutritionist, and Fitness
+                Coach.
+              </strong>
             </p>
           </Col>
         </Row>
@@ -49,7 +57,11 @@ const Footer = () => {
 
             <ul className={styles.socailmedia}>
               <li>
-                <a href="https://www.facebook.com/people/Zain-Ul-Abideen/pfbid0FA2yfbArz8XUWCG3RCW5phCZzwf6JykdWXcVLFbuJi2ztj8pVXagrYbJskGfywwzl/" target="_blank" rel="noopener noreferrer">
+                <a
+                  href="https://www.facebook.com/people/Zain-Ul-Abideen/pfbid0FA2yfbArz8XUWCG3RCW5phCZzwf6JykdWXcVLFbuJi2ztj8pVXagrYbJskGfywwzl/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
                   <svg
                     viewBox="0 0 10.712 20"
                     height="20"
@@ -66,7 +78,11 @@ const Footer = () => {
               </li>
 
               <li>
-                <a href="https://www.instagram.com/fit._.zain/" target="_blank" rel="noopener noreferrer">
+                <a
+                  href="https://www.instagram.com/fit._.zain/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
                   <svg
                     viewBox="0 0 20 20"
                     height="20"
@@ -119,7 +135,11 @@ const Footer = () => {
               </li>
 
               <li>
-                <a href="https://www.linkedin.com/in/zain-ul-abideen-b9215a283/" target="_blank" rel="noopener noreferrer">
+                <a
+                  href="https://www.linkedin.com/in/zain-ul-abideen-b9215a283/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
                   <svg
                     viewBox="0 0 20 20"
                     height="20"
@@ -153,7 +173,11 @@ const Footer = () => {
               </li>
 
               <li>
-                <a href="https://www.snapchat.com/add/zain.gallery?share_id=Y-6Fv4VUUmo&locale=en-US" target="_blank" rel="noopener noreferrer">
+                <a
+                  href="https://www.snapchat.com/add/zain.gallery?share_id=Y-6Fv4VUUmo&locale=en-US"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
                   <svg
                     viewBox="0 0 19.838 18.6"
                     height="18.6"
@@ -190,7 +214,11 @@ const Footer = () => {
               </li>
 
               <li>
-                <a href="https://www.tiktok.com/@pandistic._.zain?_t=8punaLQ6HdC&_r=1" target="_blank" rel="noopener noreferrer">
+                <a
+                  href="https://www.tiktok.com/@pandistic._.zain?_t=8punaLQ6HdC&_r=1"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
                   <svg
                     viewBox="0 0 19.738 22.466"
                     height="22.466"
@@ -211,7 +239,11 @@ const Footer = () => {
               </li>
 
               <li>
-                <a href="https://x.com/pandistic_zayn" target="_blank" rel="noopener noreferrer">
+                <a
+                  href="https://x.com/pandistic_zayn"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
                   <svg
                     viewBox="0 0 23.06 18"
                     height="18"

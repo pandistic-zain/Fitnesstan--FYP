@@ -126,6 +126,8 @@
   .footer p {
     margin-top: 10px;
     font-size: 14px;
-    color: #ddd;
+    font-style: italic;
+    font-weight:600;
+    color: #ffffff;
   }
   
