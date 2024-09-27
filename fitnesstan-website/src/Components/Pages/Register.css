@@ -261,9 +261,6 @@
   font-size: 40px;
   transform: translateZ(2em);
 }
-/* .front span{
-  font-size: large;
-} */
 .button-background {
   background-color: #ffffff; /* Equivalent to bg-green-400 */
   border-radius: 1rem; /* Equivalent to rounded-xl (16px) */
@@ -286,5 +283,6 @@
 .button-text{
   font-size: 16px;
   margin-left: 10px;
+  margin-bottom: auto;
   text-align: center;
 }
