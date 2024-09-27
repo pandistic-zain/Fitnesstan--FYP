@@ -230,46 +230,56 @@
     height: 40px;
     width: 40px;
   }
-}.GoBack {
+}
+.GoBack {
   position: absolute;
   top: 40px;
   left: 30px; 
 }
 
-.go-back-button {
-  background-color: white; /* Button background color */
-  text-align: center; /* Center text */
-  width: 192px; /* Equivalent to w-48 */
-  height: 56px; /* Equivalent to h-14 */
-  border-radius: 1rem; /* Equivalent to rounded-2xl */
-  position: relative; /* Relative positioning */
-  color: black; /* Text color */
-  font-size: 1.25rem; /* Equivalent to text-xl */
-  font-weight: 600; /* Equivalent to font-semibold */
-  cursor: pointer; /* Change cursor on hover */
-  overflow: hidden; /* Hide overflow */
+.scene {
+  width: 10em;
+  justify-content: center;
+  align-items: center;
+  perspective: 600px; 
 }
 
+.side {
+  box-sizing: border-box;
+  position: absolute;
+  display: inline-block;
+  height: 4em;
+  width: 12em;
+  text-align: center;
+  text-transform: uppercase;
+  padding-top: 1.5em;
+  font-weight: bold;
+}
+
+.front {
+  color: #ffffff;
+  font-size: 40px;
+  transform: translateZ(2em);
+}
+/* .front span{
+  font-size: large;
+} */
 .button-background {
-  background-color: #38b2a5; /* Equivalent to bg-green-400 */
-  border-radius: 1rem; /* Rounded corners */
-  height: 3rem; /* Height of the background */
-  width: 25%; /* Initial width */
-  display: flex; /* Flexbox layout */
-  align-items: center; /* Center items vertically */
-  justify-content: center; /* Center items horizontally */
-  position: absolute; /* Positioning */
-  left: 0; /* Align to left */
-  top: 4px; /* Adjusted positioning */
-  z-index: 10; /* Layering */
-  transition: width 0.5s; /* Transition for width */
+  background-color: #ffffff; /* Equivalent to bg-green-400 */
+  border-radius: 1rem; /* Equivalent to rounded-xl (16px) */
+  height: 3rem; /* Equivalent to h-12 (48px) */
+  width: 25%; /* Equivalent to w-1/4 */
+  display: flex; /* Equivalent to flex */
+  align-items: center; /* Equivalent to items-center */
+  justify-content: center; /* Equivalent to justify-center */
+  position: absolute; /* Equivalent to absolute */
+  left: 0; /* Adjusted for proper alignment */
+  top: 4px; /* Equivalent to top-[4px] */
+  z-index: 10; /* Equivalent to z-10 */
+  transition: width 0.5s; /* Transition duration (duration-500) */
 }
 
-.go-back-button:hover .button-background {
-  width: 115px; /* Width on hover (equivalent to 184px - adjust as needed) */
-}
-
-.go-back-text {
-  transform: translateX(8px); /* Move the text to the right */
-  margin-left: 8px; /* Space between icon and text */
+/* Hover effect for the parent (group) */
+.front:hover .button-background {
+  width: 100px; /* Equivalent to group-hover:w-[184px] */
 }
