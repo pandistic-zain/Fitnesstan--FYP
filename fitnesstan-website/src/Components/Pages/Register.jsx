@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from 'react-router-dom';
 import "./Register.css"; // You can rename the CSS file if you'd like
 
 const Register = () => {
@@ -7,11 +8,15 @@ const Register = () => {
   const handleToggle = () => {
     setIsSignUp(!isSignUp);
   };
+  const navigate = useNavigate();
 
+  const handleGoBack = () => {
+      navigate('/'); // Redirects to the home page
+  };
   return (
     <>
       <div className="register-page">
-        <div className="GoBack">
+        <div className="GoBack" onClick={handleGoBack}>
           <div class="scene">
               <span class="side front" >
                 <div className="button-background">

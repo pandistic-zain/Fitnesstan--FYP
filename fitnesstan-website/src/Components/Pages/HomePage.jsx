@@ -103,6 +103,11 @@ const testimonialsData = [
     message: "The nutrition and workout plans are exactly what I needed!",
     author: "Jessica Wilson",
   },
+  {
+    message:
+      "The nutrition advice has completely changed my eating habits! I never realized how important it was to balance my macros until I started following the personalized plan. Now I feel more energized, and my cravings have significantly decreased. It's amazing how the right guidance can lead to such positive changes in my life!",
+    author: "Zain Ul Abdeen",
+  },
 ];
 
 const HomePage = () => {
@@ -112,6 +117,9 @@ const HomePage = () => {
   };
   const handleLearnButtonClick = () => {
     navigate("/supplements");
+  };
+  const handleRegisterRedirect = () => {
+    navigate('/register'); // Navigate to the register page
   };
   // eslint-disable-next-line no-unused-vars
   const [currentSupplement, setCurrentSupplement] = useState(
@@ -133,7 +141,7 @@ const HomePage = () => {
                 seasoned athlete, our platform offers tailored workout and diet
                 plans crafted just for you.
               </p>
-              <button className={styles["learn-more"]}>
+              <button className={styles["learn-more"]} onClick={handleRegisterRedirect}>
                 <span className={styles["circle"]} aria-hidden="true">
                   <span
                     className={styles["icon"] + " " + styles["arrow"]}
@@ -361,8 +369,7 @@ const HomePage = () => {
         </Container>
       </section>
       {/* testimonials Section */}
-      <section className={styles.testimonialsSection}  id="testimonials">
-
+      <section className={styles.testimonialsSection} id="testimonials">
         <h2 className={styles.sectionTitle}>What Our Users Say !!!</h2>
         <div className={styles.testimonialRow}>
           {testimonialsData.map((testimonial, index) => (
