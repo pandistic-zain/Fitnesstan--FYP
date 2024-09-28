@@ -109,37 +109,53 @@ const FeaturesPage = () => {
   };
   return (
     <Container className={styles.featurePage}>
-        <div id="top"></div>
       {/* Back to Home link (Top) */}
-      <Button 
-        variant="link" 
-        className={styles.backToHomeTop}
-        onClick={navigateHome}
-      >
-        Back to Home
-      </Button>
-
+      <div className={styles.backToHomeTop}>
+        <button variant="link" className={styles.button} onClick={navigateHome}>
+          {" "}
+          <div className={styles.buttonbox}>
+            <span className={styles.buttonelem}>
+              <svg viewBox="0 0 46 40" xmlns="http://www.w3.org/2000/svg">
+                <path d="M46 20.038c0-.7-.3-1.5-.8-2.1l-16-17c-1.1-1-3.2-1.4-4.4-.3-1.2 1.1-1.2 3.3 0 4.4l11.3 11.9H3c-1.7 0-3 1.3-3 3s1.3 3 3 3h33.1l-11.3 11.9c-1 1-1.2 3.3 0 4.4 1.2 1.1 3.3.8 4.4-.3l16-17c.5-.5.8-1.1.8-1.9z"></path>
+              </svg>
+            </span>
+            <span className={styles.buttonelem}>
+              <svg viewBox="0 0 46 40">
+                <path d="M46 20.038c0-.7-.3-1.5-.8-2.1l-16-17c-1.1-1-3.2-1.4-4.4-.3-1.2 1.1-1.2 3.3 0 4.4l11.3 11.9H3c-1.7 0-3 1.3-3 3s1.3 3 3 3h33.1l-11.3 11.9c-1 1-1.2 3.3 0 4.4 1.2 1.1 3.3.8 4.4-.3l16-17c.5-.5.8-1.1.8-1.9z"></path>
+              </svg>
+            </span>
+          </div>
+        </button>
+      </div>
       {/* Section title */}
-      <h1 className={styles.sectionTitle}>Our Amazing Features</h1>
+      <h1 className={styles.sectionTitle}>Our Signature Features</h1>
+      <div className={styles.sectionDivider}></div>
 
       {featureDetails.map((feature, index) => (
         <React.Fragment key={feature.id}>
-          <Row className={index % 2 === 0 ? styles.featureRowLeft : styles.featureRowRight}>
-            {/* Image */}
-            <Col md={6} className={styles.featureImageCol}>
-              <img
-                src={feature.image}
-                alt={feature.title}
-                className={styles.featureImage}
-              />
-            </Col>
-
-            {/* Text Section */}
-            <Col md={6} className={styles.featureTextCol}>
+          <Row key={index}>
+            <Col md={12} className={styles.featureCol}>
               <h2 className={styles.featureTitle}>
                 {feature.icon} {feature.title}
               </h2>
-              <p className={styles.featureDescription}>{feature.description}</p>
+
+              <div
+                className={styles.featureDescriptionContainer}
+                style={{
+                  flexDirection: index % 2 === 0 ? "row" : "row-reverse",
+                }}
+              >
+                <p className={styles.featureDescription}>
+                  {feature.description}
+                </p>
+                <div className={styles.featureCard}>
+                  <img
+                    src={feature.image}
+                    alt={feature.title}
+                    className={styles.featureImage}
+                  />
+                </div>
+              </div>
             </Col>
           </Row>
 
@@ -148,21 +164,25 @@ const FeaturesPage = () => {
         </React.Fragment>
       ))}
 
-
       {/* Back to Home link (Bottom) */}
-      <Button 
-        variant="link" 
-        className={styles.backToHomeBottom}
-        onClick={navigateHome} // Use navigate for back to home
-      >
-        Back to Home
-      </Button>
+      <div className={styles.backToHomeBottom}>
+        <button className={styles.learnmore} onClick={navigateHome}>
+          <span className={styles.buttontext}>Fitnesstan</span>
+          <span aria-hidden="true" className={styles.circle}>
+            <span className={`${styles.icon} ${styles.arrow}`}></span>
+          </span>
+        </button>
+      </div>
 
       {/* Back to Top Button */}
       {showScroll && (
-        <Button className={styles.scrollTopButton} onClick={scrollTop}>
-          Back to Top
-        </Button>
+        <div className={styles.scrollTopButton}>
+          <button className={styles.topbutton} onClick={scrollTop}>
+            <svg className={styles.svgIcon} viewBox="0 0 384 512">
+              <path d="M214.6 41.4c-12.5-12.5-32.8-12.5-45.3 0l-160 160c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L160 141.2V448c0 17.7 14.3 32 32 32s32-14.3 32-32V141.2L329.4 246.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3l-160-160z"></path>
+            </svg>
+          </button>
+        </div>
       )}
     </Container>
   );
