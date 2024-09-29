@@ -1,0 +1,151 @@
+.supplementPage {
+  position: relative;
+  background-color: #ffffff; /* Soft light background color */
+  color: #333; /* Dark text for contrast */
+  padding: 20px; /* Added padding for inner spacing */
+}
+
+/* Back to Home Button at the top */
+.backHomeTop {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  font-size: 1rem;
+  color: #007bff; /* Bootstrap primary color */
+  background: none; /* No background */
+  border: none; /* No border */
+  text-decoration: underline; /* Underline text */
+  cursor: pointer; /* Pointer cursor */
+}
+.topDivider{
+color: #ff0000;
+}
+/* Main Page Name */
+.pageName {
+  font-size: 2.5rem; /* Larger font for the main title */
+  font-weight: 700; /* Bold font weight */
+  color: #2c3e50; /* Darker color for the title */
+  text-align: center; /* Center alignment */
+  margin-bottom: 20px; /* Space below the title */
+}
+
+/* Supplement Name */
+.supplementName {
+  margin: 15px;
+  font-size: 2rem; /* Slightly smaller than the main title */
+  font-weight: 600; /* Medium bold weight */
+  color: #2980b9; /* Color for supplement name */
+  margin-bottom: 15px; /* Space below the supplement name */
+}
+
+/* Overview section */
+.overview {
+  max-width: 100%; /* Limit width for readability */
+  margin: 0 auto 20px; /* Center alignment with margin below */
+  font-size: 1rem; /* Standard font size */
+  line-height: 1.6; /* Line height for readability */
+  padding: 15px; /* Padding for content */
+  background-color: #ffffff; /* White background for the overview */
+  border-radius: 8px; /* Rounded corners */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Light shadow for depth */
+}
+
+/* Main section styling */
+.mainSection {
+  background: #ffffff;
+  display: flex; /* Enable Flexbox */
+  align-items: center; /* Align columns to stretch the full height */
+  justify-content: center; /* Center alignment of columns */
+  padding: 0; /* Remove vertical padding */
+  margin-left: 10px;
+  margin-right: 10px;
+}
+
+/* Column styling */
+.column {
+  background-color: #ffffff; /* White background for columns */
+  padding: 20px; /* Padding for content */
+  margin: 0; /* No margin to align from the top */
+  flex: 1; /* Allow columns to grow */
+  min-width: 200px; 
+  display: flex; /* Enable Flexbox for content alignment */
+  flex-direction: column; /* Stack children vertically */
+}
+
+/* Card with Supplement Image */
+.supplementCard {
+  max-width: 250px; /* Maximum width for the card */
+  height: auto; /* Maintain aspect ratio */
+  display: flex;
+  align-items: center;
+    flex: 0 0 250px; /* Prevent the middle column from growing */
+  justify-content: center; /* Center alignment for image */
+  border-radius: 10px; /* Rounded corners for the card */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* Soft shadow for card */
+  margin: 10px; /* Margin for spacing */
+}
+
+/* Card Image */
+.cardImage {
+  max-height: 200px; /* Limit image height for better layout */
+  object-fit: contain; /* Preserve aspect ratio */
+  flex: 1;
+}
+
+/* Benefits and Drawbacks lists */
+.benefitsList,
+.drawbacksList {
+  list-style-type: none; /* Remove default list styling */
+  padding: 0; /* Remove padding */
+}
+
+.benefitsList li,
+.drawbacksList li {
+  margin-bottom: 10px; /* Space between items */
+  font-size: 1rem; /* Item font size */
+  position: relative; /* Relative positioning for pseudo-elements */
+  padding-left: 25px; /* Space for bullets */
+}
+
+/* Custom bullet styles for list items */
+.benefitsList li:before,
+.drawbacksList li:before {
+  position: absolute;
+  left: 0; /* Positioning */
+}
+
+.benefitsList li:before {
+  content: "✔"; /* Checkmark for benefits */
+  color: #27ae60; /* Green color for benefits */
+}
+
+.drawbacksList li:before {
+  content: "✖"; /* Cross for drawbacks */
+  color: #e74c3c; /* Red color for drawbacks */
+}
+
+/* Bottom Section styling */
+.bottomSection {
+  margin-top: 40px; /* Margin for spacing */
+}
+
+/* Back to Top Button */
+.backToTop {
+  position: fixed; /* Fixed position */
+  bottom: 20px; /* Distance from bottom */
+  right: 20px; /* Distance from right */
+  background-color: #007bff; /* Primary color */
+  color: #fff; /* White text */
+  border: none; /* No border */
+  border-radius: 50%; /* Circular shape */
+  width: 50px; /* Width */
+  height: 50px; /* Height */
+  font-size: 1rem; /* Font size */
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Soft shadow */
+  transition: background-color 0.3s; /* Smooth transition */
+}
+
+/* Hover effect for Back to Top button */
+.backToTop:hover {
+  background-color: #0056b3; /* Darker shade on hover */
+}
