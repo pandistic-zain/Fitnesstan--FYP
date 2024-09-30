@@ -5,17 +5,83 @@
   padding: 20px; /* Added padding for inner spacing */
 }
 
-/* Back to Home Button at the top */
-.backHomeTop {
+.backToHomeTop {
   position: absolute;
-  top: 10px;
-  left: 10px;
-  font-size: 1rem;
-  color: #ff0000; /* Bootstrap primary color */
-  background: none; /* No background */
-  border: none; /* No border */
-  text-decoration: underline; /* Underline text */
-  cursor: pointer; /* Pointer cursor */
+  top: 16px;
+  left: 13px;
+}
+.button {
+  display: block;
+  position: relative;
+  width: 56px;
+  height: 56px;
+  margin: 0;
+  overflow: hidden;
+  outline: none;
+  background-color: transparent;
+  cursor: pointer;
+  border: 0;
+}
+
+.button:before,
+.button:after {
+  content: "";
+  position: absolute;
+  border-radius: 50%;
+  inset: 7px;
+}
+
+.button:before {
+  border: 4px solid #ff0000;
+  transition: opacity 0.4s cubic-bezier(0.77, 0, 0.175, 1) 80ms,
+    transform 0.5s cubic-bezier(0.455, 0.03, 0.515, 0.955) 80ms;
+}
+
+.button:after {
+  border: 4px solid #ff0000;
+  transform: scale(1.3);
+  transition: opacity 0.4s cubic-bezier(0.165, 0.84, 0.44, 1),
+    transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  opacity: 0;
+}
+
+.button:hover:before,
+.button:focus:before {
+  opacity: 0;
+  transform: scale(0.7);
+  transition: opacity 0.4s cubic-bezier(0.165, 0.84, 0.44, 1),
+    transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.button:hover:after,
+.button:focus:after {
+  opacity: 1;
+  transform: scale(1);
+  transition: opacity 0.4s cubic-bezier(0.77, 0, 0.175, 1) 80ms,
+    transform 0.5s cubic-bezier(0.455, 0.03, 0.515, 0.955) 80ms;
+}
+
+.buttonbox {
+  display: flex;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.buttonelem {
+  display: flex;
+  align-items: center;
+  width: 20px;
+  height: 20px;
+  margin: 17px 18px 0 18px;
+  transform: rotate(180deg);
+  fill: #ff0000;
+}
+
+.button:hover .buttonbox,
+.button:focus .buttonbox {
+  transition: 0.4s;
+  transform: translateX(-56px);
 }
 .sectionDivider {
   height: 2px; 
@@ -67,42 +133,140 @@
 }
 
 /* Column styling */
-.column {
-  background-color: #ffffff; /* White background for columns */
+.bcolumn {
+  background-color: #0d9c00; /* White background for columns */
   padding: 20px; /* Padding for content */
-  margin: 0; /* No margin to align from the top */
   flex: 1; /* Allow columns to grow */
   min-width: 200px; 
   display: flex; /* Enable Flexbox for content alignment */
   flex-direction: column; /* Stack children vertically */
+  border: 2px solid #0d9c00;
+  box-shadow: 12px 10px 40px 2px #0d9c00;
+  border-radius: 14px;
   margin-left: 20px;
   margin-right: 20px;
+  color:#ffffff;
+  margin-bottom: 30px;
 }
-.column h3{
+/* Column styling */
+.dcolumn {
+  background-color: #ff0000; /* White background for columns */
+  padding: 20px; /* Padding for content */
+  flex: 1; /* Allow columns to grow */
+  min-width: 200px; 
+  display: flex; /* Enable Flexbox for content alignment */
+  flex-direction: column; /* Stack children vertically */
+  border: 2px solid #ff0000;
+  box-shadow: 12px 10px 40px 2px #ff0000;
+  border-radius: 14px;
+  margin-left: 20px;
+  margin-right: 20px;
+  color:#ffffff;
+  margin-bottom: 30px;
+}
+.bcolumn h3{
   font-weight: bolder;
   margin-left: 30px;
   margin-bottom: 15px;
-  color: #ff0000;
+  color: #000000;
+}
+.dcolumn h3{
+  font-weight: bolder;
+  margin-left: 30px;
+  margin-bottom: 15px;
+  color: #000000;
 }
 
 /* Card with Supplement Image */
+.card {
+  position: relative; /* Positioning context for child elements */
+  flex: 1 1 calc(25% - 20px);
+  max-width: 260px;
+  max-height: 200px; /* Limit image height for better layout */
+  object-fit: contain; /* Preserve aspect ratio */
+  border-radius: 14px;
+  z-index: 1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 20px 20px 60px rgba(190, 190, 190, 0.5), 
+              -20px -20px 60px rgba(255, 255, 255, 0.5);
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.card:hover {
+  transform: scale(1.05);
+  box-shadow: 25px 25px 70px rgba(255, 255, 255, 0.5), 
+              -25px -25px 70px rgba(255, 255, 255, 0.5);
+}
+
+.bg {
+  position: absolute;
+  top: 5px; /* Offset from the top */
+  left: 5px; /* Offset from the left */
+  width: calc(100% - 10px); 
+  height: calc(100% - 10px); 
+  z-index: -1; 
+  background: rgba(255, 255, 255, 0.95);
+  
+  backdrop-filter: blur(24px);
+  border-radius: 14px; /* Match card's border radius */
+  overflow: hidden;
+  outline: 2px solid white;
+}
+
+.blob {
+  position: absolute; /* Positioning within the card */
+  z-index: -2; /* Behind the background */
+  top: 50%; /* Center vertically */
+  left: 50%; /* Center horizontally */
+  width: calc(100% - 30px); /* Responsive width based on card */
+  height: calc(100% - 30px); /* Responsive height based on card */
+  border-radius: 50%; /* Make it circular */
+  background-color: #ff0000; /* Blob color */
+  opacity: 1; /* Fully visible */
+  filter: blur(12px); /* Blur effect for soft edges */
+  animation: blob-bounce 5s infinite ease; /* Animation */
+  transform: translate(-50%, -50%); /* Center the blob */
+}
+
+@keyframes blob-bounce {
+  0% {
+    transform: translate(-50%, -50%) translate(0%, 0%); /* Start at center */
+  }
+  25% {
+    transform: translate(-50%, -50%) translate(30%, -30%); /* Move to top right */
+  }
+  50% {
+    transform: translate(-50%, -50%) translate(30%, 30%); /* Move to bottom right */
+  }
+  75% {
+    transform: translate(-50%, -50%) translate(-30%, 30%); /* Move to bottom left */
+  }
+  100% {
+    transform: translate(-50%, -50%) translate(0%, 0%); /* Back to center */
+  }
+}
+
 .supplementCard {
-  max-width: 250px; /* Maximum width for the card */
-  height: auto; /* Maintain aspect ratio */
+  width: 250px; /* Fixed width for the card */
+  height: 200px; /* Fixed height for the card */
   display: flex;
   align-items: center;
-    flex: 0 0 250px; /* Prevent the middle column from growing */
   justify-content: center; /* Center alignment for image */
   border-radius: 10px; /* Rounded corners for the card */
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* Soft shadow for card */
   margin: 10px; /* Margin for spacing */
+  overflow: hidden; /* Prevents overflow of the image */
 }
 
 /* Card Image */
 .cardImage {
-  max-height: 200px; /* Limit image height for better layout */
-  object-fit: contain; /* Preserve aspect ratio */
-  flex: 1;
+  width: 100%; /* Full width of the card */
+  height: 100%; /* Full height of the card */
+  object-fit: cover; /* Ensures the image covers the area while maintaining aspect ratio */
 }
 
 /* BenefitsDrawbacks.module.css */
@@ -122,24 +286,6 @@
     padding-left: 25px; /* Space for bullets */
 }
 
-/* Custom bullet styles for list items */
-.benefitsList li:before,
-.drawbacksList li:before {
-    position: absolute;
-    left: 0; /* Positioning */
-}
-
-/* Checkmark for benefits */
-.benefitsList li:before {
-    content: "✔"; /* Checkmark */
-    color: #27ae60; /* Green color for benefits */
-}
-
-/* Cross for drawbacks */
-.drawbacksList li:before {
-    content: "✖"; /* Cross */
-    color: #e74c3c; /* Red color for drawbacks */
-}
 
 /* Bottom Section styling */
 .bottomSection {
@@ -147,24 +293,70 @@
 }
 
 /* Back to Top Button */
-.backToTop {
-  position: fixed; /* Fixed position */
-  bottom: 20px; /* Distance from bottom */
-  right: 20px; /* Distance from right */
-  background-color: #007bff; /* Primary color */
-  color: #fff; /* White text */
-  border: none; /* No border */
-  border-radius: 50%; /* Circular shape */
-  width: 50px; /* Width */
-  height: 50px; /* Height */
-  font-size: 1rem; /* Font size */
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Soft shadow */
-  transition: background-color 0.3s; /* Smooth transition */
+.scrollTopButton {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background-color: #ff0000;
+  color: #ffffff;
+  border-radius: 50px;
+}
+.topbutton {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background-color: rgb(255, 255, 255);
+  border: none;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0px 0px 0px 4px rgb(255, 0, 0);
+  cursor: pointer;
+  transition-duration: 0.3s;
+  overflow: hidden;
+  position: relative;
 }
 
-/* Hover effect for Back to Top button */
-.backToTop:hover {
-  background-color: #0056b3; /* Darker shade on hover */
+.svgIcon {
+  width: 12px;
+  transition-duration: 0.3s;
+}
+
+.svgIcon path {
+  fill: rgb(0, 0, 0);
+}
+
+.topbutton:hover {
+  width: 140px;
+  border-radius: 50px;
+  transition-duration: 0.3s;
+  background-color: rgb(255, 0, 0);
+  border: 4px solid #fff;
+  align-items: center;
+}
+
+.topbutton:hover .svgIcon {
+  /* width: 20px; */
+  transition-duration: 0.3s;
+  transform: translateY(-200%);
+}
+
+.topbutton::before {
+  position: absolute;
+  bottom: -20px;
+  content: "Back to Top";
+  color: white;
+  /* transition-duration: .3s; */
+  font-size: 10px;
+}
+
+.topbutton:hover::before {
+  font-size: 13px;
+  opacity: 1;
+  bottom: unset;
+  /* transform: translateY(-30px); */
+  transition-duration: 0.3s;
 }
 .detailedDescription {
   font-size: 1rem; /* Standard font size */
@@ -181,4 +373,111 @@
 .featureDivider {
   border: 1px solid #ccc;
   margin: 20px 0;
+}
+.backToHomeBottom {
+  display: block;
+  text-align: center;
+  margin-top: 40px;
+  font-size: 18px;
+}
+
+button {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+  outline: none;
+  border: 0;
+  vertical-align: middle;
+  text-decoration: none;
+  background: transparent;
+  padding: 0;
+  font-size: inherit;
+  font-family: inherit;
+}
+
+button.learnmore {
+  width: 12rem;
+  height: auto;
+}
+
+button.learnmore .circle {
+  transition: all 0.45s cubic-bezier(0.65, 0, 0.076, 1);
+  box-shadow: 0 0 5px 1px rgb(255, 0, 0);
+  position: relative;
+  display: block;
+  margin: 0;
+  width: 3rem;
+  height: 3rem;
+  background: #ff0000;
+  border-radius: 1.625rem;
+}
+
+button.learnmore .circle .icon {
+  transition: all 0.45s cubic-bezier(0.65, 0, 0.076, 1);
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  margin: auto;
+  background: #ffffff;
+  transform: rotate(180deg);
+  margin-left: 10px;
+}
+
+button.learnmore .circle .icon.arrow {
+  transition: all 0.45s cubic-bezier(0.65, 0, 0.076, 1);
+  left: 0.625rem;
+  width: 1.125rem;
+  height: 0.125rem;
+  background: none;
+}
+
+button.learnmore .circle .icon.arrow::before {
+  position: absolute;
+  content: "";
+  top: -0.29rem;
+  right: 0.0625rem;
+  width: 0.625rem;
+  height: 0.625rem;
+  border-top: 0.125rem solid #fff;
+  border-right: 0.125rem solid #fff;
+  transform: rotate(45deg);
+}
+
+button.learnmore .buttontext {
+  transition: all 0.45s cubic-bezier(0.65, 0, 0.076, 1);
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 0.75rem 0;
+  margin-left: 1.85rem;
+  
+  color: rgb(255, 0, 0);
+  font-weight: 700;
+  line-height: 1.6;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+button.learnmore:hover .circle {
+  width: 100%;
+  box-shadow: 0 0 10px 2px rgb(255, 0, 0);
+}
+
+button.learnmore:hover .buttontext {
+  transform: translate(6px, -2px);
+  color: #ffffff;
+  z-index: 1000;
+}
+
+button.learnmore:hover .circle .icon.arrow {
+  background: #fff;
+  transform: translateY(-2px);
+  transform: rotate(180deg);
+}
+
+button.learnmore:active .circle .icon.arrow {
+  transform: translate(9.5rem, 0);
+  transition: all 0.3s;
 }

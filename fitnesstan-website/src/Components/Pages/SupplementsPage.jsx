@@ -1,5 +1,6 @@
-import React from "react";
-import { Container, Row, Col, Card, Button } from "react-bootstrap";
+import React, { useState, useEffect } from "react";
+import { Container, Row, Col, Card } from "react-bootstrap";
+import { useNavigate } from "react-router-dom";
 import styles from "./Supplements.module.css"; // Importing as a module
 
 const SupplementsPage = () => {
@@ -29,7 +30,7 @@ In summary, Whey Protein Isolate is a potent supplement for those seeking to enh
         "Overuse may lead to kidney strain",
       ],
       imageUrl: "https://via.placeholder.com/150",
-      detailedDescription:`Whey Protein Isolate (WPI) is a premium protein supplement that has gained immense popularity among fitness enthusiasts, athletes, and bodybuilders. Derived from milk during the cheese-making process, WPI undergoes a rigorous filtration process that removes most fats and carbohydrates, resulting in a product that boasts a protein content of over 90%. This high level of purity makes Whey Protein Isolate an excellent choice for individuals looking to increase their protein intake without the excess calories that can come from fats and carbs. Its rapid digestibility is one of its standout features; WPI is absorbed quickly into the bloodstream, allowing for immediate availability of amino acids, which are the building blocks of muscle tissue. This makes it particularly beneficial for post-workout recovery, where quick replenishment of nutrients is crucial for muscle repair and growth.
+      detailedDescription: `Whey Protein Isolate (WPI) is a premium protein supplement that has gained immense popularity among fitness enthusiasts, athletes, and bodybuilders. Derived from milk during the cheese-making process, WPI undergoes a rigorous filtration process that removes most fats and carbohydrates, resulting in a product that boasts a protein content of over 90%. This high level of purity makes Whey Protein Isolate an excellent choice for individuals looking to increase their protein intake without the excess calories that can come from fats and carbs. Its rapid digestibility is one of its standout features; WPI is absorbed quickly into the bloodstream, allowing for immediate availability of amino acids, which are the building blocks of muscle tissue. This makes it particularly beneficial for post-workout recovery, where quick replenishment of nutrients is crucial for muscle repair and growth.
 The benefits of Whey Protein Isolate extend beyond just muscle recovery. Its rich amino acid profile, which includes all essential amino acids, makes it a complete protein source. This is particularly important for those engaged in intense training or athletic activities, as the body requires a sufficient amount of amino acids to facilitate muscle protein synthesis and recovery. Additionally, WPI has been shown to support immune function, improve body composition, and even aid in weight management. The high protein content helps promote satiety, making individuals feel fuller for longer periods and potentially reducing overall calorie intake. This characteristic can be advantageous for those looking to lose weight or maintain a healthy body composition.
 Whey Protein Isolate is versatile and can easily be incorporated into various dietary plans. It can be consumed as a shake, mixed into smoothies, or added to foods like oatmeal, yogurt, and baked goods. This flexibility allows individuals to enhance their protein intake without drastically altering their diet. Moreover, WPI comes in a variety of flavors, making it a palatable option for those who might be put off by the taste of plain protein powders. However, it is essential to choose high-quality products with minimal additives and artificial sweeteners, as some brands may contain undesirable ingredients that could counteract the benefits of the protein itself.
 While Whey Protein Isolate offers numerous advantages, it is important to note that it may not be suitable for everyone. Individuals with lactose intolerance might experience digestive discomfort, as WPI contains trace amounts of lactose. In such cases, plant-based protein sources or lactose-free protein powders may be more appropriate. Additionally, some products may have added ingredients that could cause allergic reactions in sensitive individuals. Therefore, it is crucial to read labels carefully and consult with a healthcare professional or nutritionist if there are any concerns about potential allergens or sensitivities.
@@ -105,16 +106,50 @@ In conclusion, Whey Protein Isolate is a powerful and effective protein suppleme
         "Omega-3 Fish Oil contains two essential fatty acids: EPA and DHA, which have numerous benefits for overall health. Athletes often use fish oil to support joint health and reduce inflammation caused by intense training... [Detailed description continues for 1500-2000 words].",
     },
   ];
+  const navigate = useNavigate(); // Initialize useNavigate
+  const [showScroll, setShowScroll] = useState(false);
 
+  const handleScroll = () => {
+    if (window.scrollY > 300) {
+      setShowScroll(true);
+    } else {
+      setShowScroll(false);
+    }
+  };
+
+  const scrollTop = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+  const navigateHome = () => {
+    navigate("/"); // Navigate to Home
+    scrollTop(); // Scroll to the top of Home page
+  };
   return (
     <Container fluid className={styles.supplementPage}>
-      <Button className={styles.backHomeTop} href="/">
-        Back to Home
-      </Button>
+      <div className={styles.backToHomeTop}>
+        <button variant="link" className={styles.button} onClick={navigateHome}>
+          {" "}
+          <div className={styles.buttonbox}>
+            <span className={styles.buttonelem}>
+              <svg viewBox="0 0 46 40" xmlns="http://www.w3.org/2000/svg">
+                <path d="M46 20.038c0-.7-.3-1.5-.8-2.1l-16-17c-1.1-1-3.2-1.4-4.4-.3-1.2 1.1-1.2 3.3 0 4.4l11.3 11.9H3c-1.7 0-3 1.3-3 3s1.3 3 3 3h33.1l-11.3 11.9c-1 1-1.2 3.3 0 4.4 1.2 1.1 3.3.8 4.4-.3l16-17c.5-.5.8-1.1.8-1.9z"></path>
+              </svg>
+            </span>
+            <span className={styles.buttonelem}>
+              <svg viewBox="0 0 46 40">
+                <path d="M46 20.038c0-.7-.3-1.5-.8-2.1l-16-17c-1.1-1-3.2-1.4-4.4-.3-1.2 1.1-1.2 3.3 0 4.4l11.3 11.9H3c-1.7 0-3 1.3-3 3s1.3 3 3 3h33.1l-11.3 11.9c-1 1-1.2 3.3 0 4.4 1.2 1.1 3.3.8 4.4-.3l16-17c.5-.5.8-1.1.8-1.9z"></path>
+              </svg>
+            </span>
+          </div>
+        </button>
+      </div>
 
-      <h1 className={`text-center mt-4 ${styles.pageName}`}>
-        Supplement Insights
-      </h1>
+      <h1 className={`text-center  ${styles.pageName}`}>Supplement Insights</h1>
       <div className={styles.sectionDivider}></div>
 
       {supplements.map((supplement) => (
@@ -135,7 +170,7 @@ In conclusion, Whey Protein Isolate is a powerful and effective protein suppleme
 
           <Row className={`mt-1 ${styles.mainSection}`}>
             {/* Left Column: Benefits */}
-            <Col className={styles.column}>
+            <Col className={styles.bcolumn}>
               <h3>Benefits</h3>
               <ul className={styles.benefitsList}>
                 {supplement.benefits.map((benefit, index) => (
@@ -145,20 +180,22 @@ In conclusion, Whey Protein Isolate is a powerful and effective protein suppleme
             </Col>
 
             <Col md="auto">
-              {" "}
-              {/* Centering the Card */}
-              <Card className={styles.supplementCard}>
-                <Card.Img
-                  variant="top"
-                  src={supplement.imageUrl}
-                  alt={supplement.name}
-                  className={styles.cardImage}
-                />
-              </Card>
+              <div className={styles.card}>
+                <div className={styles.bg}></div>
+                <div className={styles.blob}></div>
+                <Card className={styles.supplementCard}>
+                  <Card.Img
+                    variant="top"
+                    src={supplement.imageUrl}
+                    alt={supplement.name}
+                    className={styles.cardImage}
+                  />
+                </Card>
+              </div>
             </Col>
 
             {/* Right Column: Drawbacks */}
-            <Col className={styles.column}>
+            <Col className={styles.dcolumn}>
               <h3>Possible Drawbacks</h3>
               <ul className={styles.drawbacksList}>
                 {supplement.drawbacks.map((drawback, index) => (
@@ -169,14 +206,14 @@ In conclusion, Whey Protein Isolate is a powerful and effective protein suppleme
           </Row>
 
           <Row className="mt-1">
-          <Col className={styles.detailedDescription}>
-          {supplement.detailedDescription.split('\n').map((line, index) => (
-            <React.Fragment key={index}>
-              {line}
-              <br />
-            </React.Fragment>
-          ))}
-        </Col>
+            <Col className={styles.detailedDescription}>
+              {supplement.detailedDescription.split("\n").map((line, index) => (
+                <React.Fragment key={index}>
+                  {line}
+                  <br />
+                </React.Fragment>
+              ))}
+            </Col>
           </Row>
 
           {/* Horizontal Divider */}
@@ -184,16 +221,26 @@ In conclusion, Whey Protein Isolate is a powerful and effective protein suppleme
         </React.Fragment>
       ))}
 
-      <div className={`text-center mt-5 ${styles.bottomSection}`}>
-        <Button href="/">Back to Home</Button>
+      {/* Back to Home link (Bottom) */}
+      <div className={styles.backToHomeBottom}>
+        <button className={styles.learnmore} onClick={navigateHome}>
+          <span className={styles.buttontext}>Fitnesstan</span>
+          <span aria-hidden="true" className={styles.circle}>
+            <span className={`${styles.icon} ${styles.arrow}`}></span>
+          </span>
+        </button>
       </div>
 
-      <Button
-        className={styles.backToTop}
-        onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-      >
-        Back to Top
-      </Button>
+      {/* Back to Top Button */}
+      {showScroll && (
+        <div className={styles.scrollTopButton}>
+          <button className={styles.topbutton} onClick={scrollTop}>
+            <svg className={styles.svgIcon} viewBox="0 0 384 512">
+              <path d="M214.6 41.4c-12.5-12.5-32.8-12.5-45.3 0l-160 160c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L160 141.2V448c0 17.7 14.3 32 32 32s32-14.3 32-32V141.2L329.4 246.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3l-160-160z"></path>
+            </svg>
+          </button>
+        </div>
+      )}
     </Container>
   );
 };
