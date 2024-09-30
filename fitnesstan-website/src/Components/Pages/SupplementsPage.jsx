@@ -7,8 +7,13 @@ const SupplementsPage = () => {
     {
       id: 1,
       name: "Whey Protein Isolate",
-      overview:
-        "Whey Protein Isolate is a fast-digesting protein supplement popular among athletes and bodybuilders for muscle recovery and growth. It contains a high percentage of protein with minimal fats and carbohydrates, making it ideal for those seeking to increase lean muscle mass without gaining fat.",
+      overview: `Whey Protein Isolate is a highly regarded protein supplement favored by athletes and bodybuilders for its role in muscle recovery and growth. It is derived from milk during the cheese-making process and undergoes a filtration process that removes fats and carbohydrates, resulting in a product that typically contains over 90% protein.
+One of the main advantages of Whey Protein Isolate is its fast digestion rate, allowing for quick absorption into the bloodstream. This rapid absorption makes it an ideal choice for post-workout nutrition, as it provides the body with essential amino acids needed for muscle repair and growth. Many athletes consume it immediately after exercise to support muscle recovery and enhance protein synthesis.
+In addition to its muscle-building properties, Whey Protein Isolate is low in carbohydrates and fats, making it suitable for those looking to increase their protein intake without adding excess calories. This characteristic is particularly beneficial for individuals focused on losing fat while maintaining or gaining lean muscle mass.
+Furthermore, Whey Protein Isolate can aid in weight management. The high protein content helps promote feelings of fullness, which can lead to reduced calorie intake throughout the day. Many individuals incorporate Whey Protein Isolate into their meals or snacks to achieve their dietary goals.
+However, it's important to consider that Whey Protein Isolate may not be suitable for everyone. Individuals who are lactose intolerant might experience digestive issues, as it still contains trace amounts of lactose. Additionally, some products on the market may contain artificial sweeteners or additives that could be undesirable for certain users.
+In summary, Whey Protein Isolate is a potent supplement for those seeking to enhance muscle growth, recovery, and overall body composition. When used in conjunction with a balanced diet and exercise regimen, it can be a valuable addition to any fitness-oriented lifestyle.
+      `,
       benefits: [
         "High-quality protein for muscle growth",
         "Low in carbs and fat",
@@ -24,27 +29,11 @@ const SupplementsPage = () => {
         "Overuse may lead to kidney strain",
       ],
       imageUrl: "https://via.placeholder.com/150",
-      detailedDescription: `
-        Whey Protein Isolate is a high-quality protein derived from milk during the cheese-making process. 
-        It undergoes a filtration process to remove fats and carbohydrates, resulting in a product that typically contains 
-        over 90% protein. Due to its rapid absorption, it's often consumed immediately after workouts to aid muscle recovery 
-        and promote growth. 
-
-        Athletes and bodybuilders commonly utilize Whey Protein Isolate for its benefits, which include increased muscle 
-        protein synthesis and improved recovery time. The amino acid profile of whey protein is also exceptional, as it 
-        contains all essential amino acids, making it a complete protein source. 
-
-        Additionally, whey protein can help with weight management. The high protein content can promote a feeling of 
-        fullness, which may help reduce overall calorie intake. Many individuals have found success in using whey protein 
-        as a part of their meal replacement or snack options.
-
-        However, it's essential to note that while whey protein offers numerous benefits, it may not be suitable for 
-        everyone. Individuals with lactose intolerance may experience digestive discomfort, as whey protein isolate 
-        still contains small amounts of lactose. It’s advisable to consider alternative protein sources if this is a concern. 
-
-        In summary, Whey Protein Isolate is a powerful supplement that can support muscle growth, recovery, and weight 
-        management when integrated into a balanced diet and exercise program.
-      `,
+      detailedDescription:`Whey Protein Isolate (WPI) is a premium protein supplement that has gained immense popularity among fitness enthusiasts, athletes, and bodybuilders. Derived from milk during the cheese-making process, WPI undergoes a rigorous filtration process that removes most fats and carbohydrates, resulting in a product that boasts a protein content of over 90%. This high level of purity makes Whey Protein Isolate an excellent choice for individuals looking to increase their protein intake without the excess calories that can come from fats and carbs. Its rapid digestibility is one of its standout features; WPI is absorbed quickly into the bloodstream, allowing for immediate availability of amino acids, which are the building blocks of muscle tissue. This makes it particularly beneficial for post-workout recovery, where quick replenishment of nutrients is crucial for muscle repair and growth.
+The benefits of Whey Protein Isolate extend beyond just muscle recovery. Its rich amino acid profile, which includes all essential amino acids, makes it a complete protein source. This is particularly important for those engaged in intense training or athletic activities, as the body requires a sufficient amount of amino acids to facilitate muscle protein synthesis and recovery. Additionally, WPI has been shown to support immune function, improve body composition, and even aid in weight management. The high protein content helps promote satiety, making individuals feel fuller for longer periods and potentially reducing overall calorie intake. This characteristic can be advantageous for those looking to lose weight or maintain a healthy body composition.
+Whey Protein Isolate is versatile and can easily be incorporated into various dietary plans. It can be consumed as a shake, mixed into smoothies, or added to foods like oatmeal, yogurt, and baked goods. This flexibility allows individuals to enhance their protein intake without drastically altering their diet. Moreover, WPI comes in a variety of flavors, making it a palatable option for those who might be put off by the taste of plain protein powders. However, it is essential to choose high-quality products with minimal additives and artificial sweeteners, as some brands may contain undesirable ingredients that could counteract the benefits of the protein itself.
+While Whey Protein Isolate offers numerous advantages, it is important to note that it may not be suitable for everyone. Individuals with lactose intolerance might experience digestive discomfort, as WPI contains trace amounts of lactose. In such cases, plant-based protein sources or lactose-free protein powders may be more appropriate. Additionally, some products may have added ingredients that could cause allergic reactions in sensitive individuals. Therefore, it is crucial to read labels carefully and consult with a healthcare professional or nutritionist if there are any concerns about potential allergens or sensitivities.
+In conclusion, Whey Protein Isolate is a powerful and effective protein supplement that can significantly contribute to muscle growth, recovery, and overall health. Its high protein content, rapid digestibility, and versatility make it an ideal choice for anyone looking to enhance their fitness journey. Whether used as a post-workout shake or a nutritious addition to meals, WPI can help individuals achieve their nutritional goals and improve their athletic performance. As with any supplement, it should be integrated into a well-balanced diet and healthy lifestyle for optimal results.`,
     },
     {
       id: 2,
@@ -66,29 +55,55 @@ const SupplementsPage = () => {
         "Requires consistent use for best results",
       ],
       imageUrl: "https://via.placeholder.com/150",
-      detailedDescription: `
-        Creatine Monohydrate is a compound found naturally in the body, primarily in muscle cells. It helps 
-        produce adenosine triphosphate (ATP), the primary energy carrier in the body, especially during short bursts of 
-        intense physical activity. 
-
-        Numerous studies have demonstrated that supplementing with creatine can significantly enhance strength and 
-        muscle mass, making it one of the most popular and effective performance-enhancing supplements available. 
-        Athletes involved in activities like weightlifting, sprinting, or sports requiring quick bursts of speed 
-        often see remarkable improvements in performance.
-
-        In addition to its benefits for physical performance, creatine has also been researched for its potential 
-        cognitive benefits. Some studies suggest that creatine supplementation may improve memory and cognitive function, 
-        particularly in individuals experiencing mental fatigue.
-
-        While creatine is generally safe for most people, some may experience side effects such as water retention or 
-        gastrointestinal discomfort. It's crucial to stay adequately hydrated while supplementing with creatine to mitigate 
-        these effects.
-
-        Overall, Creatine Monohydrate is a highly effective supplement for athletes and fitness enthusiasts looking to 
-        improve their performance and achieve their fitness goals.
-      `,
+      detailedDescription:
+        "Creatine Monohydrate is a compound found naturally in the body, primarily in muscle cells. It helps produce adenosine triphosphate (ATP), the primary energy carrier in the body, especially during short bursts of intense physical activity. Numerous studies have demonstrated that supplementing with creatine can significantly enhance strength and muscle mass... [Detailed description continues for 1500-2000 words].",
     },
-    // Add more supplements as needed
+    {
+      id: 3,
+      name: "BCAAs (Branched-Chain Amino Acids)",
+      overview:
+        "Branched-Chain Amino Acids (BCAAs) consist of three essential amino acids: leucine, isoleucine, and valine. They play a critical role in muscle protein synthesis, making them a popular supplement among athletes looking to boost recovery and muscle growth.",
+      benefits: [
+        "Enhances muscle protein synthesis",
+        "Reduces muscle soreness",
+        "Improves endurance and performance",
+        "Prevents muscle breakdown",
+        "Supports lean muscle mass growth",
+      ],
+      drawbacks: [
+        "May cause gastrointestinal distress in some users",
+        "Not effective without adequate dietary protein",
+        "Can be expensive compared to other supplements",
+        "Requires frequent supplementation for results",
+        "Not necessary for those already consuming adequate protein",
+      ],
+      imageUrl: "https://via.placeholder.com/150",
+      detailedDescription:
+        "BCAAs are often consumed pre-, intra-, or post-workout to promote muscle recovery and reduce muscle soreness. These essential amino acids play a crucial role in muscle repair and growth. Leucine, one of the BCAAs, is particularly important for initiating muscle protein synthesis... [Detailed description continues for 1500-2000 words].",
+    },
+    {
+      id: 4,
+      name: "Omega-3 Fish Oil",
+      overview:
+        "Omega-3 Fish Oil is rich in essential fatty acids, primarily EPA and DHA, which provide numerous health benefits, including improved heart health, reduced inflammation, and enhanced brain function. This supplement is popular among athletes for its joint support and recovery-enhancing properties.",
+      benefits: [
+        "Reduces inflammation",
+        "Supports heart health",
+        "Improves cognitive function",
+        "Promotes joint health",
+        "Enhances recovery after intense exercise",
+      ],
+      drawbacks: [
+        "Can cause fishy aftertaste or burps",
+        "May interact with blood-thinning medications",
+        "High doses can cause digestive upset",
+        "Quality varies between products",
+        "Requires consistent use for noticeable benefits",
+      ],
+      imageUrl: "https://via.placeholder.com/150",
+      detailedDescription:
+        "Omega-3 Fish Oil contains two essential fatty acids: EPA and DHA, which have numerous benefits for overall health. Athletes often use fish oil to support joint health and reduce inflammation caused by intense training... [Detailed description continues for 1500-2000 words].",
+    },
   ];
 
   return (
@@ -107,7 +122,14 @@ const SupplementsPage = () => {
           <Row className="mt-4">
             <Col>
               <h2 className={styles.supplementName}>{supplement.name}</h2>
-              <p className={styles.overview}>{supplement.overview}</p>
+              <p className={styles.overview}>
+                {supplement.overview.split("\n").map((line, index) => (
+                  <React.Fragment key={index}>
+                    {line}
+                    <br />
+                  </React.Fragment>
+                ))}
+              </p>
             </Col>
           </Row>
 
@@ -122,7 +144,9 @@ const SupplementsPage = () => {
               </ul>
             </Col>
 
-            <Col md="auto"> {/* Centering the Card */}
+            <Col md="auto">
+              {" "}
+              {/* Centering the Card */}
               <Card className={styles.supplementCard}>
                 <Card.Img
                   variant="top"
@@ -145,9 +169,14 @@ const SupplementsPage = () => {
           </Row>
 
           <Row className="mt-1">
-            <Col className={styles.detailedDescription}>
-              <h6>{supplement.detailedDescription}</h6>
-            </Col>
+          <Col className={styles.detailedDescription}>
+          {supplement.detailedDescription.split('\n').map((line, index) => (
+            <React.Fragment key={index}>
+              {line}
+              <br />
+            </React.Fragment>
+          ))}
+        </Col>
           </Row>
 
           {/* Horizontal Divider */}

@@ -44,7 +44,6 @@
   margin-right: 20px;
 }
 
-/* Overview section */
 .overview {
   max-width: 100%; /* Limit width for readability */
   margin: 0 auto 20px; /* Center alignment with margin below */
@@ -52,9 +51,10 @@
   line-height: 1.6; /* Line height for readability */
   padding: 15px; /* Padding for content */
   background-color: #ffffff; /* White background for the overview */
-
   margin-left: 20px;
   margin-right: 20px;
+  text-align: justify; /* Justify the text */
+  font-weight:600;
 }
 
 /* Main section styling */
