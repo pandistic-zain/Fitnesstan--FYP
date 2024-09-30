@@ -1,7 +1,7 @@
 .supplementPage {
   position: relative;
   background-color: #ffffff; /* Soft light background color */
-  color: #333; /* Dark text for contrast */
+  color: #000000; /* Dark text for contrast */
   padding: 20px; /* Added padding for inner spacing */
 }
 
@@ -11,20 +11,25 @@
   top: 10px;
   left: 10px;
   font-size: 1rem;
-  color: #007bff; /* Bootstrap primary color */
+  color: #ff0000; /* Bootstrap primary color */
   background: none; /* No background */
   border: none; /* No border */
   text-decoration: underline; /* Underline text */
   cursor: pointer; /* Pointer cursor */
 }
-.topDivider{
-color: #ff0000;
+.sectionDivider {
+  height: 2px; 
+  background-color: #ff0000;
+  margin: 20px 0; 
+  width: 100%; 
+  /* box-shadow: 0 12px 14px rgba(255, 0, 0, 0.5); */
 }
+
 /* Main Page Name */
 .pageName {
   font-size: 2.5rem; /* Larger font for the main title */
   font-weight: 700; /* Bold font weight */
-  color: #2c3e50; /* Darker color for the title */
+  color: #ff0000; /* Darker color for the title */
   text-align: center; /* Center alignment */
   margin-bottom: 20px; /* Space below the title */
 }
@@ -33,9 +38,10 @@ color: #ff0000;
 .supplementName {
   margin: 15px;
   font-size: 2rem; /* Slightly smaller than the main title */
-  font-weight: 600; /* Medium bold weight */
-  color: #2980b9; /* Color for supplement name */
-  margin-bottom: 15px; /* Space below the supplement name */
+  font-weight: bolder; /* Medium bold weight */
+  color: #ff0000; /* Color for supplement name */
+  margin-left: 20px;
+  margin-right: 20px;
 }
 
 /* Overview section */
@@ -46,8 +52,9 @@ color: #ff0000;
   line-height: 1.6; /* Line height for readability */
   padding: 15px; /* Padding for content */
   background-color: #ffffff; /* White background for the overview */
-  border-radius: 8px; /* Rounded corners */
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Light shadow for depth */
+
+  margin-left: 20px;
+  margin-right: 20px;
 }
 
 /* Main section styling */
@@ -57,8 +64,6 @@ color: #ff0000;
   align-items: center; /* Align columns to stretch the full height */
   justify-content: center; /* Center alignment of columns */
   padding: 0; /* Remove vertical padding */
-  margin-left: 10px;
-  margin-right: 10px;
 }
 
 /* Column styling */
@@ -70,6 +75,14 @@ color: #ff0000;
   min-width: 200px; 
   display: flex; /* Enable Flexbox for content alignment */
   flex-direction: column; /* Stack children vertically */
+  margin-left: 20px;
+  margin-right: 20px;
+}
+.column h3{
+  font-weight: bolder;
+  margin-left: 30px;
+  margin-bottom: 15px;
+  color: #ff0000;
 }
 
 /* Card with Supplement Image */
@@ -92,36 +105,40 @@ color: #ff0000;
   flex: 1;
 }
 
-/* Benefits and Drawbacks lists */
+/* BenefitsDrawbacks.module.css */
+
 .benefitsList,
 .drawbacksList {
-  list-style-type: none; /* Remove default list styling */
-  padding: 0; /* Remove padding */
+    list-style-type: none; /* Remove default list styling */
+    padding: 0; /* Remove padding */
 }
 
 .benefitsList li,
 .drawbacksList li {
-  margin-bottom: 10px; /* Space between items */
-  font-size: 1rem; /* Item font size */
-  position: relative; /* Relative positioning for pseudo-elements */
-  padding-left: 25px; /* Space for bullets */
+    margin-bottom: 10px; /* Space between items */
+    font-size: 1rem; 
+    font-weight: bold;
+    position: relative; /* Relative positioning for pseudo-elements */
+    padding-left: 25px; /* Space for bullets */
 }
 
 /* Custom bullet styles for list items */
 .benefitsList li:before,
 .drawbacksList li:before {
-  position: absolute;
-  left: 0; /* Positioning */
+    position: absolute;
+    left: 0; /* Positioning */
 }
 
+/* Checkmark for benefits */
 .benefitsList li:before {
-  content: "✔"; /* Checkmark for benefits */
-  color: #27ae60; /* Green color for benefits */
+    content: "✔"; /* Checkmark */
+    color: #27ae60; /* Green color for benefits */
 }
 
+/* Cross for drawbacks */
 .drawbacksList li:before {
-  content: "✖"; /* Cross for drawbacks */
-  color: #e74c3c; /* Red color for drawbacks */
+    content: "✖"; /* Cross */
+    color: #e74c3c; /* Red color for drawbacks */
 }
 
 /* Bottom Section styling */
@@ -148,4 +165,20 @@ color: #ff0000;
 /* Hover effect for Back to Top button */
 .backToTop:hover {
   background-color: #0056b3; /* Darker shade on hover */
+}
+.detailedDescription {
+  font-size: 1rem; /* Standard font size */
+  line-height: 1.75; /* Increased line height for better readability */
+  margin-bottom: 2rem; /* Space below the paragraph */
+  color: #333333; /* Dark gray for softer contrast */
+  margin-left: 20px;
+  margin-right: 20px;
+  text-align: justify; /* Justify the text */
+  font-weight: 400; /* Normal font weight for a cleaner look */
+}
+
+
+.featureDivider {
+  border: 1px solid #ccc;
+  margin: 20px 0;
 }
