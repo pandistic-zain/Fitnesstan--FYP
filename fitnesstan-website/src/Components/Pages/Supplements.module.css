@@ -141,7 +141,7 @@
   display: flex; /* Enable Flexbox for content alignment */
   flex-direction: column; /* Stack children vertically */
   border: 2px solid #0d9c005b;
-  box-shadow: 2px 1px 30px 2px #0d9c003b;
+  box-shadow: 2px 1px 30px 2px #ffffff3b;
   border-radius: 14px;
   margin-left: 20px;
   margin-right: 20px;
@@ -157,7 +157,7 @@
   display: flex; /* Enable Flexbox for content alignment */
   flex-direction: column; /* Stack children vertically */
   border: 2px solid #ff00005b;
-  box-shadow: 12px 10px 40px 2px #ff00003b;
+  box-shadow: 12px 10px 40px 2px #ffffff3b;
   border-radius: 14px;
   margin-left: 20px;
   margin-right: 20px;
