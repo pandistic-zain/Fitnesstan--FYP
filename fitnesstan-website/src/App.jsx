@@ -2,7 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Front from './Components/Front';
 import Register from './Components/Pages/Register';
-import AdminDashboard from './AdminPanel/AdminDashboard';
+import AdminDashboard from './Components/AdminPanel/AdminDashboard';
 
 function App() {
   return (
