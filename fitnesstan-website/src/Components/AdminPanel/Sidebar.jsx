@@ -1,10 +1,16 @@
 // src/components/AdminDashboard/Sidebar.jsx
-import React from "react";
+import React, { useState } from "react";
 import SidebarMenu from "react-bootstrap-sidebar-menu";
 import { Link } from "react-router-dom";
 import styles from "./Sidebar.module.css"; // Ensure this path matches your structure
 
 const Sidebar = () => {
+  const [mlPlansOpen, setMlPlansOpen] = useState(false);
+
+  const toggleMlPlans = () => {
+    setMlPlansOpen(!mlPlansOpen); // Toggle state
+  };
+
   return (
     <SidebarMenu className={styles.sidebar}>
       <SidebarMenu.Header className={styles.header}>
@@ -66,8 +72,12 @@ const Sidebar = () => {
             </SidebarMenu.Nav.Title>
           </SidebarMenu.Nav.Link>
           <SidebarMenu.Sub>
+            {/* Toggle for ML Plans */}
             <SidebarMenu.Sub.Toggle
-              className={`${styles.navLink} sidebar-link ${styles.toggle}`}
+              onClick={toggleMlPlans} // Toggle on click
+              className={`${styles.navLink} sidebar-link ${
+                mlPlansOpen ? styles.subMenuOpen : ""
+              }`}
             >
               <SidebarMenu.Nav.Icon
                 className={`${styles.navIcon} sidebar-icon`}
@@ -78,10 +88,19 @@ const Sidebar = () => {
               <SidebarMenu.Nav.Title className={styles.navTitle}>
                 ML Plans
               </SidebarMenu.Nav.Title>
-              <span className={styles.caret}></span>{" "}
-              {/* Caret icon for toggle indication */}
+
+              {/* Caret icon with dynamic class for rotation */}
+              <span className={styles.caret}>
+                {/* Caret icon for toggle indication */}
+              </span>
             </SidebarMenu.Sub.Toggle>
-            <SidebarMenu.Sub.Collapse>
+
+            {/* Submenu for ML Plans */}
+            <SidebarMenu.Sub.Collapse
+              className={
+                mlPlansOpen ? styles.subMenuOpen : styles.subMenuClosed
+              }
+            >
               <SidebarMenu.Nav>
                 <SidebarMenu.Nav.Link
                   as={Link}
@@ -98,6 +117,7 @@ const Sidebar = () => {
                     Plan 1
                   </SidebarMenu.Nav.Title>
                 </SidebarMenu.Nav.Link>
+
                 <SidebarMenu.Nav.Link
                   as={Link}
                   to="/ml-plan-2"
@@ -116,7 +136,6 @@ const Sidebar = () => {
               </SidebarMenu.Nav>
             </SidebarMenu.Sub.Collapse>
           </SidebarMenu.Sub>
-
           <SidebarMenu.Nav.Link
             as={Link}
             to="/diabetes-care-management"
