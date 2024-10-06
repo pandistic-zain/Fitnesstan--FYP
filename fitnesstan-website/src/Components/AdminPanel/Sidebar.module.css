@@ -1,0 +1,166 @@
+/* src/components/AdminDashboard/Sidebar.module.css */
+
+/* General Sidebar Styles */
+.sidebar {
+    width: 250px; /* Fixed width for the sidebar */
+    background-color: #ffffff; /* White background for cleanliness */
+    height: 100vh; /* Full height of the viewport */
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+    display: flex;
+    flex-direction: column; /* Vertical stacking */
+    overflow-y: auto; /* Enable scrolling for longer content */
+    transition: width 0.3s ease; /* Smooth width transition */
+}
+.header{
+    height: 60px !important;
+    width: auto;
+    margin-top: 15px;
+}
+.body{
+    margin-top: 30px;
+}
+/* Sidebar Brand Styles */
+.brand {
+    padding: 25px;
+    font-size: 1.4rem; /* Larger font for visibility */
+    font-weight: bold; /* Bold text for brand */
+    color: #ff0000; /* Primary brand color */
+    text-align: center; /* Center text */
+    border-bottom: 2px solid #ff0000; /* Underline for brand */
+    margin-bottom: 30px; /* Spacing below brand */
+    transition: background-color 0.3s ease; /* Transition on hover */
+}
+
+.brand:hover {
+    background-color: rgba(255, 0, 0, 0.1); /* Light background on hover */
+}
+
+/* Navigation Link Styles */
+.navLink {
+    /* margin-top: 30px; */
+    color: #000; /* Black text color */
+    padding: 15px 20px; /* Padding around links */
+    font-size: 1.1rem; /* Slightly larger font size */
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1); /* Subtle border between links */
+    display: flex; /* Flexbox for aligning icon and title */
+    align-items: center; /* Center items vertically */
+    text-decoration: none; /* Remove underline */
+    transition: background 0.3s ease, color 0.3s ease; /* Smooth transitions */
+}
+
+.navLink:hover {
+    /* Use a variable for the primary color to maintain consistency */
+    background-color: #ff0000;
+    color: #ffffff; /* White text on hover */
+    transform: scale(1.02);
+  }
+  
+  .navLink:hover .navIcon {
+    color: inherit; /* Inherit the text color from the parent element */
+  }
+
+/* Navigation Title Styles */
+.navTitle {
+    margin-left: 10px; /* Space between icon and title */
+    font-weight: 600; /* Semi-bold for emphasis */
+}
+
+/* Navigation Icon Styles */
+.navIcon {
+    font-size: 1.5rem; /* Size for icons */
+    color: #ff0000; /* Icon color matches brand */
+    margin-right: 10px; /* Space to the right of icons */
+}
+
+/* Submenu Styles */
+.sub {
+    padding-left: 20px; /* Indentation for submenus */
+    background-color: #f5f5f5; /* Light grey background for submenus */
+    margin: 10px 0; /* Margin around submenus */
+    border-radius: 5px; /* Rounded corners for visual appeal */
+}
+
+/* Toggle Styles */
+.toggle {
+    display: flex;
+    justify-content: space-between; /* Space out the title and caret */
+    align-items: center; /* Center items vertically */
+    padding: 10px 20px; /* Adjust padding */
+    cursor: pointer; /* Pointer cursor for interactivity */
+    transition: background-color 0.3s ease; /* Smooth transition for hover effect */
+}
+
+.toggle:hover {
+    background-color: #e0e0e0; /* Change background color on hover */
+}
+
+.caret {
+    display: inline-block;
+    margin-left: auto; /* Push caret to the right */
+    width: 8px;
+    height: 8px;
+    border-left: 2px solid #555; /* Left line for caret */
+    border-bottom: 2px solid #555; /* Bottom line for caret */
+    transform: rotate(45deg); /* Rotate to make a caret shape */
+    transition: transform 0.3s ease; /* Transition effect for rotation */
+}
+
+/* Rotate caret when submenu is open */
+.subMenuOpen .caret {
+    transform: rotate(-135deg); /* Flip caret up when open */
+}
+
+/* Submenu Link Styles */
+.subNavLink {
+    padding: 10px 30px; /* Slightly increased left padding for better visual hierarchy */
+    color: #555; /* Darker text color */
+    text-decoration: none; /* Remove underline */
+    display: flex; /* Flexbox for alignment */
+    align-items: center; /* Center items vertically */
+    transition: background 0.3s ease, color 0.3s ease; /* Smooth transitions */
+}
+
+.subNavLink:hover {
+    background-color: #e0e0e0; /* Hover effect for submenu items */
+    color: #000; /* Dark text on hover */
+}
+
+/* Additional styles for icons */
+.subNavLink .sidebar-icon {
+    margin-right: 10px; /* Space between icon and title */
+}
+
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .sidebar {
+        width: 200px; /* Reduce sidebar width on smaller screens */
+    }
+
+    .navLink {
+        font-size: 1rem; /* Adjust font size */
+    }
+
+    .navIcon {
+        font-size: 1.25rem; /* Adjust icon size */
+    }
+
+    .brand {
+        font-size: 1.5rem; /* Smaller brand font on mobile */
+    }
+}
+
+@media (max-width: 576px) {
+    .sidebar {
+        width: 150px; /* Further reduce sidebar width on extra small screens */
+    }
+
+    .navLink {
+        padding: 10px 15px; /* Reduce padding for small screens */
+        font-size: 0.9rem; /* Smaller font size */
+    }
+
+    .navIcon {
+        font-size: 1.1rem; /* Smaller icon size */
+    }
+}
