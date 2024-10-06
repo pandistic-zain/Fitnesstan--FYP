@@ -23,7 +23,7 @@ const Sidebar = () => {
         <SidebarMenu.Nav>
           <SidebarMenu.Nav.Link
             as={Link}
-            to="/dashboard"
+            to="/AdminDashboard"
             className={`${styles.navLink} sidebar-link`}
           >
             <SidebarMenu.Nav.Icon className={`${styles.navIcon} sidebar-icon`}>
@@ -35,7 +35,7 @@ const Sidebar = () => {
           </SidebarMenu.Nav.Link>
           <SidebarMenu.Nav.Link
             as={Link}
-            to="/user-management"
+            to="/users"
             className={`${styles.navLink} sidebar-link`}
           >
             <SidebarMenu.Nav.Icon className={`${styles.navIcon} sidebar-icon`}>
