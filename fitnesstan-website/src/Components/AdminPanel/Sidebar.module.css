@@ -1,178 +1,189 @@
 /* src/components/AdminDashboard/Sidebar.module.css */
 
+/* Define CSS Variables for Reusability */
+:root {
+  --primary-color: #ff0000; /* Red color */
+  --text-color: #000000; /* Black for text */
+  --hover-bg-color: #ffffff; /* White background on hover */
+  --light-gray-bg: #f5f5f5; /* Light grey background */
+  --box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Hover shadow */
+  --transition-speed: 0.3s; /* General transition speed */
+  --padding-horizontal: 20px; /* Consistent horizontal padding */
+  --icon-size: 1.5rem; /* Default icon size */
+}
+
 /* General Sidebar Styles */
 .sidebar {
-  width: 250px; /* Fixed width for the sidebar */
-  background-color: #ffffff; /* White background for cleanliness */
-  height: 100vh; /* Full height of the viewport */
-  box-shadow: 0 0 15px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+  width: 250px;
+  background-color: var(--hover-bg-color);
+  height: 100vh;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
   display: flex;
-  flex-direction: column; /* Vertical stacking */
-  overflow-y: auto; /* Enable scrolling for longer content */
-  transition: width 0.3s ease; /* Smooth width transition */
+  flex-direction: column;
+  overflow-y: auto;
+  transition: width var(--transition-speed) ease;
 }
+
+/* Sidebar Header */
 .header {
-  height: 60px !important;
-  width: auto;
+  width: 100%;
   margin-top: 15px;
 }
+
+/* Sidebar Body */
 .body {
   margin-top: 30px;
 }
+
 /* Sidebar Brand Styles */
 .brand {
-  padding: 25px;
-  font-size: 1.4rem; /* Larger font for visibility */
-  font-weight: bold; /* Bold text for brand */
-  color: #ff0000; /* Primary brand color */
-  text-align: center; /* Center text */
-  border-bottom: 2px solid #ff0000; /* Underline for brand */
-  margin-bottom: 30px; /* Spacing below brand */
-  transition: background-color 0.3s ease; /* Transition on hover */
+  width: 100%;
+  margin: 20px;
+  font-size: 1.6rem;
+  font-weight: bold;
+  color: var(--primary-color);
+  text-align: center;
+  border-bottom: 2px solid var(--primary-color);
+  margin-bottom: 30px;
+  transition: background-color var(--transition-speed) ease;
 }
 
 .brand:hover {
-  background-color: rgba(255, 0, 0, 0.1); /* Light background on hover */
+  background-color: rgba(255, 0, 0, 0.1);
 }
 
 /* Navigation Link Styles */
 .navLink {
-  /* margin-top: 30px; */
-  color: #000; /* Black text color */
-  padding: 15px 20px; /* Padding around links */
-  font-size: 1.1rem; /* Slightly larger font size */
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1); /* Subtle border between links */
-  display: flex; /* Flexbox for aligning icon and title */
-  align-items: center; /* Center items vertically */
-  text-decoration: none; /* Remove underline */
-  transition: background 0.3s ease, color 0.3s ease; /* Smooth transitions */
+  color: var(--text-color);
+  padding: 15px var(--padding-horizontal);
+  font-size: 1.1rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  transition: background var(--transition-speed) ease, color var(--transition-speed) ease;
 }
 
 .navLink:hover {
-  /* Use a variable for the primary color to maintain consistency */
-  background-color: #ff0000;
-  color: #ffffff; /* White text on hover */
+  background-color: var(--primary-color);
+  color: var(--hover-bg-color);
+  box-shadow: var(--box-shadow);
   transform: scale(1.02);
 }
 
 .navLink:hover .navIcon {
-  color: inherit; /* Inherit the text color from the parent element */
+  color: inherit;
 }
 
 /* Navigation Title Styles */
 .navTitle {
-  margin-left: 10px; /* Space between icon and title */
-  font-weight: 600; /* Semi-bold for emphasis */
+  margin-left: 10px;
+  font-weight: 600;
 }
 
 /* Navigation Icon Styles */
 .navIcon {
-  font-size: 1.5rem; /* Size for icons */
-  color: #ff0000; /* Icon color matches brand */
-  margin-right: 10px; /* Space to the right of icons */
+  font-size: var(--icon-size);
+  color: var(--primary-color);
+  margin-right: 10px;
 }
 
 /* Submenu Styles */
 .sub {
-  padding-left: 20px; /* Indentation for submenus */
-  background-color: #f5f5f5; /* Light grey background for submenus */
-  margin: 10px 0; /* Margin around submenus */
-  border-radius: 5px; /* Rounded corners for visual appeal */
+  padding-left: calc(var(--padding-horizontal) * 1.5);
+  background-color: var(--light-gray-bg);
+  margin: 10px 0;
+  border-radius: 5px;
 }
-
-/* Toggle Styles */
-.toggle {
+.mlPlansNavLink {
+  width: 100%;
+  color: var(--text-color);
+  padding: 15px var(--padding-horizontal);
+  font-size: 1.1rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
   display: flex;
-  justify-content: space-between; /* Space out the title and caret */
-  align-items: center; /* Center items vertically */
-  padding: 10px 20px; /* Adjust padding */
-  cursor: pointer; /* Pointer cursor for interactivity */
-  transition: background-color 0.3s ease; /* Smooth transition for hover effect */
+  align-items: center;
+  text-decoration: none;
+  transition: background var(--transition-speed) ease, color var(--transition-speed) ease;
 }
 
-.toggle:hover {
-    background-color: #ff0000; /* Change background color on hover */
-  }
-  
-  /* Change caret color on toggle hover */
-  .toggle:hover .caret {
-   border-color: #ffffff;
-  }
-  
-  .caret {
-    display: inline-block;
-    margin-left: 60px; /* Push caret to the right */
-    width: 8px;
-    height: 8px;
-    border-left: 2px solid #ff0000; /* Red color for caret */
-    border-bottom: 2px solid #ff0000; /* Red color for caret */
-    transform: rotate(315deg); /* Default rotation (pointing down) */
-    transition: transform 0.5s ease !important; /* Smooth transition for rotation and border color */
-  }
-  
-  /* Rotate only the caret when the submenu is open */
-  .subMenuOpen .caret {
-    transform: rotate(135deg); /* Rotate up when submenu is open */
-  }
+/* Hover effect for ML Plans navLink */
+.mlPlansNavLink:hover {
+  background-color: #ffcdcd; /* Dark background on hover */
+  transform: scale(1.02); /* Slight scaling on hover */
+}
+
+/* Caret (Arrow) Styling */
+.caret {
+  display: inline-block;
+  margin-left: 40px;
+  width: 8px;
+  height: 8px;
+  border-left: 2px solid var(--primary-color);
+  border-bottom: 2px solid var(--primary-color);
+  transform: rotate(315deg);
+  transition: transform 0.5s ease, border-color 0.5s ease;
+}
+
+.subMenuOpen .caret {
+  transform: rotate(135deg);
+}
+
+.subMenuClosed .caret {
+  transform: rotate(315deg);
+}
 /* Submenu Link Styles */
 .subNavLink {
-  padding: 10px 30px; /* Slightly increased left padding for better visual hierarchy */
-  color: #555; /* Darker text color */
-  text-decoration: none; /* Remove underline */
-  display: flex; /* Flexbox for alignment */
-  align-items: center; /* Center items vertically */
-  transition: background 0.3s ease, color 0.3s ease; /* Smooth transitions */
+  padding: 10px calc(var(--padding-horizontal) * 1.5);
+  color: #555;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  transition: background var(--transition-speed) ease, color var(--transition-speed) ease;
 }
 
 .subNavLink:hover {
-  background-color: #e0e0e0; /* Hover effect for submenu items */
-  color: #000; /* Dark text on hover */
+  background-color: var(--primary-color);
+  color: var(--hover-bg-color);
+}
+.subNavLink:hover .navIcon {
+  color: inherit;
 }
 
-/* Additional styles for icons */
 .subNavLink .sidebar-icon {
-  margin-right: 10px; /* Space between icon and title */
-}
-
-/* Hide the submenu initially */
-.subMenuOpen {
-  display: block;
-}
-
-.subMenuClosed {
-  display: none;
+  margin-right: 10px;
 }
 
 /* Responsive Adjustments */
 @media (max-width: 768px) {
   .sidebar {
-    width: 200px; /* Reduce sidebar width on smaller screens */
+    width: 200px;
   }
 
   .navLink {
-    font-size: 1rem; /* Adjust font size */
+    font-size: 1rem;
   }
 
   .navIcon {
-    font-size: 1.25rem; /* Adjust icon size */
+    font-size: 1.25rem;
   }
 
   .brand {
-    font-size: 1.5rem; /* Smaller brand font on mobile */
+    font-size: 1.5rem;
   }
 }
 
 @media (max-width: 576px) {
   .sidebar {
-    width: 150px; /* Further reduce sidebar width on extra small screens */
+    width: 150px;
   }
 
   .navLink {
-    padding: 10px 15px; /* Reduce padding for small screens */
-    font-size: 0.9rem; /* Smaller font size */
+    padding: 10px 15px;
+    font-size: 0.9rem;
   }
 
   .navIcon {
-    font-size: 1.1rem; /* Smaller icon size */
+    font-size: 1.1rem;
   }
 }

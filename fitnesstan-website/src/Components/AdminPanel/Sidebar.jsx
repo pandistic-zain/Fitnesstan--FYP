@@ -75,7 +75,7 @@ const Sidebar = () => {
             {/* Toggle for ML Plans */}
             <SidebarMenu.Sub.Toggle
               onClick={toggleMlPlans} // Toggle on click
-              className={`${styles.navLink} sidebar-link ${
+              className={`${styles.mlPlansNavLink} sidebar-link ${
                 mlPlansOpen ? styles.subMenuOpen : ""
               }`}
             >
