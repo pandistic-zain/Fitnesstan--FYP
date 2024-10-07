@@ -71,7 +71,7 @@ public class UserServices {
                 throw new Exception("Admin with the same email already exists.");
             }
             user.setPassword(passwordEncoder.encode(user.getPassword()));
-            user.setRoles(Arrays.asList("ADMIN", "USER"));
+            user.setRoles(Arrays.asList("ADMIN"));
             user.setCreatedAt(LocalDateTime.now());
             user.setUpdatedAt(LocalDateTime.now());
             return userRepository.save(user);
@@ -87,4 +87,20 @@ public class UserServices {
     public void deleteUser(String id) {
         userRepository.deleteById(id);
     }
+
+    public Users validateUser(String email, String password) {
+        // Fetch the user by email from the repository
+        Users user = userRepository.findByEmail(email); // Assuming you have this method in your UserRepository
+
+        // Check if the user exists
+        if (user != null) {
+            // Use BCrypt to match the raw password with the encoded password
+            if (passwordEncoder.matches(password, user.getPassword())) {
+                return user; // Return user if credentials are valid
+            }
+        }
+
+        return null; // Return null if credentials are invalid
+    }
+
 }

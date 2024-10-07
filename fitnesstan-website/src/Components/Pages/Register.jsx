@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { registerUser, loginUser } from "../../API/RegisterAPI.jsx"; // Import the API functions
 import "./Register.css"; // Add your styles here
 
 const Register = () => {
@@ -32,23 +33,20 @@ const Register = () => {
     setSignUpData({ ...signUpData, [name]: value });
   };
 
-  // Handle login
   const handleLoginSubmit = async (e) => {
+    console.log("Login form submitted");
     e.preventDefault();
     try {
-      const response = await fetch("/api/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(loginData),
-      });
+      console.log("Attempting to login...");
+      const response = await loginUser(loginData); // Call the login API function
+      let data = response.data; // Assume data is in response.data
 
-      const data = await response.json();
+      console.log("Login response data: ", data); // Log the response data
 
-      if (response.ok) {
-        if (data.role === "admin") {
-          navigate("/admin-panel"); // Redirect to admin panel
+      if (response.status === 200) {
+        // Check if roles includes ADMIN
+        if (data.roles.includes("ADMIN")) {
+          navigate("/AdminDashboard"); // Redirect to admin panel
         } else {
           navigate("/user-dashboard"); // Redirect to user dashboard
         }
@@ -56,6 +54,7 @@ const Register = () => {
         setErrorMessage(data.message || "Login failed. Please try again.");
       }
     } catch (error) {
+      console.error("Login error: ", error); // Log the error
       setErrorMessage("An error occurred. Please try again.");
     }
   };
@@ -64,27 +63,19 @@ const Register = () => {
   const handleSignUpSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch("/api/signup", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(signUpData),
-      });
+      const response = await registerUser(signUpData); // Call the register API function
 
-      const data = await response.json();
-
-      if (response.ok) {
-        // Navigate to user dashboard upon successful sign-up
+      if (response.status === 201) {
         navigate("/user-dashboard");
       } else {
-        setErrorMessage(data.message || "Sign-up failed. Please try again.");
+        setErrorMessage(
+          response.data.message || "Sign-up failed. Please try again."
+        );
       }
     } catch (error) {
       setErrorMessage("An error occurred. Please try again.");
     }
   };
-
   return (
     <div className="register-page">
       <div className="GoBack" onClick={handleGoBack}>
@@ -111,7 +102,10 @@ const Register = () => {
           </span>
         </div>
       </div>
-      <div className={`container ${isSignUp ? "right-panel-active" : ""}`} id="container">
+      <div
+        className={`container ${isSignUp ? "right-panel-active" : ""}`}
+        id="container"
+      >
         <div className="form-container sign-up-container">
           <form onSubmit={handleSignUpSubmit}>
             <h1>SIGN UP</h1>
@@ -172,7 +166,8 @@ const Register = () => {
             <div className="overlay-panel overlay-left">
               <h1>Welcome Back to Fitnesstan!</h1>
               <p>
-                Log in to access your personalized fitness and nutrition plans, crafted just for you.
+                Log in to access your personalized fitness and nutrition plans,
+                crafted just for you.
               </p>
               <button className="ghost" onClick={handleToggle}>
                 Login
@@ -181,7 +176,8 @@ const Register = () => {
             <div className="overlay-panel overlay-right">
               <h1>Hello, Fitness Enthusiast!</h1>
               <p>
-                Join Fitnesstan today and embark on a tailored fitness journey, complete with workout and nutrition guidance.
+                Join Fitnesstan today and embark on a tailored fitness journey,
+                complete with workout and nutrition guidance.
               </p>
               <button className="ghost" onClick={handleToggle}>
                 Sign Up

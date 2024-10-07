@@ -24,7 +24,7 @@ public class SpringSecurity {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http.authorizeHttpRequests(request -> request
-                        .requestMatchers("/public/**").permitAll() // Public pages, accessible to everyone
+                        .requestMatchers("/register/**").permitAll() // Public pages, accessible to everyone
                         .requestMatchers("/users/**", "/trainer/**").authenticated() // Secured endpoints
                         .requestMatchers("/admin/**").hasRole("ADMIN") // Admin role required for certain URLs
                         .anyRequest().authenticated()) // All other requests should be authenticated
