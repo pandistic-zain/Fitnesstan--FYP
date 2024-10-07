@@ -7,7 +7,8 @@ import com.fitnesstan.fitnesstan_backend.Entity.Users;
 
 public interface UserRepository extends MongoRepository<Users, ObjectId> {
     // Removed Optional and returning Users directly
-    Users findByUsername(String username);  // This may return null if not found
-    Users findByEmail(String email);        // This may return null if not found
+    Users findByUsername(String username);  
+    Users findByEmail(String email);      
     void deleteById(String id);
+    void deleteByUsername(String username);
 }

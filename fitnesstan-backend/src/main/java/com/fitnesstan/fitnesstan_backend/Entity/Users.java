@@ -27,7 +27,8 @@ public class Users {
     @Indexed(unique = true)
     @NonNull
     private String username;
-
+    
+    @Indexed(unique = true)
     @NonNull
     private String email;
 
