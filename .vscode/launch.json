@@ -2,6 +2,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "FitnesstanApplication",
+            "request": "launch",
+            "mainClass": "com.fitnesstan.fitnesstan_backend.FitnesstanApplication",
+            "projectName": "fitnesstan-backend"
+        },
+        {
+            "type": "java",
             "name": "Spring Boot-FitnesstanApplication<fitnesstan>",
             "request": "launch",
             "cwd": "${workspaceFolder}",
