@@ -38,7 +38,7 @@ public class UserServices {
     @Transactional
     public void saveUser(Users user) throws Exception {
         // Check username and email uniqueness
-        if (isUsernameExists(user.getUsername()) || isEmailExists(user.getEmail())) {
+        if (isEmailExists(user.getEmail())) {
             throw new Exception("Username or email already exists.");
         }
 
@@ -61,11 +61,6 @@ public class UserServices {
         } catch (Exception e) {
             throw new Exception("Failed to send verification email, rolling back.", e);
         }
-    }
-
-    private boolean isUsernameExists(String username) {
-        Query query = new Query(Criteria.where("username").is(username));
-        return mongoTemplate.exists(query, Users.class);
     }
 
     private boolean isEmailExists(String email) {
@@ -119,7 +114,7 @@ public class UserServices {
     @Transactional
     public void createAdmin(Users admin) throws Exception {
         // Check if username or email already exists
-        if (isUsernameExists(admin.getUsername()) || isEmailExists(admin.getEmail())) {
+        if ( isEmailExists(admin.getEmail())) {
             throw new Exception("Admin with the same username or email already exists.");
         }
 

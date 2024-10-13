@@ -1,0 +1,49 @@
+/* EmailVerification.module.css */
+
+.verificationContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-image: url("../../Assets/bannerBg.png");
+    background-size: cover;     /* Ensures the image covers the section fully */
+    background-repeat: no-repeat; /* Prevents the image from repeating */
+    background-position: center;
+  }
+  
+  .formContainer {
+    background: rgba(255, 255, 255, 0.8); /* Optional: For a translucent background */
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  }
+  
+  .formGroup {
+    margin-bottom: 15px;
+  }
+  
+  .formInput {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+  
+  .submitButton {
+    width: 100%;
+    padding: 10px;
+    background-color: #ff0000; /* Adjust to your theme */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .successMessage {
+    color: green;
+  }
+  
+  .errorMessage {
+    color: red;
+  }
+  

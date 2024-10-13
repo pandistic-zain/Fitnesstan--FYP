@@ -8,6 +8,7 @@ const Register = () => {
   const [loginData, setLoginData] = useState({ email: "", password: "" });
   const [signUpData, setSignUpData] = useState({ username: "", email: "", password: "" });
   const [errorMessage, setErrorMessage] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
   const navigate = useNavigate();
 
   const handleToggle = () => {
@@ -46,7 +47,7 @@ const Register = () => {
       }
     } catch (error) {
       console.error("Login error: ", error.response?.data || error);
-      setErrorMessage(error.response?.data.message || "An error occurred. Please try again.");
+      setErrorMessage(error.response?.data.message || "Invalid email or password. Please try again.");
     }
   };
 
@@ -55,13 +56,14 @@ const Register = () => {
     try {
       const response = await registerUser(signUpData); 
       if (response.status === 201) {
+        setSuccessMessage("Registration successful! Please check your email to verify your account.");
         navigate(`/email-verification?email=${encodeURIComponent(signUpData.email)}`); 
       } else {
-        setErrorMessage(response.data.message || "Sign-up failed. Please try again.");
+        setErrorMessage(response.data.message || "Sign-up failed. Please ensure all fields are filled correctly.");
       }
     } catch (error) {
       console.error("Sign-up error: ", error.response?.data || error);
-      setErrorMessage(error.response?.data.message || "An error occurred. Please try again.");
+      setErrorMessage(error.response?.data.message || "Email already in use or invalid input. Please try again.");
     }
   };
   return (
