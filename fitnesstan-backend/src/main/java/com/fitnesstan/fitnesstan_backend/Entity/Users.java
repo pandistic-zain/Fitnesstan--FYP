@@ -22,12 +22,11 @@ import java.util.List;
 @Document(collection = "users") // Map this class to the "users" collection in MongoDB
 public class Users {
     @Id
-    private ObjectId id;  // Use String instead of ObjectId for simplicity.
+    private ObjectId id; // Use String instead of ObjectId for simplicity.
 
-    @Indexed(unique = true)
     @NonNull
     private String username;
-    
+
     @Indexed(unique = true)
     @NonNull
     private String email;
@@ -36,7 +35,8 @@ public class Users {
     private String password;
 
     private List<String> roles; // Store roles as List<String> for multiple roles (e.g., ADMIN, USER)
-
+    private String status; // e.g., "PENDING", "ACTIVE"
+    private String verificationToken;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }
