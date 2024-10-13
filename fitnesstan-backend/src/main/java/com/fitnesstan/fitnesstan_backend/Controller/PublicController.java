@@ -52,14 +52,14 @@ public class PublicController {
         }
     }
 
-    // Email verification endpoint
-    @GetMapping("/verify-email")
-    public ResponseEntity<String> verifyEmail(@RequestParam("token") String token) {
-        try {
-            userServices.verifyEmail(token);  // Change user status to PASS
-            return new ResponseEntity<>("Email verified successfully. You can now log in.", HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>("Email verification failed: " + e.getMessage(), HttpStatus.BAD_REQUEST);
-        }
+// Email verification endpoint
+@GetMapping("/verify-email")
+public ResponseEntity<String> verifyEmail(@RequestParam("email") String email, @RequestParam("otp") String otp) {
+    try {
+        userServices.verifyEmail(email, otp);
+        return new ResponseEntity<>("Email verified successfully. You can now log in.", HttpStatus.OK);
+    } catch (Exception e) {
+        return new ResponseEntity<>("Email verification failed: " + e.getMessage(), HttpStatus.BAD_REQUEST);
     }
+}
 }

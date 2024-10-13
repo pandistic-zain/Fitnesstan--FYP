@@ -12,6 +12,7 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import java.util.concurrent.ConcurrentHashMap;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.fitnesstan.fitnesstan_backend.Entity.Users;
@@ -28,6 +29,7 @@ public class UserServices {
     private JavaMailSender mailSender;
 
     private static final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+    private final ConcurrentHashMap<String, Users> otpStore = new ConcurrentHashMap<>();
 
     public List<Users> getAllUsers() {
         return userRepository.findAll();
@@ -50,12 +52,15 @@ public class UserServices {
 
         // Send verification email with OTP
         try {
+            // Store OTP in the in-memory store
+            otpStore.put(user.getEmail(), user);
+            
+            System.err.println(otpStore);
+            // Send the verification email
             sendVerificationEmail(user.getEmail(), user.getVerificationToken());
         } catch (Exception e) {
             throw new Exception("Failed to send verification email, rolling back.", e);
         }
-
-        // Save logic moved to `verifyEmail` to ensure only verified users are stored.
     }
 
     private boolean isUsernameExists(String username) {
@@ -71,15 +76,15 @@ public class UserServices {
     private void sendVerificationEmail(String email, String otp) {
         String subject = "Verify your email";
         String message = "Your OTP for verification is: " + otp + "\nPlease enter this OTP to verify your email.";
-    
+
         SimpleMailMessage emailMessage = new SimpleMailMessage();
         emailMessage.setTo(email);
         emailMessage.setSubject(subject);
         emailMessage.setText(message);
-    
+
         mailSender.send(emailMessage);
     }
-    
+
     // Method to generate a random OTP
     private String generateOTP() {
         SecureRandom random = new SecureRandom();
@@ -88,22 +93,28 @@ public class UserServices {
     }
 
     @Transactional
-    public void verifyEmail(String token) throws Exception {
-        Query query = new Query(Criteria.where("verificationToken").is(token));
-        Users user = mongoTemplate.findOne(query, Users.class);
-
-        if (user == null) {
-            throw new Exception("Invalid verification token.");
+    public void verifyEmail(String email, String otp) throws Exception {
+        System.out.println("Verification OTP is " + otp);
+    
+        // Check if the OTP matches the one stored in memory
+        Users user = otpStore.get(email);
+        System.out.println("Email = "+ otpStore.get(email) +"OTP = "+ otpStore.get(otp));
+        if (user == null || !user.getVerificationToken().equals(otp)) {
+            throw new Exception("Invalid verification token."); // OTP not found or does not match
         }
-
-        // Update user status to ACTIVE and remove token
-        user.setStatus("ACTIVE");
+    
+        // If OTP is valid, remove it from the store
+        otpStore.remove(email);
+    
+        // Update user status to PASS and remove token
+        user.setStatus("PASS");
         user.setVerificationToken(null);
         user.setUpdatedAt(LocalDateTime.now());
-
-        // Save user only after status is ACTIVE
+    
+        // Save user only after status is PASS
         userRepository.save(user);
     }
+    
 
     @Transactional
     public void createAdmin(Users admin) throws Exception {
