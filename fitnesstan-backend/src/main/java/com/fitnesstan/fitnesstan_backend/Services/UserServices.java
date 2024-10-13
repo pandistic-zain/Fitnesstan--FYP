@@ -2,9 +2,8 @@ package com.fitnesstan.fitnesstan_backend.Services;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.UUID;
 import java.time.LocalDateTime;
-
+import java.security.SecureRandom;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -45,15 +44,15 @@ public class UserServices {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setRoles(Arrays.asList("USER"));
         user.setStatus("PENDING");
-        user.setVerificationToken(generateVerificationToken());
+        user.setVerificationToken(generateOTP());
         user.setCreatedAt(LocalDateTime.now());
         user.setUpdatedAt(LocalDateTime.now());
 
-        // Store the user temporarily in case of rollback
+        // Send verification email with OTP
         try {
             sendVerificationEmail(user.getEmail(), user.getVerificationToken());
         } catch (Exception e) {
-            throw new Exception("Failed to send verification email, rolling back.");
+            throw new Exception("Failed to send verification email, rolling back.", e);
         }
 
         // Save logic moved to `verifyEmail` to ensure only verified users are stored.
@@ -69,22 +68,23 @@ public class UserServices {
         return mongoTemplate.exists(query, Users.class);
     }
 
-    private String generateVerificationToken() {
-        return UUID.randomUUID().toString();
-    }
-
-    private void sendVerificationEmail(String email, String token) {
+    private void sendVerificationEmail(String email, String otp) {
         String subject = "Verify your email";
-        String verificationUrl = "http://localhost:8080/verify-email?token=" + token;
-
-        String message = "Click the link below to verify your email:\n" + verificationUrl;
-
+        String message = "Your OTP for verification is: " + otp + "\nPlease enter this OTP to verify your email.";
+    
         SimpleMailMessage emailMessage = new SimpleMailMessage();
         emailMessage.setTo(email);
         emailMessage.setSubject(subject);
         emailMessage.setText(message);
-
+    
         mailSender.send(emailMessage);
+    }
+    
+    // Method to generate a random OTP
+    private String generateOTP() {
+        SecureRandom random = new SecureRandom();
+        int otp = 100000 + random.nextInt(900000); // Generates a 6-digit OTP
+        return String.valueOf(otp);
     }
 
     @Transactional
@@ -96,12 +96,12 @@ public class UserServices {
             throw new Exception("Invalid verification token.");
         }
 
-        // Update user status to PASS and remove token
-        user.setStatus("PASS");
+        // Update user status to ACTIVE and remove token
+        user.setStatus("ACTIVE");
         user.setVerificationToken(null);
         user.setUpdatedAt(LocalDateTime.now());
 
-        // Save user only after status is PASS
+        // Save user only after status is ACTIVE
         userRepository.save(user);
     }
 
@@ -116,17 +116,15 @@ public class UserServices {
         admin.setPassword(passwordEncoder.encode(admin.getPassword()));
         admin.setRoles(Arrays.asList("ADMIN"));
         admin.setStatus("PENDING");
-        admin.setVerificationToken(generateVerificationToken());
+        admin.setVerificationToken(generateOTP());
         admin.setCreatedAt(LocalDateTime.now());
         admin.setUpdatedAt(LocalDateTime.now());
 
         try {
             sendVerificationEmail(admin.getEmail(), admin.getVerificationToken());
         } catch (Exception e) {
-            throw new Exception("Failed to send verification email, rolling back.");
+            throw new Exception("Failed to send verification email, rolling back.", e);
         }
-
-        // Save logic moved to `verifyEmail` for the same reason as users.
     }
 
     public Users findByUsername(String username) {
