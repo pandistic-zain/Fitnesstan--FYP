@@ -1,18 +1,13 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { registerUser, loginUser } from "../../API/RegisterAPI.jsx"; // Import the API functions
+import { registerUser, loginUser } from "../../API/RegisterAPI.jsx"; 
 import "./Register.css"; // Add your styles here
 
 const Register = () => {
   const [isSignUp, setIsSignUp] = useState(false);
   const [loginData, setLoginData] = useState({ email: "", password: "" });
-  const [signUpData, setSignUpData] = useState({
-    username: "",
-    email: "",
-    password: "",
-  });
-  const [errorMessage, setErrorMessage] = useState(""); // For displaying errors
-
+  const [signUpData, setSignUpData] = useState({ username: "", email: "", password: "" });
+  const [errorMessage, setErrorMessage] = useState("");
   const navigate = useNavigate();
 
   const handleToggle = () => {
@@ -20,7 +15,7 @@ const Register = () => {
   };
 
   const handleGoBack = () => {
-    navigate("/"); // Redirects to the home page
+    navigate("/"); 
   };
 
   const handleLoginChange = (e) => {
@@ -34,46 +29,39 @@ const Register = () => {
   };
 
   const handleLoginSubmit = async (e) => {
-    console.log("Login form submitted");
     e.preventDefault();
     try {
-      console.log("Attempting to login...");
-      const response = await loginUser(loginData); // Call the login API function
-      let data = response.data; // Assume data is in response.data
-
-      console.log("Login response data: ", data); // Log the response data
+      const response = await loginUser(loginData); 
+      let data = response.data;
 
       if (response.status === 200) {
-        // Check if roles includes ADMIN
+        // Assuming data contains user roles
         if (data.roles.includes("ADMIN")) {
-          navigate("/AdminDashboard"); // Redirect to admin panel
+          navigate("/AdminDashboard"); 
         } else {
-          navigate("/user-dashboard"); // Redirect to user dashboard
+          navigate("/user-dashboard"); 
         }
       } else {
         setErrorMessage(data.message || "Login failed. Please try again.");
       }
     } catch (error) {
-      console.error("Login error: ", error); // Log the error
-      setErrorMessage("An error occurred. Please try again.");
+      console.error("Login error: ", error.response?.data || error);
+      setErrorMessage(error.response?.data.message || "An error occurred. Please try again.");
     }
   };
 
-  // Handle sign up
   const handleSignUpSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await registerUser(signUpData); // Call the register API function
-
+      const response = await registerUser(signUpData); 
       if (response.status === 201) {
-        navigate("/user-dashboard");
+        navigate(`/email-verification?email=${encodeURIComponent(signUpData.email)}`); 
       } else {
-        setErrorMessage(
-          response.data.message || "Sign-up failed. Please try again."
-        );
+        setErrorMessage(response.data.message || "Sign-up failed. Please try again.");
       }
     } catch (error) {
-      setErrorMessage("An error occurred. Please try again.");
+      console.error("Sign-up error: ", error.response?.data || error);
+      setErrorMessage(error.response?.data.message || "An error occurred. Please try again.");
     }
   };
   return (
