@@ -142,21 +142,24 @@ const Register = () => {
               onChange={handleSignUpChange}
               required
             />
-            <div className="password-container">
+             <div className="password-container">
               <input
                 type={showPassword ? "text" : "password"}
                 name="password"
                 placeholder="Password"
-                value={signUpData.password}
-                onChange={handleSignUpChange}
+                value={loginData.password}
+                onChange={handleLoginChange}
                 required
               />
-              <label className="show-password" title="Show Password">
-                <input
-                  type="checkbox"
-                  onChange={() => setShowPassword((prev) => !prev)}
+              <span
+                className="show-password"
+                onClick={() => setShowPassword((prev) => !prev)}
+                title={showPassword ? "Hide Password" : "Show Password"}
+              >
+                <i
+                  className={`fas ${showPassword ? "fa-eye-slash" : "fa-eye"}`}
                 />
-              </label>
+              </span>
             </div>
             <input
               type="password"
@@ -191,12 +194,15 @@ const Register = () => {
                 onChange={handleLoginChange}
                 required
               />
-              <label className="show-password" title="Show Password">
-                <input
-                  type="checkbox"
-                  onChange={() => setShowPassword((prev) => !prev)}
+              <span
+                className="show-password"
+                onClick={() => setShowPassword((prev) => !prev)}
+                title={showPassword ? "Hide Password" : "Show Password"}
+              >
+                <i
+                  className={`fas ${showPassword ? "fa-eye-slash" : "fa-eye"}`}
                 />
-              </label>
+              </span>
             </div>
             <a href="#">Forgot your password?</a>
             <button type="submit">Login</button>
