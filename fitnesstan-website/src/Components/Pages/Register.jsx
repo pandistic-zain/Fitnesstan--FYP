@@ -150,6 +150,7 @@ const Register = () => {
                 value={loginData.password}
                 onChange={handleLoginChange}
                 required
+                className={showPassword ? 'password-visible' : ''}
               />
               <span
                 className="show-password"
@@ -193,6 +194,7 @@ const Register = () => {
                 value={loginData.password}
                 onChange={handleLoginChange}
                 required
+                className={showPassword ? 'password-visible' : ''}
               />
               <span
                 className="show-password"
