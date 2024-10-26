@@ -1,14 +1,22 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { registerUser, loginUser } from "../../API/RegisterAPI.jsx"; 
+import { registerUser, loginUser } from "../../API/RegisterAPI.jsx";
 import "./Register.css"; // Add your styles here
 
 const Register = () => {
   const [isSignUp, setIsSignUp] = useState(false);
   const [loginData, setLoginData] = useState({ email: "", password: "" });
-  const [signUpData, setSignUpData] = useState({ username: "", email: "", password: "" });
+  const [signUpData, setSignUpData] = useState({
+    username: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+  });
+
   const [errorMessage, setErrorMessage] = useState("");
+  // eslint-disable-next-line
   const [successMessage, setSuccessMessage] = useState("");
+  const [showPassword, setShowPassword] = useState(false); // Password toggle state
   const navigate = useNavigate();
 
   const handleToggle = () => {
@@ -16,7 +24,7 @@ const Register = () => {
   };
 
   const handleGoBack = () => {
-    navigate("/"); 
+    navigate("/");
   };
 
   const handleLoginChange = (e) => {
@@ -32,40 +40,57 @@ const Register = () => {
   const handleLoginSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await loginUser(loginData); 
-      let data = response.data;
+      const response = await loginUser(loginData);
+      const data = response.data;
 
       if (response.status === 200) {
-        // Assuming data contains user roles
         if (data.roles.includes("ADMIN")) {
-          navigate("/AdminDashboard"); 
+          navigate("/AdminDashboard");
         } else {
-          navigate("/user-dashboard"); 
+          navigate("/user-dashboard");
         }
       } else {
         setErrorMessage(data.message || "Login failed. Please try again.");
       }
     } catch (error) {
       console.error("Login error: ", error.response?.data || error);
-      setErrorMessage(error.response?.data.message || "Invalid email or password. Please try again.");
+      setErrorMessage(
+        error.response?.data.message ||
+          "Invalid email or password. Please try again."
+      );
     }
   };
 
   const handleSignUpSubmit = async (e) => {
     e.preventDefault();
+    if (signUpData.password !== signUpData.confirmPassword) {
+      setErrorMessage("Passwords do not match.");
+      return;
+    }
     try {
-      const response = await registerUser(signUpData); 
+      const response = await registerUser(signUpData);
       if (response.status === 201) {
-        setSuccessMessage("Registration successful! Please check your email to verify your account.");
-        navigate(`/email-verification?email=${encodeURIComponent(signUpData.email)}`); 
+        setSuccessMessage(
+          "Registration successful! Please check your email to verify your account."
+        );
+        navigate(
+          `/email-verification?email=${encodeURIComponent(signUpData.email)}`
+        );
       } else {
-        setErrorMessage(response.data.message || "Sign-up failed. Please ensure all fields are filled correctly.");
+        setErrorMessage(
+          response.data.message ||
+            "Sign-up failed. Please ensure all fields are filled correctly."
+        );
       }
     } catch (error) {
       console.error("Sign-up error: ", error.response?.data || error);
-      setErrorMessage(error.response?.data.message || "Email already in use or invalid input. Please try again.");
+      setErrorMessage(
+        error.response?.data.message ||
+          "Email already in use or invalid input. Please try again."
+      );
     }
   };
+
   return (
     <div className="register-page">
       <div className="GoBack" onClick={handleGoBack}>
@@ -99,6 +124,7 @@ const Register = () => {
         <div className="form-container sign-up-container">
           <form onSubmit={handleSignUpSubmit}>
             <h1>SIGN UP</h1>
+
             <input
               type="text"
               name="username"
@@ -107,6 +133,7 @@ const Register = () => {
               onChange={handleSignUpChange}
               required
             />
+
             <input
               type="email"
               name="email"
@@ -115,14 +142,31 @@ const Register = () => {
               onChange={handleSignUpChange}
               required
             />
+            <div className="password-container">
+              <input
+                type={showPassword ? "text" : "password"}
+                name="password"
+                placeholder="Password"
+                value={signUpData.password}
+                onChange={handleSignUpChange}
+                required
+              />
+              <label className="show-password" title="Show Password">
+                <input
+                  type="checkbox"
+                  onChange={() => setShowPassword((prev) => !prev)}
+                />
+              </label>
+            </div>
             <input
               type="password"
-              name="password"
-              placeholder="Password"
-              value={signUpData.password}
+              name="confirmPassword"
+              placeholder="Confirm Password"
+              value={signUpData.confirmPassword}
               onChange={handleSignUpChange}
               required
             />
+
             <button type="submit">Sign Up</button>
             {errorMessage && <p className="error">{errorMessage}</p>}
           </form>
@@ -138,14 +182,22 @@ const Register = () => {
               onChange={handleLoginChange}
               required
             />
-            <input
-              type="password"
-              name="password"
-              placeholder="Password"
-              value={loginData.password}
-              onChange={handleLoginChange}
-              required
-            />
+            <div className="password-container">
+              <input
+                type={showPassword ? "text" : "password"}
+                name="password"
+                placeholder="Password"
+                value={loginData.password}
+                onChange={handleLoginChange}
+                required
+              />
+              <label className="show-password" title="Show Password">
+                <input
+                  type="checkbox"
+                  onChange={() => setShowPassword((prev) => !prev)}
+                />
+              </label>
+            </div>
             <a href="#">Forgot your password?</a>
             <button type="submit">Login</button>
             {errorMessage && <p className="error">{errorMessage}</p>}

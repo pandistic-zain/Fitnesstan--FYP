@@ -286,3 +286,47 @@
   margin-bottom: auto;
   text-align: center;
 }
+.password-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between; 
+  margin-bottom: 10px;
+  width: 100%; 
+}
+
+.password-container input {
+  flex: 1;
+  padding: 10px;
+  margin-right: 10px; 
+  border-radius: 4px;
+}
+.show-password input {
+  display: none;
+}
+
+/* Styling the show-password icon */
+.show-password::before {
+  content: "👁";
+  cursor: pointer;
+  font-size: 18px;
+  color: #ccc;
+  transition: color 0.3s ease-in-out;
+}
+
+.show-password input[type="checkbox"] {
+  display: none; /* Hides the checkbox */
+}
+
+/* Icon changes on checking the input (show password) */
+.show-password input[type="checkbox"]:checked + .show-password::before {
+  content: "👁️‍🗨️"; /* Different eye icon */
+  color: #ff0000; /* Primary color on active */
+  transition: transform 0.3s ease-in-out, color 0.3s ease-in-out;
+  transform: scale(1.1); /* Subtle scale animation */
+}
+
+/* Reset to original state on unchecking (hide password) */
+.show-password input[type="checkbox"] + .show-password::before {
+  color: #ccc; /* Neutral color */
+  transform: scale(1); /* Scale back */
+}
