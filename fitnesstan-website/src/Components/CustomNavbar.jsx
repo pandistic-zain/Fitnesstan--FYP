@@ -1,7 +1,7 @@
 import React from "react";
 import { Navbar as BootstrapNavbar, Nav, Container } from "react-bootstrap";
 import { NavLink, Link, useLocation } from "react-router-dom";
-import logo from "../Assets/Fitnesstan.png";
+import logo from "../Assets/FIRNESSTAN_BARA_LOGO.png";
 import "./Navbar.css";
 
 const CustomNavbar = () => {
@@ -58,14 +58,13 @@ const CustomNavbar = () => {
         className="main-navbar"
       >
         <Container>
-          <BootstrapNavbar.Brand
-            as={Link}
-            to="/"
-            className="d-flex align-items-center"
-          >
-            {/* Uncomment if using logo */}
-            <img src={logo} alt="Fitnesstan Logo" />
-          </BootstrapNavbar.Brand>
+        <BootstrapNavbar.Brand
+          as={Link}
+          to="/"
+          className="d-flex align-items-center brand-container"
+        >
+          <img src={logo} alt="Fitnesstan Logo" className="navbar-logo" />
+        </BootstrapNavbar.Brand>
           <BootstrapNavbar.Toggle aria-controls="basic-navbar-nav" />
           <BootstrapNavbar.Collapse
             id="basic-navbar-nav"

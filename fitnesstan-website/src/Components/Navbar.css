@@ -10,10 +10,17 @@
     padding: 0 20px; /* Adding padding for spacing */
 }
 
-.navbar-brand img {
-  height: 35px; /* Adjust height as needed */
-  width: auto;  /* Keeps aspect ratio, or set a fixed width if preferred */
-  max-width: 100%; /* Ensures the image scales properly in responsive views */
+.brand-container {
+  display: flex;
+  align-items: center;
+  gap: 10px; /* Optional spacing between logo and text */
+}
+
+.navbar-logo {
+  height: 70px; /* Adjust based on your preference */
+  min-width: 100%; /* Ensures responsiveness */
+  object-fit: contain; /* Maintains aspect ratio */
+  display: block; /* Ensures no extra inline spacing */
 }
 
 
