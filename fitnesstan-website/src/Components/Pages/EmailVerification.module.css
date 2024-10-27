@@ -11,39 +11,110 @@
     background-position: center;
   }
   
-  .formContainer {
-    background: rgba(255, 255, 255, 0.8); /* Optional: For a translucent background */
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  .card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    border-radius: 0.75rem;
+    background-color: #ffffff;
+    width: 400px;
+    height: 450px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+    padding: 1.5rem;
   }
   
-  .formGroup {
-    margin-bottom: 15px;
+  .info {
+    flex-grow: 1;
+    text-align: center;
   }
   
-  .formInput {
+  .header {
+    margin-bottom: 1rem;
+    border-radius: 0.75rem;
+    background-color: #ff0000;
+    height: 8rem;
+  }
+  
+  .title {
+    color: #ff0000;
+    font-weight: 600;
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+  }
+  h3{
+    font-size: medium !important;
+  }
+  .otpInput {
     width: 100%;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    border: 1px solid #ffffff !important; /* Light border for a cleaner look */
+    font-size: 1rem;
+    text-align: center;
+    margin: 0.75rem 0 0.5rem;
+    outline: none;
+    transition:  box-shadow 0.4s ease-in-out !important; /* Smooth transitions */
   }
   
-  .submitButton {
-    width: 100%;
-    padding: 10px;
-    background-color: #ff0000; /* Adjust to your theme */
-    color: white;
+  .otpInput:focus {
+    box-shadow: 0 0 10px rgba(255, 0, 0, 0.6); /* Subtle shadow to indicate focus */
+  }
+  
+  
+.messageContainer {
+  min-height: 40px; /* Reserve space for the message */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 0.5rem;
+}
+
+.message {
+  color: #008000;
+  background-color: rgba(0, 128, 0, 0.1);
+  padding: 0.5rem;
+  border-radius: 0.25rem;
+  font-size: 0.875rem;
+}
+
+.errorMessage {
+  color: #ff0000;
+  background-color: rgba(255, 0, 0, 0.1);
+  padding: 0.5rem;
+  border-radius: 0.25rem;
+  font-size: 0.875rem;
+}
+  .footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 1rem;
+  }
+  
+  .resend {
+    color: #ff0000;
+    margin-top: 15px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    text-decoration: underline;
+  }
+  
+  .action {
+    user-select: none;
     border: none;
-    border-radius: 5px;
+    outline: none;
+    box-shadow: 0 4px 6px -1px rgba(255, 0, 0, 0.4), 0 2px 4px -2px rgba(255, 0, 0, 0.4);
+    color: #ffffff;
+    font-weight: 700;
+    font-size: 0.85rem;
+    padding: 0.75rem 1.5rem;
+    background-color: #ff0000;
+    border-radius: 0.5rem;
     cursor: pointer;
   }
   
-  .successMessage {
-    color: green;
+  .action:hover {
+    background-color: #cc0000;
   }
   
-  .errorMessage {
-    color: red;
-  }
   
