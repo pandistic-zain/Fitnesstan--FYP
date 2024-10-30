@@ -1,11 +1,11 @@
-import React, { useState } from "react"; 
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { registerUser, loginUser } from "../../API/RegisterAPI.jsx";
 import Loader from "../Loader.jsx"; // Import the Loader component
 import "./Register.css";
 
 const Register = () => {
-  const [isSignUp, setIsSignUp] = useState(false);
+  const [isSignUp, setIsSignUp] = useState(true); // Default to sign-up page
   const [loginData, setLoginData] = useState({ email: "", password: "" });
   const [signUpData, setSignUpData] = useState({
     username: "",

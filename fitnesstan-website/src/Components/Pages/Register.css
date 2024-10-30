@@ -87,7 +87,8 @@
 
   input {
     background-color: #eee;
-    border: none;
+    border: 1px solid #ccc;
+    border-radius: 5px;
     padding: 12px 15px;
     margin: 8px 0;
     width: 100%;
@@ -97,7 +98,6 @@
     background-color: #fff;
     border-radius: 10px;
     box-shadow: -15px 30px 60px rgba(0, 0, 0, 0.5), -10px 20px 20px rgba(0, 0, 0, 0.4);
-
     position: relative;
     overflow: hidden;
     width: 768px;
