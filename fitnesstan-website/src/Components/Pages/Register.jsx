@@ -150,26 +150,16 @@ const Register = () => {
                   onChange={handleSignUpChange}
                   required
                 />
-                <div className="password-container">
+                
                   <input
-                    type={showPassword ? "text" : "password"}
+                    type="password"
                     name="password"
                     placeholder="Password"
                     value={signUpData.password}
                     onChange={handleSignUpChange}
                     required
-                    className={showPassword ? 'password-visible' : ''}
                   />
-                  <span
-                    className="show-password"
-                    onClick={() => setShowPassword((prev) => !prev)}
-                    title={showPassword ? "Hide Password" : "Show Password"}
-                  >
-                    <i
-                      className={`fas ${showPassword ? "fa-eye-slash" : "fa-eye"}`}
-                    />
-                  </span>
-                </div>
+                
                 <input
                   type="password"
                   name="confirmPassword"

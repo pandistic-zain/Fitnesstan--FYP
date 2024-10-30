@@ -93,6 +93,9 @@
     margin: 8px 0;
     width: 100%;
   }
+  input:focus {
+    border: 2px solid #000000 !important;
+  }
 
   .container {
     background-color: #fff;
