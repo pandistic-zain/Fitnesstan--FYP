@@ -1,5 +1,7 @@
 package com.fitnesstan.fitnesstan_backend.Controller;
 
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -62,4 +64,16 @@ public ResponseEntity<String> verifyEmail(@RequestParam("email") String email, @
         return new ResponseEntity<>("Email verification failed: " + e.getMessage(), HttpStatus.BAD_REQUEST);
     }
 }
+
+    // New endpoint for resending OTP
+    @PostMapping("/resend-otp")
+    public ResponseEntity<?> resendOtp(@RequestBody Map<String, String> payload) {
+        String email = payload.get("email");
+        try {
+            userServices.resendOtp(email);
+            return ResponseEntity.ok("OTP resent successfully.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
 }

@@ -1,17 +1,28 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { verifyEmail } from "../../API/RegisterAPI.jsx"; // API function to verify email
-import styles from "./EmailVerification.module.css"; // Import CSS module
+import { verifyEmail, resendOtp } from "../../API/RegisterAPI.jsx";
+import styles from "./EmailVerification.module.css";
 
 const EmailVerification = () => {
   const [otp, setOtp] = useState("");
   const [message, setMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+  const [isCooldown, setIsCooldown] = useState(true);
+  const [cooldownTime, setCooldownTime] = useState(60);
   const navigate = useNavigate();
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const email = queryParams.get("email");
 
+  // Function to clear messages after 5 seconds
+  const clearMessagesAfterTimeout = () => {
+    setTimeout(() => {
+      setMessage("");
+      setErrorMessage("");
+    }, 5000);
+  };
+
+  // Verify OTP function
   const handleVerify = async (e) => {
     e.preventDefault();
     setMessage("");
@@ -21,28 +32,63 @@ const EmailVerification = () => {
       const response = await verifyEmail(email, otp);
       if (response.status === 200) {
         setMessage("Email verified!");
-        navigate("/user-dashboard");
+        setErrorMessage(""); // Clear error if any
+        setTimeout(() => navigate("/user-dashboard"), 1000);
       } else {
         setErrorMessage(response.data.message || "Invalid OTP. Try again.");
+        setMessage(""); // Clear success message if any
       }
+      clearMessagesAfterTimeout();
     } catch (error) {
       console.error("Verification error: ", error.response?.data || error);
-      if (error.response?.status === 400) {
-        setErrorMessage("Invalid OTP. Please try again.");
-      } else if (error.response?.status === 404) {
-        setErrorMessage("Email not found. Check your entry.");
-      } else if (error.response?.status === 500) {
-        setErrorMessage("Server error. Please try later.");
-      } else {
-        setErrorMessage("An error occurred. Try again.");
-      }
+      setErrorMessage(
+        error.response?.status === 400
+          ? "Invalid OTP. Please try again."
+          : error.response?.status === 404
+          ? "Email not found. Check your entry."
+          : error.response?.status === 500
+          ? "Server error. Please try later."
+          : "An error occurred. Try again."
+      );
+      setMessage("");
+      clearMessagesAfterTimeout();
     }
   };
 
-  const handleResendOtp = () => {
-    setMessage("OTP has been resent.");
+  // Resend OTP function with cooldown
+  const handleResendOtp = async () => {
+    setIsCooldown(true);
+    setCooldownTime(60);
+    setMessage("");
     setErrorMessage("");
+
+    try {
+      setMessage("Resending OTP...");
+      await resendOtp(email);
+      setMessage("OTP has been resent. Please check your email.");
+      setErrorMessage(""); // Clear error if any
+    } catch (error) {
+      console.error("Resend OTP error: ", error.response?.data || error);
+      setErrorMessage("Could not resend OTP. Try again later.");
+      setMessage(""); // Clear success message if any
+      setIsCooldown(false); // Re-enable if resend fails
+      setCooldownTime(0);
+    }
+    clearMessagesAfterTimeout();
   };
+
+  // Cooldown timer effect
+  useEffect(() => {
+    if (isCooldown && cooldownTime > 0) {
+      const timer = setInterval(() => {
+        setCooldownTime((prevTime) => prevTime - 1);
+      }, 1000);
+
+      return () => clearInterval(timer);
+    } else if (cooldownTime === 0) {
+      setIsCooldown(false);
+    }
+  }, [isCooldown, cooldownTime]);
 
   return (
     <div className={styles.verificationContainer}>
@@ -62,8 +108,17 @@ const EmailVerification = () => {
           {errorMessage && <div className={styles.errorMessage}>{errorMessage}</div>}
         </div>
         <div className={styles.footer}>
-          <p className={styles.resend} onClick={handleResendOtp}>Resend OTP</p>
-          <button type="button" className={styles.action} onClick={handleVerify}>
+          <p
+            className={`${styles.resend} ${isCooldown ? styles.disabled : ""}`}
+            onClick={!isCooldown ? handleResendOtp : null}
+          >
+            {isCooldown ? `Resend OTP in ${cooldownTime}s` : "Resend OTP"}
+          </p>
+          <button
+            type="button"
+            className={styles.action}
+            onClick={handleVerify}
+          >
             Verify OTP
           </button>
         </div>

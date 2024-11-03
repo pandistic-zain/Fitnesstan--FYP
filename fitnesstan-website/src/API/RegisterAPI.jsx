@@ -10,8 +10,14 @@ export const registerUser = async (userData) => {
 export const loginUser = async (userData) => {
     return await axios.post(`${API_URL}/login`, userData);
 };
+
 export const verifyEmail = async (email, otp) => {
     return await axios.get(`${API_URL}/verify-email`, {
         params: { email, otp }
     });
+};
+
+// New function to resend OTP
+export const resendOtp = async (email) => {
+    return await axios.post(`${API_URL}/resend-otp`, { email });
 };
