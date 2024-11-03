@@ -215,7 +215,6 @@
   overflow: hidden;
   outline: 2px solid white;
 }
-
 .blob {
   position: absolute; /* Positioning within the card */
   z-index: -2; /* Behind the background */
@@ -224,11 +223,24 @@
   width: calc(100% - 30px); /* Responsive width based on card */
   height: calc(100% - 30px); /* Responsive height based on card */
   border-radius: 50%; /* Make it circular */
-  background-color: #ff0000; /* Blob color */
   opacity: 1; /* Fully visible */
   filter: blur(12px); /* Blur effect for soft edges */
-  animation: blob-bounce 5s infinite ease; /* Animation */
+  animation: colorSwitch 3s ease-in-out infinite, blob-bounce 5s infinite ease; /* Combined animations */
   transform: translate(-50%, -50%); /* Center the blob */
+}
+@keyframes colorSwitch {
+  0% {
+      background-color: #ff0000; /* Red */
+  }
+  33% {
+      background-color: #b30000; /* Darker Red */
+  }
+  67% {
+      background-color: #00b300; /* Darker Green */
+  }
+  100% {
+      background-color: #0d9c00; /* Green */
+  }
 }
 
 @keyframes blob-bounce {
