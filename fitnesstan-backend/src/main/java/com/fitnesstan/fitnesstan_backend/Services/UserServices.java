@@ -2,8 +2,11 @@ package com.fitnesstan.fitnesstan_backend.Services;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.time.LocalDateTime;
 import java.security.SecureRandom;
+
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -137,15 +140,33 @@ public class UserServices {
         return userRepository.findByUsername(username);
     }
 
-    public void deleteUser(String id) {
-        userRepository.deleteById(id);
-    }
-
     public Users validateUser(String email, String password) {
         Users user = userRepository.findByEmail(email);
         if (user != null && passwordEncoder.matches(password, user.getPassword())) {
             return user;
         }
         return null;
+    }
+    public boolean updateUser(String id, Users user) {
+        Optional<Users> existingUser = userRepository.findById(new ObjectId(id));
+        if (existingUser.isPresent()) {
+            Users userToUpdate = existingUser.get();
+            userToUpdate.setUsername(user.getUsername());
+            userToUpdate.setEmail(user.getEmail());
+            userToUpdate.setRoles(user.getRoles());
+            userToUpdate.setStatus(user.getStatus());
+            userToUpdate.setUpdatedAt(LocalDateTime.now());
+            userRepository.save(userToUpdate);
+            return true;
+        }
+        return false;
+    }
+
+    public boolean deleteUser(String id) {
+        if (userRepository.existsById(new ObjectId(id))) {
+            userRepository.deleteById(new ObjectId(id)); // Delete or deactivate user
+            return true;
+        }
+        return false;
     }
 }

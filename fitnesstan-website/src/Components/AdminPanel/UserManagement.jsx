@@ -1,63 +1,61 @@
 import React, { useState, useEffect } from "react";
 import { Table, Button, Form, Modal } from "react-bootstrap";
-import axios from "axios"; // Ensure axios is installed
+import axios from "axios";
 import Sidebar from './Sidebar';
-import styles from './UserManagement.module.css'; // Importing CSS module
+import Loader from '../Loader'; // Import your custom loader
+import styles from './UserManagement.module.css';
 
 const UserManagement = () => {
-  const [users, setUsers] = useState([]); // State to store users
+  const [users, setUsers] = useState([]);
   const [search, setSearch] = useState("");
   const [filteredUsers, setFilteredUsers] = useState([]);
-  const [selectedUser, setSelectedUser] = useState(null); // For profile viewing/editing
-  const [showEditModal, setShowEditModal] = useState(false); // Modal for editing user info
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [loading, setLoading] = useState(true); // Loading state
 
-  // Fetch users from backend
   useEffect(() => {
     const fetchUsers = async () => {
+      setLoading(true); // Show loader
       try {
-        const response = await axios.get("/api/users"); // Replace with your actual API endpoint
+        const response = await axios.get("http://localhost:8080/admin/all-users");
         setUsers(response.data);
         setFilteredUsers(response.data);
       } catch (error) {
         console.error("Error fetching users", error);
       }
+      setLoading(false); // Hide loader after data is fetched
     };
     fetchUsers();
   }, []);
 
-  // Filter users by search input
   const handleSearch = (e) => {
     setSearch(e.target.value);
     const filtered = users.filter((user) =>
-      user.name.toLowerCase().includes(e.target.value.toLowerCase()) ||
+      user.username.toLowerCase().includes(e.target.value.toLowerCase()) ||
       user.email.toLowerCase().includes(e.target.value.toLowerCase())
     );
     setFilteredUsers(filtered);
   };
 
-  // Open modal to edit user
   const handleEdit = (user) => {
     setSelectedUser(user);
     setShowEditModal(true);
   };
 
-  // Save edited user profile
   const handleSaveChanges = async () => {
     try {
-      await axios.put(`/api/users/${selectedUser.id}`, selectedUser); // PUT request to update user
+      await axios.put(`http://localhost:8080/admin/update-user/${selectedUser.id}`, selectedUser);
       setShowEditModal(false);
-      // Refetch users after saving
-      const response = await axios.get("/api/users");
+      const response = await axios.get("http://localhost:8080/admin/all-users");
       setUsers(response.data);
     } catch (error) {
       console.error("Error updating user", error);
     }
   };
 
-  // Deactivate or delete a user
   const handleDeactivate = async (userId) => {
     try {
-      await axios.delete(`/api/users/${userId}`); // Delete request to deactivate user
+      await axios.delete(`http://localhost:8080/admin/delete-user/${userId}`);
       const updatedUsers = users.filter(user => user.id !== userId);
       setUsers(updatedUsers);
     } catch (error) {
@@ -65,40 +63,40 @@ const UserManagement = () => {
     }
   };
 
+  if (loading) return <Loader />; // Render loader while loading
+
   return (
-    <div className={styles.userManagement}> {/* Flexbox container for Sidebar and UserManagement */}
+    <div className={styles.userManagement}>
       <Sidebar />
       <div className={styles.userManagementContent}>
         <h2>User Management</h2>
 
-        {/* Search Bar */}
         <Form.Group className="mb-3">
           <Form.Control
             type="text"
-            placeholder="Search by name, email, or plan type..."
+            placeholder="Search by username or email..."
             value={search}
             onChange={handleSearch}
           />
         </Form.Group>
 
-        {/* User Table */}
         <Table striped bordered hover responsive>
           <thead>
             <tr>
-              <th>Name</th>
+              <th>Username</th>
               <th>Email</th>
-              <th>Plan Type</th>
-              <th>Last Login</th>
+              <th>Roles</th>
+              <th>Status</th>
               <th>Actions</th>
             </tr>
           </thead>
           <tbody>
             {filteredUsers.map((user) => (
               <tr key={user.id}>
-                <td>{user.name}</td>
+                <td>{user.username}</td>
                 <td>{user.email}</td>
-                <td>{user.planType}</td>
-                <td>{user.lastLogin}</td>
+                <td>{user.roles.join(", ")}</td>
+                <td>{user.status}</td>
                 <td>
                   <Button
                     variant="info"
@@ -119,7 +117,6 @@ const UserManagement = () => {
           </tbody>
         </Table>
 
-        {/* Edit User Modal */}
         <Modal show={showEditModal} onHide={() => setShowEditModal(false)}>
           <Modal.Header closeButton>
             <Modal.Title>Edit User Profile</Modal.Title>
@@ -127,12 +124,12 @@ const UserManagement = () => {
           <Modal.Body>
             <Form>
               <Form.Group className="mb-3">
-                <Form.Label>Name</Form.Label>
+                <Form.Label>Username</Form.Label>
                 <Form.Control
                   type="text"
-                  value={selectedUser?.name || ""}
+                  value={selectedUser?.username || ""}
                   onChange={(e) =>
-                    setSelectedUser({ ...selectedUser, name: e.target.value })
+                    setSelectedUser({ ...selectedUser, username: e.target.value })
                   }
                 />
               </Form.Group>
@@ -147,21 +144,23 @@ const UserManagement = () => {
                 />
               </Form.Group>
               <Form.Group className="mb-3">
-                <Form.Label>Plan Type</Form.Label>
+                <Form.Label>Roles</Form.Label>
                 <Form.Control
                   type="text"
-                  value={selectedUser?.planType || ""}
+                  value={selectedUser?.roles?.join(", ") || ""}
                   onChange={(e) =>
-                    setSelectedUser({ ...selectedUser, planType: e.target.value })
+                    setSelectedUser({ ...selectedUser, roles: e.target.value.split(", ") })
                   }
                 />
               </Form.Group>
               <Form.Group className="mb-3">
-                <Form.Label>Last Login</Form.Label>
+                <Form.Label>Status</Form.Label>
                 <Form.Control
                   type="text"
-                  value={selectedUser?.lastLogin || ""}
-                  readOnly
+                  value={selectedUser?.status || ""}
+                  onChange={(e) =>
+                    setSelectedUser({ ...selectedUser, status: e.target.value })
+                  }
                 />
               </Form.Group>
             </Form>
