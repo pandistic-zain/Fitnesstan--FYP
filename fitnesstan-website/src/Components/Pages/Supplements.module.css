@@ -141,9 +141,8 @@
   min-width: 200px; 
   display: flex; /* Enable Flexbox for content alignment */
   flex-direction: column; /* Stack children vertically */
-  border: 2px solid #0d9c005b;
-  box-shadow: 2px 1px 30px 2px #ffffff3b;
-  border-radius: 14px;
+  box-shadow: 0 0 30px 15px rgba(13, 156, 0, 0.46); /* Professional blended shadow */
+  border-radius: 10px; /* Optional: Rounded corners for a softer look */
   margin-left: 20px;
   margin-right: 20px;
   color:#000000;
@@ -157,8 +156,7 @@
   min-width: 200px; 
   display: flex; /* Enable Flexbox for content alignment */
   flex-direction: column; /* Stack children vertically */
-  border: 2px solid #ff00005b;
-  box-shadow: 12px 10px 40px 2px #ffffff3b;
+  box-shadow: 0 0 30px 15px rgba(255, 0, 0, 0.46); 
   border-radius: 14px;
   margin-left: 20px;
   margin-right: 20px;
