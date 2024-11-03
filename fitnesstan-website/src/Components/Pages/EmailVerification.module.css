@@ -29,11 +29,29 @@
   }
   
   .header {
+    position: relative; /* Position for the ::before element */
     margin-bottom: 1rem;
     border-radius: 0.75rem;
     background-color: #ff0000;
     height: 8rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
+  
+  /* ::before element for the logo */
+  .header::before {
+    content: "";
+    display: block;
+    background-image: url("../../Assets/FIRNESSTAN_BARA_LOGO_inverted.png"); /* Path to your logo */
+    background-size: contain; /* Adjusts the image to fit */
+    background-repeat: no-repeat;
+    background-position: center;
+    
+    width: 350px; /* Adjust width as needed */
+    height: 300px; /* Adjust height as needed */
+  }
+  
   
   .title {
     color: #ff0000;
