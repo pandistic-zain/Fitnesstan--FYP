@@ -1,9 +1,10 @@
 .supplementPage {
+  padding: 20px;
   position: relative;
-  background-color: #ffffff; /* Soft light background color */
-  color: #000000; /* Dark text for contrast */
-  padding: 20px; /* Added padding for inner spacing */
+  max-width: 1200px; /* Set the maximum width as per your design */
+  margin: 0 auto; /* Center the page */
 }
+
 
 .backToHomeTop {
   position: absolute;
