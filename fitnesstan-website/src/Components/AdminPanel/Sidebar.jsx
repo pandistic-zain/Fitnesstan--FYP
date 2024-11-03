@@ -29,7 +29,7 @@ const Sidebar = () => {
             <SidebarMenu.Nav.Icon className={`${styles.navIcon} sidebar-icon`}>
               <i className="fas fa-tachometer-alt"></i> {/* Dashboard Icon */}
             </SidebarMenu.Nav.Icon>
-            <SidebarMenu.Nav.Title className={styles.navTitle} mt-3>
+            <SidebarMenu.Nav.Title className={`${styles.navTitle} mt-3`}>
               Dashboard
             </SidebarMenu.Nav.Title>
           </SidebarMenu.Nav.Link>
