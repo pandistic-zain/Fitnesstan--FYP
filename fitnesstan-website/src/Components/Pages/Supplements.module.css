@@ -1,9 +1,10 @@
 .supplementPage {
+  padding: 20px;
   position: relative;
-  background-color: #ffffff; /* Soft light background color */
-  color: #000000; /* Dark text for contrast */
-  padding: 20px; /* Added padding for inner spacing */
+  max-width: 1200px; /* Set the maximum width as per your design */
+  margin: 0 auto; /* Center the page */
 }
+
 
 .backToHomeTop {
   position: absolute;
@@ -140,9 +141,8 @@
   min-width: 200px; 
   display: flex; /* Enable Flexbox for content alignment */
   flex-direction: column; /* Stack children vertically */
-  border: 2px solid #0d9c005b;
-  box-shadow: 2px 1px 30px 2px #ffffff3b;
-  border-radius: 14px;
+  box-shadow: 0 0 30px 15px rgba(13, 156, 0, 0.46); /* Professional blended shadow */
+  border-radius: 10px; /* Optional: Rounded corners for a softer look */
   margin-left: 20px;
   margin-right: 20px;
   color:#000000;
@@ -156,8 +156,7 @@
   min-width: 200px; 
   display: flex; /* Enable Flexbox for content alignment */
   flex-direction: column; /* Stack children vertically */
-  border: 2px solid #ff00005b;
-  box-shadow: 12px 10px 40px 2px #ffffff3b;
+  box-shadow: 0 0 30px 15px rgba(255, 0, 0, 0.46); 
   border-radius: 14px;
   margin-left: 20px;
   margin-right: 20px;
@@ -216,7 +215,6 @@
   overflow: hidden;
   outline: 2px solid white;
 }
-
 .blob {
   position: absolute; /* Positioning within the card */
   z-index: -2; /* Behind the background */
@@ -225,11 +223,24 @@
   width: calc(100% - 30px); /* Responsive width based on card */
   height: calc(100% - 30px); /* Responsive height based on card */
   border-radius: 50%; /* Make it circular */
-  background-color: #ff0000; /* Blob color */
   opacity: 1; /* Fully visible */
   filter: blur(12px); /* Blur effect for soft edges */
-  animation: blob-bounce 5s infinite ease; /* Animation */
+  animation: colorSwitch 3s ease-in-out infinite, blob-bounce 5s infinite ease; /* Combined animations */
   transform: translate(-50%, -50%); /* Center the blob */
+}
+@keyframes colorSwitch {
+  0% {
+      background-color: #ff0000; /* Red */
+  }
+  33% {
+      background-color: #b30000; /* Darker Red */
+  }
+  67% {
+      background-color: #00b300; /* Darker Green */
+  }
+  100% {
+      background-color: #0d9c00; /* Green */
+  }
 }
 
 @keyframes blob-bounce {

@@ -2,8 +2,11 @@ package com.fitnesstan.fitnesstan_backend.Services;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.time.LocalDateTime;
 import java.security.SecureRandom;
+
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -37,12 +40,12 @@ public class UserServices {
 
     @Transactional
     public void saveUser(Users user) throws Exception {
-        // Check username and email uniqueness
-        if (isEmailExists(user.getEmail())) {
+        // Check if email already exists in database
+        if (isEmailExists(user.getEmail()) || otpStore.containsKey(user.getEmail())) {
             throw new Exception("Username or email already exists.");
         }
 
-        // Prepare user details with PENDING status
+        // Prepare user details with PENDING status and save to temporary store
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setRoles(Arrays.asList("USER"));
         user.setStatus("PENDING");
@@ -50,17 +53,9 @@ public class UserServices {
         user.setCreatedAt(LocalDateTime.now());
         user.setUpdatedAt(LocalDateTime.now());
 
-        // Send verification email with OTP
-        try {
-            // Store OTP in the in-memory store
-            otpStore.put(user.getEmail(), user);
-            
-            System.err.println(otpStore);
-            // Send the verification email
-            sendVerificationEmail(user.getEmail(), user.getVerificationToken());
-        } catch (Exception e) {
-            throw new Exception("Failed to send verification email, rolling back.", e);
-        }
+        // Store OTP in memory and send the verification email
+        otpStore.put(user.getEmail(), user);
+        sendVerificationEmail(user.getEmail(), user.getVerificationToken());
     }
 
     private boolean isEmailExists(String email) {
@@ -80,7 +75,22 @@ public class UserServices {
         mailSender.send(emailMessage);
     }
 
-    // Method to generate a random OTP
+    public void resendOtp(String email) throws Exception {
+        // Retrieve user from otpStore
+        Users user = otpStore.get(email);
+        if (user == null) {
+            throw new Exception("User not found or already verified.");
+        }
+
+        // Generate a new OTP and update the otpStore
+        String newOtp = generateOTP();
+        user.setVerificationToken(newOtp);
+        user.setUpdatedAt(LocalDateTime.now());
+
+        otpStore.put(email, user); // Update otpStore with new OTP
+        sendVerificationEmail(email, newOtp);
+    }
+
     private String generateOTP() {
         SecureRandom random = new SecureRandom();
         int otp = 100000 + random.nextInt(900000); // Generates a 6-digit OTP
@@ -89,36 +99,31 @@ public class UserServices {
 
     @Transactional
     public void verifyEmail(String email, String otp) throws Exception {
-        System.out.println("Verification OTP is " + otp);
-    
-        // Check if the OTP matches the one stored in memory
+        // Retrieve user from otpStore
         Users user = otpStore.get(email);
-        System.out.println("Email = "+ otpStore.get(email) +"OTP = "+ otpStore.get(otp));
         if (user == null || !user.getVerificationToken().equals(otp)) {
             throw new Exception("Invalid verification token."); // OTP not found or does not match
         }
-    
-        // If OTP is valid, remove it from the store
+
+        // Remove user from otpStore and set status to PASS
         otpStore.remove(email);
-    
-        // Update user status to PASS and remove token
+
         user.setStatus("PASS");
         user.setVerificationToken(null);
         user.setUpdatedAt(LocalDateTime.now());
-    
-        // Save user only after status is PASS
+
+        // Persist verified user to the database
         userRepository.save(user);
     }
-    
 
     @Transactional
     public void createAdmin(Users admin) throws Exception {
-        // Check if username or email already exists
-        if ( isEmailExists(admin.getEmail())) {
+        // Check if email already exists in database
+        if (isEmailExists(admin.getEmail())) {
             throw new Exception("Admin with the same username or email already exists.");
         }
 
-        // Prepare admin details with PENDING status
+        // Prepare admin details and save
         admin.setPassword(passwordEncoder.encode(admin.getPassword()));
         admin.setRoles(Arrays.asList("ADMIN"));
         admin.setStatus("PENDING");
@@ -126,34 +131,42 @@ public class UserServices {
         admin.setCreatedAt(LocalDateTime.now());
         admin.setUpdatedAt(LocalDateTime.now());
 
-        try {
-            sendVerificationEmail(admin.getEmail(), admin.getVerificationToken());
-        } catch (Exception e) {
-            throw new Exception("Failed to send verification email, rolling back.", e);
-        }
+        // Store admin temporarily in otpStore and send OTP
+        otpStore.put(admin.getEmail(), admin);
+        sendVerificationEmail(admin.getEmail(), admin.getVerificationToken());
     }
 
     public Users findByUsername(String username) {
         return userRepository.findByUsername(username);
     }
 
-    public void deleteUser(String id) {
-        userRepository.deleteById(id);
-    }
-
     public Users validateUser(String email, String password) {
-        // Fetch the user by email from the repository
-        Users user = userRepository.findByEmail(email); // Assuming you have this method in your UserRepository
-
-        // Check if the user exists
-        if (user != null) {
-            // Use BCrypt to match the raw password with the encoded password
-            if (passwordEncoder.matches(password, user.getPassword())) {
-                return user; // Return user if credentials are valid
-            }
+        Users user = userRepository.findByEmail(email);
+        if (user != null && passwordEncoder.matches(password, user.getPassword())) {
+            return user;
         }
-
-        return null; // Return null if credentials are invalid
+        return null;
+    }
+    public boolean updateUser(String id, Users user) {
+        Optional<Users> existingUser = userRepository.findById(new ObjectId(id));
+        if (existingUser.isPresent()) {
+            Users userToUpdate = existingUser.get();
+            userToUpdate.setUsername(user.getUsername());
+            userToUpdate.setEmail(user.getEmail());
+            userToUpdate.setRoles(user.getRoles());
+            userToUpdate.setStatus(user.getStatus());
+            userToUpdate.setUpdatedAt(LocalDateTime.now());
+            userRepository.save(userToUpdate);
+            return true;
+        }
+        return false;
     }
 
+    public boolean deleteUser(String id) {
+        if (userRepository.existsById(new ObjectId(id))) {
+            userRepository.deleteById(new ObjectId(id)); // Delete or deactivate user
+            return true;
+        }
+        return false;
+    }
 }

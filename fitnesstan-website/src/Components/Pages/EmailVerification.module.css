@@ -1,66 +1,82 @@
 /* EmailVerification.module.css */
 
 .verificationContainer {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    background-image: url("../../Assets/bannerBg.png");
-    background-size: cover;     /* Ensures the image covers the section fully */
-    background-repeat: no-repeat; /* Prevents the image from repeating */
-    background-position: center;
-  }
-  
-  .card {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    border-radius: 0.75rem;
-    background-color: #ffffff;
-    width: 400px;
-    height: 450px;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
-    padding: 1.5rem;
-  }
-  
-  .info {
-    flex-grow: 1;
-    text-align: center;
-  }
-  
-  .header {
-    margin-bottom: 1rem;
-    border-radius: 0.75rem;
-    background-color: #ff0000;
-    height: 8rem;
-  }
-  
-  .title {
-    color: #ff0000;
-    font-weight: 600;
-    font-size: 1.5rem;
-    margin-bottom: 0.5rem;
-  }
-  h3{
-    font-size: medium !important;
-  }
-  .otpInput {
-    width: 100%;
-    padding: 0.75rem;
-    border-radius: 0.5rem;
-    border: 1px solid #ffffff !important; /* Light border for a cleaner look */
-    font-size: 1rem;
-    text-align: center;
-    margin: 0.75rem 0 0.5rem;
-    outline: none;
-    transition:  box-shadow 0.4s ease-in-out !important; /* Smooth transitions */
-  }
-  
-  .otpInput:focus {
-    box-shadow: 0 0 10px rgba(255, 0, 0, 0.6); /* Subtle shadow to indicate focus */
-  }
-  
-  
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-image: url("../../Assets/bannerBg.png");
+  background-size: cover; /* Ensures the image covers the section fully */
+  background-repeat: no-repeat; /* Prevents the image from repeating */
+  background-position: center;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border-radius: 0.75rem;
+  background-color: #ffffff;
+  width: 400px;
+  height: 450px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -2px rgba(0, 0, 0, 0.1);
+  padding: 1.5rem;
+}
+
+.info {
+  flex-grow: 1;
+  text-align: center;
+}
+
+.header {
+  position: relative; /* Position for the ::before element */
+  margin-bottom: 1rem;
+  border-radius: 0.75rem;
+  background-color: #ff0000;
+  height: 8rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* ::before element for the logo */
+.header::before {
+  content: "";
+  display: block;
+  background-image: url("../../Assets/FIRNESSTAN_BARA_LOGO_inverted.png"); /* Path to your logo */
+  background-size: contain; /* Adjusts the image to fit */
+  background-repeat: no-repeat;
+  background-position: center;
+  width: 350px; /* Adjust width as needed */
+  height: 300px; /* Adjust height as needed */
+}
+
+.title {
+  color: #ff0000;
+  font-weight: 600;
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+h3 {
+  font-size: medium !important;
+}
+.otpInput {
+  width: 100%;
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+  border: 1px solid #ffffff !important; /* Light border for a cleaner look */
+  font-size: 1rem;
+  text-align: center;
+  margin: 0.75rem 0 0.5rem;
+  outline: none;
+  transition: box-shadow 0.4s ease-in-out !important; /* Smooth transitions */
+}
+
+.otpInput:focus {
+  box-shadow: 0 0 10px rgba(255, 0, 0, 0.6); /* Subtle shadow to indicate focus */
+}
+
 .messageContainer {
   min-height: 40px; /* Reserve space for the message */
   display: flex;
@@ -84,37 +100,47 @@
   border-radius: 0.25rem;
   font-size: 0.875rem;
 }
-  .footer {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-top: 1rem;
-  }
-  
-  .resend {
-    color: #ff0000;
-    margin-top: 15px;
-    font-size: 0.85rem;
-    cursor: pointer;
-    text-decoration: underline;
-  }
-  
-  .action {
-    user-select: none;
-    border: none;
-    outline: none;
-    box-shadow: 0 4px 6px -1px rgba(255, 0, 0, 0.4), 0 2px 4px -2px rgba(255, 0, 0, 0.4);
-    color: #ffffff;
-    font-weight: 700;
-    font-size: 0.85rem;
-    padding: 0.75rem 1.5rem;
-    background-color: #ff0000;
-    border-radius: 0.5rem;
-    cursor: pointer;
-  }
-  
-  .action:hover {
-    background-color: #cc0000;
-  }
-  
-  
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 1rem;
+}
+
+.resend {
+  color: #ff0000;
+  margin-top: 15px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  text-decoration: underline;
+  transition: color 0.3s ease;
+}
+
+.resend:hover {
+  color: #cc0000; /* Darker red when hovered */
+}
+
+.resend.disabled {
+  color: #aaa; /* Light gray for disabled state */
+  cursor: not-allowed;
+  text-decoration: none;
+}
+
+.action {
+  user-select: none;
+  border: none;
+  outline: none;
+  box-shadow: 0 4px 6px -1px rgba(255, 0, 0, 0.4),
+    0 2px 4px -2px rgba(255, 0, 0, 0.4);
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 0.85rem;
+  padding: 0.75rem 1.5rem;
+  background-color: #ff0000;
+  border-radius: 0.5rem;
+  cursor: pointer;
+}
+
+.action:hover {
+  background-color: #cc0000;
+}
