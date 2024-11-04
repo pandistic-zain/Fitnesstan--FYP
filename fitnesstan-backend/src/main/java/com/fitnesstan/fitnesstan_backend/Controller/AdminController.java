@@ -19,8 +19,9 @@ import com.fitnesstan.fitnesstan_backend.Entity.Users;
 import com.fitnesstan.fitnesstan_backend.Services.UserServices;
 
 @RestController
+@CrossOrigin(origins = "http://localhost:3000")
+
 @RequestMapping("/admin")
-@CrossOrigin(origins = "http://localhost:3000") // Allow CORS from React app
 public class AdminController {
 
     @Autowired
