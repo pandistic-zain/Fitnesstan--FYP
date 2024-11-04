@@ -2,7 +2,8 @@
 import React, { useState } from "react";
 import SidebarMenu from "react-bootstrap-sidebar-menu";
 import { Link } from "react-router-dom";
-import styles from "./Sidebar.module.css"; // Ensure this path matches your structure
+import styles from "./Sidebar.module.css"; 
+import logo from '../../Assets/FIRNESSTAN_BARA_LOGO.png'; 
 
 const Sidebar = () => {
   const [mlPlansOpen, setMlPlansOpen] = useState(false);
@@ -14,9 +15,9 @@ const Sidebar = () => {
   return (
     <SidebarMenu className={styles.sidebar}>
       <SidebarMenu.Header className={styles.header}>
-        <SidebarMenu.Brand className={styles.brand}>
-          Fitnesstan Admin
-        </SidebarMenu.Brand>
+      <SidebarMenu.Brand className={styles.brand}>
+        <img src={logo} alt="Fitnesstan Admin Logo" className={styles.logo} />
+      </SidebarMenu.Brand>
         <SidebarMenu.Toggle />
       </SidebarMenu.Header>
       <SidebarMenu.Body className={styles.body}>
@@ -29,7 +30,7 @@ const Sidebar = () => {
             <SidebarMenu.Nav.Icon className={`${styles.navIcon} sidebar-icon`}>
               <i className="fas fa-tachometer-alt"></i> {/* Dashboard Icon */}
             </SidebarMenu.Nav.Icon>
-            <SidebarMenu.Nav.Title className={`${styles.navTitle} mt-3`}>
+            <SidebarMenu.Nav.Title className={`${styles.navTitle}`}>
               Dashboard
             </SidebarMenu.Nav.Title>
           </SidebarMenu.Nav.Link>

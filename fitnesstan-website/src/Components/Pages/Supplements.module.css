@@ -1,9 +1,11 @@
 .supplementPage {
   padding: 20px;
   position: relative;
-  max-width: 1200px; /* Set the maximum width as per your design */
+  width: 90%; /* Use a percentage for dynamic width */
+  max-width: 1200px; /* Maximum width for larger screens */
   margin: 0 auto; /* Center the page */
 }
+
 
 
 .backToHomeTop {

@@ -32,24 +32,25 @@
 
 /* Sidebar Body */
 .body {
-  margin-top: 30px;
+  margin-top: 15px;
 }
 
-/* Sidebar Brand Styles */
+/* Brand Styles */
 .brand {
   width: 100%;
-  margin: 20px;
-  font-size: 1.4rem;
-  font-weight: bold;
-  color: var(--primary-color);
-  text-align: center;
-  border-bottom: 2px solid var(--primary-color);
-  margin-bottom: 30px;
-  transition: background-color var(--transition-speed) ease;
+  margin: 20px auto; /* Center the brand */
+  text-align: center; /* Center the logo */
+  padding: 10px 0; /* Add vertical padding for spacing */
+}
+
+.brand img {
+  max-width: 100%; /* Ensures the logo fits within the brand area */
+  height: auto; /* Maintain aspect ratio */
 }
 
 .brand:hover {
-  background-color: rgba(255, 0, 0, 0.1);
+  transform: scale(1.05); /* Scale up by 5% */
+  transition: transform var(--transition-speed) ease; /* Smooth transition */
 }
 
 /* Navigation Link Styles */
@@ -57,13 +58,13 @@
   color: var(--text-color);
   padding: 15px var(--padding-horizontal);
   font-size: 1.1rem;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
   display: flex;
   align-items: center;
   text-decoration: none;
   transition: background var(--transition-speed) ease, color var(--transition-speed) ease;
 }
 
+/* Hover effect for all nav links */
 .navLink:hover {
   background-color: var(--primary-color);
   color: var(--hover-bg-color);
@@ -95,12 +96,12 @@
   margin: 10px 0;
   border-radius: 5px;
 }
+
 .mlPlansNavLink {
   width: 100%;
   color: var(--text-color);
   padding: 15px var(--padding-horizontal);
   font-size: 1.1rem;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
   display: flex;
   align-items: center;
   text-decoration: none;
@@ -109,7 +110,7 @@
 
 /* Hover effect for ML Plans navLink */
 .mlPlansNavLink:hover {
-  background-color: #ffcdcd; /* Dark background on hover */
+  background-color: #ffcdcd; /* Light background on hover */
   transform: scale(1.02); /* Slight scaling on hover */
 }
 
@@ -132,6 +133,7 @@
 .subMenuClosed .caret {
   transform: rotate(315deg);
 }
+
 /* Submenu Link Styles */
 .subNavLink {
   padding: 10px calc(var(--padding-horizontal) * 1.5);
@@ -146,6 +148,7 @@
   background-color: var(--primary-color);
   color: var(--hover-bg-color);
 }
+
 .subNavLink:hover .navIcon {
   color: inherit;
 }
