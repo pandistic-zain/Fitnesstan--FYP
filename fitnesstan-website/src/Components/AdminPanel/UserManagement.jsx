@@ -18,8 +18,14 @@ const UserManagement = () => {
       setLoading(true);
       try {
         const response = await fetchAllUsers();
-        setUsers(response.data);
-        setFilteredUsers(response.data);
+        
+        // Since response is an array, we set users directly
+        if (Array.isArray(response)) {
+          setUsers(response);
+          setFilteredUsers(response);
+        } else {
+          console.error("Unexpected response format: data is not an array", response);
+        }
       } catch (error) {
         console.error("Error fetching users", error);
       } finally {
@@ -30,10 +36,11 @@ const UserManagement = () => {
   }, []);
 
   const handleSearch = (e) => {
-    setSearch(e.target.value);
+    const value = e.target.value;
+    setSearch(value);
     const filtered = users.filter((user) =>
-      user.username.toLowerCase().includes(e.target.value.toLowerCase()) ||
-      user.email.toLowerCase().includes(e.target.value.toLowerCase())
+      (user.username && user.username.toLowerCase().includes(value.toLowerCase())) ||
+      (user.email && user.email.toLowerCase().includes(value.toLowerCase()))
     );
     setFilteredUsers(filtered);
   };
@@ -48,8 +55,10 @@ const UserManagement = () => {
       await updateUser(selectedUser.id, selectedUser);
       setShowEditModal(false);
       const response = await fetchAllUsers();
-      setUsers(response.data);
-      setFilteredUsers(response.data);
+      if (Array.isArray(response)) {
+        setUsers(response);
+        setFilteredUsers(response);
+      }
     } catch (error) {
       console.error("Error updating user", error);
     }
@@ -96,11 +105,11 @@ const UserManagement = () => {
           <tbody>
             {filteredUsers.length > 0 ? (
               filteredUsers.map((user) => (
-                <tr key={user.id}>
-                  <td>{user.username}</td>
-                  <td>{user.email}</td>
-                  <td>{user.roles.join(", ")}</td>
-                  <td>{user.status}</td>
+                <tr key={user.id.timestamp}> {/* Assuming id is an object, use a unique property */}
+                  <td>{user.username || "N/A"}</td>
+                  <td>{user.email || "N/A"}</td>
+                  <td>{user.roles ? user.roles.join(", ") : "No roles"}</td>
+                  <td>{user.status || "N/A"}</td>
                   <td>
                     <Button
                       variant="info"
@@ -111,7 +120,7 @@ const UserManagement = () => {
                     </Button>
                     <Button
                       variant="danger"
-                      onClick={() => handleDeactivate(user.id)}
+                      onClick={() => handleDeactivate(user.id.timestamp)} // Adjust if id is not a simple value
                     >
                       Deactivate
                     </Button>

@@ -46,6 +46,10 @@ const Register = () => {
       const data = response.data;
 
       if (response.status === 200) {
+        // Store email and password in local storage for future API requests
+        localStorage.setItem("email", loginData.email);
+        localStorage.setItem("password", loginData.password); // Only do this for secure environments
+
         if (data.roles.includes("ADMIN")) {
           navigate("/AdminDashboard");
         } else {
@@ -150,16 +154,16 @@ const Register = () => {
                   onChange={handleSignUpChange}
                   required
                 />
-                
-                  <input
-                    type="password"
-                    name="password"
-                    placeholder="Password"
-                    value={signUpData.password}
-                    onChange={handleSignUpChange}
-                    required
-                  />
-                
+
+                <input
+                  type="password"
+                  name="password"
+                  placeholder="Password"
+                  value={signUpData.password}
+                  onChange={handleSignUpChange}
+                  required
+                />
+
                 <input
                   type="password"
                   name="confirmPassword"
@@ -193,7 +197,7 @@ const Register = () => {
                     value={loginData.password}
                     onChange={handleLoginChange}
                     required
-                    className={showPassword ? 'password-visible' : ''}
+                    className={showPassword ? "password-visible" : ""}
                   />
                   <span
                     className="show-password"
@@ -201,7 +205,9 @@ const Register = () => {
                     title={showPassword ? "Hide Password" : "Show Password"}
                   >
                     <i
-                      className={`fas ${showPassword ? "fa-eye-slash" : "fa-eye"}`}
+                      className={`fas ${
+                        showPassword ? "fa-eye-slash" : "fa-eye"
+                      }`}
                     />
                   </span>
                 </div>
@@ -215,8 +221,8 @@ const Register = () => {
               <div className="overlay-panel overlay-left">
                 <h1>Welcome Back to Fitnesstan!</h1>
                 <p>
-                  Log in to access your personalized fitness and nutrition plans,
-                  crafted just for you.
+                  Log in to access your personalized fitness and nutrition
+                  plans, crafted just for you.
                 </p>
                 <button className="ghost" onClick={handleToggle}>
                   Login
@@ -225,8 +231,8 @@ const Register = () => {
               <div className="overlay-panel overlay-right">
                 <h1>Hello, Fitness Enthusiast!</h1>
                 <p>
-                  Join Fitnesstan today and embark on a tailored fitness journey,
-                  complete with workout and nutrition guidance.
+                  Join Fitnesstan today and embark on a tailored fitness
+                  journey, complete with workout and nutrition guidance.
                 </p>
                 <button className="ghost" onClick={handleToggle}>
                   Sign Up
