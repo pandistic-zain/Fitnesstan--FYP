@@ -37,8 +37,6 @@ PAKISTANI_ITEMS = [
     "Koftay", "Shahi Tukray", "Sheer Khurma"
 ]
 
-
-# Expanded list of non-Pakistani items (other origins), detailed by region
 NON_PAKISTANI_ITEMS = [
     # East Asian (Chinese, Japanese, Korean)
     "Sushi", "Ramen", "Chow Mein", "Spring Rolls", "Kimchi", "Dim Sum", "Bibimbap",
@@ -82,27 +80,28 @@ def classify_meal_type(item_name):
     # Define meal type categories with inclusive item lists
     breakfast_items = [
         "egg", "milk", "cereal", "bread", "butter", "yogurt", "oatmeal", "pancake", "paratha", "chai", "toast",
-        "porridge", "muesli", "cheese", "smoothie", "lassi", "honey", "ajwa dates", "aseel dates"
+        "porridge", "muesli", "cheese", "smoothie", "lassi", "honey", "ajwa dates", "aseel dates", "lassi", "green tea", "black tea"
     ]
     lunch_items = [
         "rice", "dal", "vegetable", "curry", "paneer", "soup", "stew", "salad", "sandwich", "burger", "pasta",
         "pizza", "tacos", "noodles", "kebab", "dosa", "idli", "falafel", "shawarma", "pita", "biryani", "sindhi biryani",
-        "sai bhaji", "tandoori roti", "chapati", "curry", "gosht", "karahi", "korma", "nihari", "qorma", "thali"
+        "sai bhaji", "tandoori roti", "chapati", "karahi", "korma", "nihari", "qorma", "thali", "moussaka", "paella", 
+        "rogan josh", "palak paneer", "chole bhature", "pav bhaji", "tagine", "couscous"
     ]
     dinner_items = [
-        "steak", "roast", "grill", "tikka", "masala", "moussaka", "lasagna", "tagine", "couscous", "sushi", "ramen",
-        "jalfrezi", "handi", "haleem", "pulao", "sajji", "shinwari karahi", "kabuli pulao", "mandu", "gushtaba",
-        "chicken karahi", "koftay", "chicken handi", "chapli kabab", "afghani pulao", "chicken korma", "karahi gosht",
-        "rogan josh", "palak paneer", "chole bhature"
-    ] + lunch_items  # Including lunch items in dinner for more accurate classification
+        "steak", "roast", "grill", "tikka", "masala", "lasagna", "sushi", "ramen", "jalfrezi", "handi", "haleem",
+        "pulao", "sajji", "shinwari karahi", "kabuli pulao", "mandu", "gushtaba", "chicken karahi", "koftay", "chicken handi",
+        "chapli kabab", "afghani pulao", "chicken korma", "karahi gosht"
+    ] + lunch_items  # Dinner often includes items that are also commonly eaten at lunch
     snack_items = [
         "fruit", "nuts", "chips", "biscuit", "cookie", "pakoras", "samosa", "popcorn", "pretzel", "dumpling", "chaat",
         "puff", "roll", "ice cream", "cake", "donut", "pastry", "barfi", "gajar halwa", "kheer", "ras malai", "gulab jamun",
-        "falooda", "seviyan", "aloo bhujia", "panjiri", "jalebi", "shami kabab", "seekh kabab", "sheer khurma", "shahi tukray"
+        "falooda", "seviyan", "aloo bhujia", "panjiri", "jalebi", "shami kabab", "seekh kabab", "sheer khurma", "shahi tukray",
+        "dolma", "baklava", "empanadas", "crepes", "macaroni and cheese"
     ]
     unhealthy_items = [
         "fried", "sugar", "soda", "candy", "chocolate", "sweet", "dessert", "jalebi", "gulab jamun", "barfi", "falooda",
-        "seviyan", "lassi", "rooh afza", "thadal", "shakar"
+        "seviyan", "lassi", "rooh afza", "thadal", "shakar", "ice cream", "donut", "cake", "pastry", "creme", "mousse"
     ]
 
     item_name_lower = item_name.lower()
