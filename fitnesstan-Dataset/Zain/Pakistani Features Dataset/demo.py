@@ -6,7 +6,7 @@ API_KEY = '73fu4VtnrMbmuLbGXcmKB9025YeS4x1ipEmqgjrt'
 BASE_URL = 'https://api.nal.usda.gov/fdc/v1/foods/search'
 
 PAKISTANI_ITEMS = [
-    "Basmati Rice", "Wheat Flour", "Maida", "Barley", "Semolina", "Corn Flour",
+    "Basmati Rice","Rice", "Wheat Flour", "Maida", "Barley", "Semolina", "Corn Flour",
     "Lentils", "Chana Dal", "Moong Dal", "Masoor Dal", "Urad Dal", "Chickpeas",
     "Black Eyed Peas", "Kidney Beans", "Pigeon Peas", "Spinach", "Okra", "Biryani",
     "Butter Chicken", "Chicken Tikka Masala", "Chapati", "Eggplant", "Potato",
@@ -54,8 +54,8 @@ NON_PAKISTANI_ITEMS = [
     "Green Curry", "Red Curry", "Yellow Curry",
 
     # South Asian (Indian but non-Pakistani)
-    "Dosa", "Idli", "Vindaloo", "Saag Paneer",
-    "Biryani", "Rogan Josh",
+    "Dosa", "Idli", "Vindaloo", "Saag Paneer","Biryani"
+    , "Rogan Josh",
     "Naan Bread", "Pav Bhaji", "Chole Bhature", "Palak Paneer",
 
     # Additional Miscellaneous International Items
@@ -81,23 +81,37 @@ def classify_meal_type(item_name):
     breakfast_items = [
         "egg", "milk", "cereal", "bread", "butter", "yogurt", "oatmeal", "pancake", "paratha", "chai", "toast",
         "porridge", "muesli", "cheese", "smoothie", "lassi", "honey", "ajwa dates", "aseel dates", "lassi", "green tea", "black tea"
+        , "Sarson ka Saag","Makki di Roti", "Roghni Naan", "nihari","Ghee", "Butter", "Coconut Oil", "Sesame Oil", "Goat Liver", "Cinnamon", "Cardamom",
+        "Butter Naan", "Desi Ghee", "Almond Milk", "Panjiri", "Haleem"
     ]
     lunch_items = [
         "rice", "dal", "vegetable", "curry", "paneer", "soup", "stew", "salad", "sandwich", "burger", "pasta",
         "pizza", "tacos", "noodles", "kebab", "dosa", "idli", "falafel", "shawarma", "pita", "biryani", "sindhi biryani",
         "sai bhaji", "tandoori roti", "chapati", "karahi", "korma", "nihari", "qorma", "thali", "moussaka", "paella", 
-        "rogan josh", "palak paneer", "chole bhature", "pav bhaji", "tagine", "couscous"
+        "rogan josh", "palak paneer", "chole bhature", "pav bhaji", "tagine", "couscous", "Chana Dal", "Moong Dal", "Masoor Dal",
+        "Tomato", "Onion", "Garlic", "Ginger", "Cauliflower", "Cabbage", "Carrot", "Pumpkin", "Fenugreek Leaves", "Coriander Leaves", "Mint Leaves", "Green Chilies",
+        "Mustard Oil", "Sunflower Oil", "Mutton", "Beef", "Chicken", "Kashmiri Chai", "Rista", "Gushtaba", "Shinwari Gosht",
+        "Shami Kabab", "Seekh Kabab", "Afghani Pulao", "Halwa Puri", "Murgh Cholay",
+
     ]
-    dinner_items = [
+    dinner_items =  lunch_items+[
         "steak", "roast", "grill", "tikka", "masala", "lasagna", "sushi", "ramen", "jalfrezi", "handi", "haleem",
         "pulao", "sajji", "shinwari karahi", "kabuli pulao", "mandu", "gushtaba", "chicken karahi", "koftay", "chicken handi",
-        "chapli kabab", "afghani pulao", "chicken korma", "karahi gosht"
-    ] + lunch_items  # Dinner often includes items that are also commonly eaten at lunch
+        "chapli kabab", "afghani pulao", "chicken korma", "karahi gosht", "Fish and Chips","Biryani", "Kidney Beans","Butter Chicken", "Chicken Tikka Masala", "Chapati",
+        "Fish", "Shrimp","Sajji", "Kaak", "Landi",
+    "Ash-e-dosh", "Chapli Kabab", "Shinwari Karahi", "Kabuli Pulao", "Mantu",
+    "Namkeen Gosht", "Kashmiri Chai", "Rista", "Gushtaba", "Chicken Handi", "Lobia",
+    "Koftay" ] # Dinner often includes items that are also commonly eaten at lunch
     snack_items = [
         "fruit", "nuts", "chips", "biscuit", "cookie", "pakoras", "samosa", "popcorn", "pretzel", "dumpling", "chaat",
         "puff", "roll", "ice cream", "cake", "donut", "pastry", "barfi", "gajar halwa", "kheer", "ras malai", "gulab jamun",
         "falooda", "seviyan", "aloo bhujia", "panjiri", "jalebi", "shami kabab", "seekh kabab", "sheer khurma", "shahi tukray",
-        "dolma", "baklava", "empanadas", "crepes", "macaroni and cheese"
+        "dolma", "baklava", "empanadas", "crepes", "macaroni and cheese","Banana", "Mango", "Papaya", "Guava", "Apple", "Pomegranate", "Dates", "Oranges",
+        "Watermelon", "Melon", "Apricot", "Peach", "Fennel Seeds", "Fenugreek Seeds", "Mustard Seeds",
+        "Tamarind", "Bay Leaves", "Carom Seeds", "Nigella Seeds", "Curry Leaves", "Almonds",
+        "Cashews", "Peanuts", "Walnuts", "Pistachios", "Flax Seeds", "Chia Seeds",
+        "Sesame Seeds", "Gajrela","Samosa", "Pakoras", "Gajar Halwa", "Kheer", "Ras Malai", "Gulab Jamun", "Barfi",
+    "Falooda", "Seviyan", "Shahi Tukray", "Sheer Khurma"
     ]
     unhealthy_items = [
         "fried", "sugar", "soda", "candy", "chocolate", "sweet", "dessert", "jalebi", "gulab jamun", "barfi", "falooda",
