@@ -127,7 +127,7 @@ def classify_meal_type(item_name):
     "LYCHEE FLAVORED ALOE VERA DRINK WITH PULP","GOLDEN NEST, SWALLOW NEST BEVERAGE, LYCHEE","CALPICO, NON CARBONATED SOFT DRINK, LYCHEE",
     "MANGO LYCHEE ANTIOXIDANT DRINK","LYCHEE","MINI CHURROS","HERBAL BEVERAGE","MULBERRIES & GOJI BERRIES SUN-DRIED",
     " DRIED POWER BERRIES","TAM TAMS ONION","JAPANESE CRISPY SEAWEED","TOM YUM GOONG","STRAWBERRY","MELON","SUN DRIED TOMATO & BASIL HUMMUS",
-    "WATERMELON RINGS, WATERMELON","DE MI PAIS, PLANTAIN STRIPS","SESAME SEEDS","canned"
+    "WATERMELON RINGS, WATERMELON","DE MI PAIS, PLANTAIN STRIPS","SESAME SEEDS","canned","PAPAYA"
     ]
 
     unhealthy_items = [
@@ -137,7 +137,10 @@ def classify_meal_type(item_name):
     ]
 
 
+        # Convert the item name to lowercase to facilitate case-insensitive matching
     item_name_lower = item_name.lower()
+
+    # Check each category
     if any(food in item_name_lower for food in breakfast_items):
         return "Breakfast"
     elif any(food in item_name_lower for food in lunch_items):
@@ -148,7 +151,9 @@ def classify_meal_type(item_name):
         return "Snack"
     elif any(food in item_name_lower for food in unhealthy_items):
         return "Unhealthy"
-    return "Unspecified"
+
+    # If no category is matched, return 'Unspecified'
+    return "Unknown"
 
 
 
