@@ -82,7 +82,10 @@ def classify_meal_type(item_name):
     "egg", "milk", "cereal", "bread", "butter", "yogurt", "oatmeal", "pancake", "paratha", "chai", "toast",
     "porridge", "muesli", "cheese", "smoothie", "lassi", "honey", "ajwa dates", "aseel dates", "green tea", "black tea",
     "lassi", "Sarson ka Saag", "Makki di Roti", "Roghni Naan", "nihari", "Ghee", "Butter", "Coconut Oil", "Sesame Oil",
-    "Goat Liver", "Cinnamon", "Cardamom", "Butter Naan", "Desi Ghee", "Almond Milk", "Panjiri", "Haleem", "Kashmiri Chai"
+    "Goat Liver", "Cinnamon", "Cardamom", "Butter Naan", "Desi Ghee", "Almond Milk", "Panjiri", "Haleem", "Kashmiri Chai",
+    "Almonds","Chia Seeds","Cashews","Pistachios","Dates","Chopped Dates","Mango","Papaya Chunks","Raisins","Litchis, raw","Litchis, dried",
+    "Peaches, canned, light syrup pack","Peach nectar, canned, with sucralose","Peaches, canned, extra heavy syrup pack","Peaches, canned, extra light syrup",
+    "MAPLE CINNAMON GHEE","Pie","Pie, banana cream, prepared from recipe"
     ]
 
     lunch_items = [
@@ -92,14 +95,22 @@ def classify_meal_type(item_name):
     "chole bhature", "pav bhaji", "tagine", "couscous", "Chana Dal", "Moong Dal", "Masoor Dal", "Tomato", "Onion", "Garlic",
     "Ginger", "Cauliflower", "Cabbage", "Carrot", "Pumpkin", "Fenugreek Leaves", "Coriander Leaves", "Mint Leaves",
     "Green Chilies", "Mustard Oil", "Sunflower Oil", "Mutton", "Beef", "Chicken", "Kashmiri Chai", "Rista", "Gushtaba",
-    "Shinwari Gosht", "Shami Kabab", "Seekh Kabab", "Afghani Pulao", "Halwa Puri", "Murgh Cholay"
+    "Shinwari Gosht", "Shami Kabab", "Seekh Kabab", "Afghani Pulao", "Halwa Puri", "Murgh Cholay","haddock","Cut Okra","Spinach",
+    "Green Pigeon Peas","Kidney Beans","Fish","Vinegar","cider","POLLO ASADO COOKING SAUCE","BROCCOLI CHEDDAR QUICHE","DI PARMA PROSCIUTTO",
+    "CUMIN & CORIANDER POWDER"
     ]
 
     dinner_items = lunch_items + [
     "steak", "roast", "grill", "tikka", "masala", "lasagna", "sushi", "ramen", "jalfrezi", "handi", "haleem",
     "pulao", "sajji", "shinwari karahi", "kabuli pulao", "mandu", "gushtaba", "chicken karahi", "koftay", "chicken handi",
     "chapli kabab", "afghani pulao", "chicken korma", "karahi gosht", "Fish and Chips", "Biryani", "Kidney Beans",
-    "Butter Chicken", "Chicken Tikka Masala", "Chapati", "Fish", "Shrimp", "Sajji", "Kaak", "Landi", "Ash-e-dosh"
+    "Butter Chicken", "Chicken Tikka Masala", "Chapati", "Fish", "Shrimp", "Sajji", "Kaak", "Landi", "Ash-e-dosh",
+    "Au Jus Gravy Mix","Oil, canola","Oil, coconut","Bay Leaves","Balsamic Vinegar","Oil, industrial, coconut (hydrogenated)",
+    "PURITY FARMS GHEE","Oil, sunflower, linoleic (less than 60%)","Oil, sunflower, high oleic (70% and over)","Oil, sunflower, linoleic, (partially hydrogenated)",
+    "Oil, sunflower, linoleic, (approx. 65%)","Oil, industrial, mid-oleic, sunflower","Oil, industrial, canola (partially hydrogenated)","Oil, wheat germ","Oil, soybean lecithin",
+    "Oil, cupu assu","Oil, corn and canola","Mustard greens, cooked, boiled","BOUILLABAISSE","BAY LEAVES TURKISH","BEEF BULGOGI MARINADE",
+    "KOREAN BBQ SAUCE","BEEF PHO BEEF FLAVOR NOODLE DISH WITH SOY","GARLIC & GINGER","RUSTIC RATATOUILLE COOKING SAUCE","MOTHER INDIA ORGANICS",
+    "ALOO MATAR","THREE LAYER DIP","CARDAMOM PLANT-BASED GELATO"
     ]
 
     snack_items = [
@@ -110,12 +121,19 @@ def classify_meal_type(item_name):
     "Pomegranate", "Dates", "Oranges", "Watermelon", "Melon", "Apricot", "Peach", "Fennel Seeds", "Fenugreek Seeds",
     "Mustard Seeds", "Tamarind", "Bay Leaves", "Carom Seeds", "Nigella Seeds", "Curry Leaves", "Almonds", "Cashews",
     "Peanuts", "Walnuts", "Pistachios", "Flax Seeds", "Chia Seeds", "Sesame Seeds", "Gajrela", "Samosa", "Pakoras",
-    "Gajar Halwa", "Kheer", "Ras Malai", "Gulab Jamun", "Barfi", "Falooda", "Seviyan", "Shahi Tukray", "Sheer Khurma"
+    "Gajar Halwa", "Kheer", "Ras Malai", "Gulab Jamun", "Barfi", "Falooda", "Seviyan", "Shahi Tukray", "Sheer Khurma",
+    "Hummus","Guava Nectar","Pomegranate Juice","LYCHEES IN HEAVY SYRUP","JANS, LYCHEE NECTAR","SOUR LYCHEE LI HING GUMMIES",
+    "RASPBERRY ROSE LYCHEE GELATO","LYCHEE MINT SPARKLING BOTANICAL WATER","LYCHEE GINGER TEA INFUSION BAGS","LYCHEE FLAVORED PURE PREMIUM ALOE DRINK",
+    "LYCHEE FLAVORED ALOE VERA DRINK WITH PULP","GOLDEN NEST, SWALLOW NEST BEVERAGE, LYCHEE","CALPICO, NON CARBONATED SOFT DRINK, LYCHEE",
+    "MANGO LYCHEE ANTIOXIDANT DRINK","LYCHEE","MINI CHURROS","HERBAL BEVERAGE","MULBERRIES & GOJI BERRIES SUN-DRIED",
+    " DRIED POWER BERRIES","TAM TAMS ONION","JAPANESE CRISPY SEAWEED","TOM YUM GOONG","STRAWBERRY","MELON","SUN DRIED TOMATO & BASIL HUMMUS",
+    "WATERMELON RINGS, WATERMELON","DE MI PAIS, PLANTAIN STRIPS","SESAME SEEDS","canned"
     ]
 
     unhealthy_items = [
     "fried", "sugar", "soda", "candy", "chocolate", "sweet", "dessert", "jalebi", "gulab jamun", "barfi", "falooda",
-    "seviyan", "lassi", "rooh afza", "thadal", "shakar", "ice cream", "donut", "cake", "pastry", "creme", "mousse"
+    "seviyan", "MIGHTY MICRO SUNFLOWER, PEA & RADISH MICROS MIX", "rooh afza", "thadal", "shakar", "ice cream", "donut", "cake", "pastry", "creme", "mousse","PURE MAPLE SYRUP",
+    "Fast foods","chicken tenders","Corned beef loaf","jellied","DATE SYRUP","POMEGRANATE CALAMANSI-ADE"
     ]
 
 
