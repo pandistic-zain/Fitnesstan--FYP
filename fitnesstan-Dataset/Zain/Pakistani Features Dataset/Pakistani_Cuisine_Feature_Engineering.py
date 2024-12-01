@@ -187,7 +187,7 @@ def extract_nutrients(foods, is_pakistani):
             'Household Serving': household_serving,  # Include household serving text
             'Brand Name': food.get('brandName', 'Not specified'),  # Assuming 'brandOwner' maps to 'brandName'
             'Ingredients': food.get('ingredients', 'Not specified'),
-            'Market Country': food.get('marketCountry', 'Pakistan'),  # Assuming default as 'United States'
+            # 'Market Country': food.get('marketCountry', 'Pakistan'),  # Assuming default as 'United States'
             'Calories (kcal)': calories,
             'Protein (g)': nutrients.get('Protein', 0),
             'Total Fat (g)': nutrients.get('Total lipid (fat)', 0),
