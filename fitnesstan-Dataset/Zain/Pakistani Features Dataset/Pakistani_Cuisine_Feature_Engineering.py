@@ -178,11 +178,16 @@ def extract_nutrients(foods, is_pakistani):
         serving_size = food.get('servingSize', 'Not specified')
         serving_size_unit = food.get('servingSizeUnit', 'g')
         meal_type = classify_meal_type(food.get('description', 'No description'))
+        household_serving = food.get('householdServingFullText', 'Not specified')
         calories = nutrients.get('Energy', 0)
 
         food_data = {
             'Item Name': food.get('description', 'No description'),
             'Serving Size': f"{serving_size} {serving_size_unit}" if serving_size != 'Not specified' else 'Not specified',
+            'Household Serving': household_serving,  # Include household serving text
+            'Brand Name': food.get('brandName', 'Not specified'),  # Assuming 'brandOwner' maps to 'brandName'
+            'Ingredients': food.get('ingredients', 'Not specified'),
+            'Market Country': food.get('marketCountry', 'Pakistan'),  # Assuming default as 'United States'
             'Calories (kcal)': calories,
             'Protein (g)': nutrients.get('Protein', 0),
             'Total Fat (g)': nutrients.get('Total lipid (fat)', 0),
