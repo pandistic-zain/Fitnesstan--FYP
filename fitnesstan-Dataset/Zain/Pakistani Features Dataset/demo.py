@@ -114,14 +114,10 @@ def classify_meal_type(item_name):
     ]
 
     snack_items = [
-    "fruit", "nuts", "chips", "biscuit", "cookie", "pakoras", "samosa", "popcorn", "pretzel", "dumpling", "chaat",
-    "puff", "roll", "ice cream", "cake", "donut", "pastry", "barfi", "gajar halwa", "kheer", "ras malai", "gulab jamun",
-    "falooda", "seviyan", "aloo bhujia", "panjiri", "jalebi", "shami kabab", "seekh kabab", "sheer khurma", "shahi tukray",
-    "dolma", "baklava", "empanadas", "crepes", "macaroni and cheese", "Banana", "Mango", "Papaya", "Guava", "Apple",
+    "fruit", "nuts", "chaat","panjiri", "shami kabab", "seekh kabab", "macaroni and cheese", "Banana", "Mango", "Papaya", "Guava", "Apple",
     "Pomegranate", "Dates", "Oranges", "Watermelon", "Melon", "Apricot", "Peach", "Fennel Seeds", "Fenugreek Seeds",
-    "Mustard Seeds", "Tamarind", "Bay Leaves", "Carom Seeds", "Nigella Seeds", "Curry Leaves", "Almonds", "Cashews",
-    "Peanuts", "Walnuts", "Pistachios", "Flax Seeds", "Chia Seeds", "Sesame Seeds", "Gajrela", "Samosa", "Pakoras",
-    "Gajar Halwa", "Kheer", "Ras Malai", "Gulab Jamun", "Barfi", "Falooda", "Seviyan", "Shahi Tukray", "Sheer Khurma",
+    "Mustard Seeds", "Tamarind", "Bay Leaves", "Carom Seeds", "Nigella Seeds", "Almonds", "Cashews",
+    "Peanuts", "Walnuts", "Pistachios", "Flax Seeds", "Chia Seeds", "Sesame Seeds",
     "Hummus","Guava Nectar","Pomegranate Juice","LYCHEES IN HEAVY SYRUP","JANS, LYCHEE NECTAR","SOUR LYCHEE LI HING GUMMIES",
     "RASPBERRY ROSE LYCHEE GELATO","LYCHEE MINT SPARKLING BOTANICAL WATER","LYCHEE GINGER TEA INFUSION BAGS","LYCHEE FLAVORED PURE PREMIUM ALOE DRINK",
     "LYCHEE FLAVORED ALOE VERA DRINK WITH PULP","GOLDEN NEST, SWALLOW NEST BEVERAGE, LYCHEE","CALPICO, NON CARBONATED SOFT DRINK, LYCHEE",
@@ -133,7 +129,10 @@ def classify_meal_type(item_name):
     unhealthy_items = [
     "fried", "sugar", "soda", "candy", "chocolate", "sweet", "dessert", "jalebi", "gulab jamun", "barfi", "falooda",
     "seviyan", "MIGHTY MICRO SUNFLOWER, PEA & RADISH MICROS MIX", "rooh afza", "thadal", "shakar", "ice cream", "donut", "cake", "pastry", "creme", "mousse","PURE MAPLE SYRUP",
-    "Fast foods","chicken tenders","Corned beef loaf","jellied","DATE SYRUP","POMEGRANATE CALAMANSI-ADE"
+    "Fast foods","chicken tenders","Corned beef loaf","jellied","DATE SYRUP","POMEGRANATE CALAMANSI-ADE", "chips", "biscuit", "cookie", "pakoras", "samosa", "popcorn", "pretzel", "dumpling",
+    "puff", "roll", "ice cream", "cake", "donut", "pastry", "barfi", "gajar halwa", "kheer", "ras malai", "gulab jamun","falooda", "seviyan", "aloo bhujia", "jalebi",
+    "sheer khurma", "shahi tukray","dolma", "baklava", "empanadas", "crepes"
+
     ]
 
 
