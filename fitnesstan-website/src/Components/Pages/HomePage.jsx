@@ -17,7 +17,7 @@ import {
   FaChartLine,
 } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
-import headerImg from "../../Assets/header-image.png";
+import headerImg from "../../Assets/header-img.png";
 
 const supplementsData = [
   {

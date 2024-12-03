@@ -1,7 +1,7 @@
 /* Main Navbar Styles */
 .main-navbar {
     height: 80px; /* Height for the main navbar */
-    background-color: #ffffff !important; /* Light background */
+    background-color: #121212 !important; /* Light background */
     border-bottom: 1px solid rgba(255, 0, 0, 0.038); /* Subtle bottom border */
     box-shadow: 0 4px 6px rgba(255, 0, 0, 0.1); /* Soft shadow for depth */
     display: flex;
@@ -27,13 +27,28 @@
 /* Links Section */
 .links-section {
   height: var(--links-section-height, 30px);
-  background-color: var(--pakistan-green, #ff0000);
-  padding: 0.5rem 1.5rem; /* 5px and 15px converted to rem units */
+  background-color: #FF0000; /* Hard red background */
+  padding: 0.5rem 1.5rem; /* Consistent padding */
   display: flex;
   align-items: center;
   position: sticky;
   top: 0;
   z-index: 1000;
+  box-shadow: 0 0 10px rgba(255, 0, 0, 0.6), 0 0 20px rgba(255, 0, 0, 0.4), 0 0 30px rgba(255, 0, 0, 0.3); /* Subtle initial glow */
+  animation: links-glow 2.5s infinite alternate ease-in-out; /* Continuous glow animation */
+}
+
+/* Glow animation for the links-section */
+@keyframes links-glow {
+  0% {
+    box-shadow: 0 0 10px rgba(255, 0, 0, 0.6), 0 0 20px rgba(255, 0, 0, 0.4), 0 0 30px rgba(255, 0, 0, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(255, 0, 0, 0.8), 0 0 40px rgba(255, 0, 0, 0.6), 0 0 60px rgba(255, 0, 0, 0.5); /* Brighter glow */
+  }
+  100% {
+    box-shadow: 0 0 10px rgba(255, 0, 0, 0.6), 0 0 20px rgba(255, 0, 0, 0.4), 0 0 30px rgba(255, 0, 0, 0.3); /* Reset glow */
+  }
 }
 
 .links-section .nav-link {
@@ -41,7 +56,7 @@
     margin: 0 15px;
     font-size: 1rem;
     position: relative; /* Allow the use of pseudo-elements for hover effect */
-    transition: color 0.3s ease-in-out; /* Smooth transition on hover */
+    transition: color 0.3s ease-in-out, text-decoration 0.3s ease-in-out; /* Smooth transition on hover */
 }
 
 .links-section .nav-link {
@@ -50,11 +65,11 @@
 
 .links-section .nav-link:focus {
   outline: none; 
-  color: #350202; 
+  color: #ffffff; 
 }
 
 .links-section .nav-link:hover {
-  color: #6e1515; 
+  color: #FFD700; 
   text-decoration: underline; 
 }
 

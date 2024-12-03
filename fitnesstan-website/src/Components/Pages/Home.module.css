@@ -2,21 +2,53 @@
 html{
   scroll-behavior: smooth;
 }
-/* Hero Section */
 .hero-section {
-  background-image: url("../../Assets/mainBannerBg.svg");
-  background-size: cover; /* Ensures the image covers the section fully */
-  background-repeat: no-repeat; /* Prevents the image from repeating */
-  background-position: center; /* Centers the image */
-  padding: 80px 0;
+  background: radial-gradient(circle at center, #1a1a1a 40%, #000000 100%) !important; /* Improved gradient with a smoother transition */
+  color: #E0E0E0 !important; /* Light grey for supporting text */
+  padding: 50px;
+  position: relative; /* For overlay effects */
+  overflow: hidden; /* Ensures child elements like decorations are contained */
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.8); /* Adds depth to the section */
 }
 
+/* Adding animated subtle glow effect around the hero section */
+.hero-section::before {
+  content: '';
+  position: absolute;
+  top: -20%;
+  left: -20%;
+  width: 140%;
+  height: 140%;
+  background: radial-gradient(circle, rgba(255, 0, 0, 0.2) 0%, transparent 60%);
+  animation: section-glow 5s infinite alternate ease-in-out;
+  z-index: 0; /* Places this layer beneath the content */
+}
+
+/* Glow animation */
+@keyframes section-glow {
+  0% {
+    transform: scale(1);
+    opacity: 0.6;
+  }
+  100% {
+    transform: scale(1.2);
+    opacity: 0.4;
+  }
+}
+/* Background gradient for hero section */
 .hero-section h1 {
   font-size: 3rem;
   font-weight: bold;
+  color: #ff0000; /* Bright red text */
+  /* text-shadow: 0 0 8px #ff0000, 0 0 12px #8a8a8a, 0 0 20px #8a8a8a;  */
 }
-
+/* Ensure content is above the glow */
+.hero-section * {
+  position: relative;
+  z-index: 1;
+}
 .hero-section p {
+  color: #ffffff;
   font-size: 1.2rem;
   margin-bottom: 20px;
 }
@@ -48,7 +80,7 @@ button.learn-more .circle {
   margin: 0;
   width: 3rem;
   height: 3rem;
-  background: #700000;
+  background: #ff0000;
   border-radius: 1.625rem;
 }
 
@@ -90,7 +122,7 @@ button.learn-more .button-text {
   bottom: 0;
   padding: 0.75rem 0;
   margin: 0 0 0 1.85rem;
-  color: #700000;
+  color: #ff0000;
   font-weight: 700;
   line-height: 1.6;
   text-align: center;
@@ -99,6 +131,8 @@ button.learn-more .button-text {
 
 button:hover .circle {
   width: 100%;
+  box-shadow: 0 0 15px #FF0000, 0 0 30px #FF0000, 0 0 45px #FF0000; /* Shining red glow */
+  transition: width 0.3s ease-in-out, box-shadow 0.3s ease-in-out; /* Smooth transition for the glow effect */
 }
 
 button:hover .circle .icon.arrow {

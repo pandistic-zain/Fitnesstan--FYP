@@ -52,8 +52,6 @@ const CustomNavbar = () => {
     <>
       {/* Main Navbar */}
       <BootstrapNavbar
-        bg="light"
-        variant="light"
         expand="lg"
         className="main-navbar"
       >
