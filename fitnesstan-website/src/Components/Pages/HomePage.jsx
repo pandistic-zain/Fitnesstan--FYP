@@ -18,6 +18,7 @@ import {
 } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import headerImg from "../../Assets/header-img.png";
+import ZainImg from "../../Assets/zain.jpg";
 
 const supplementsData = [
   {
@@ -113,7 +114,7 @@ const testimonialsData = [
 const HomePage = () => {
   const navigate = useNavigate();
   const handleExploreButtonClick = () => {
-    navigate('/features'); 
+    navigate("/features");
     scrollTop();
   };
   const handleLearnButtonClick = () => {
@@ -121,7 +122,7 @@ const HomePage = () => {
     scrollTop();
   };
   const handleRegisterRedirect = () => {
-    navigate('/register'); 
+    navigate("/register");
     scrollTop();
   };
   const scrollTop = () => {
@@ -148,7 +149,10 @@ const HomePage = () => {
                 seasoned athlete, our platform offers tailored workout and diet
                 plans crafted just for you.
               </p>
-              <button className={styles["learn-more"]} onClick={handleRegisterRedirect}>
+              <button
+                className={styles["learn-more"]}
+                onClick={handleRegisterRedirect}
+              >
                 <span className={styles["circle"]} aria-hidden="true">
                   <span
                     className={styles["icon"] + " " + styles["arrow"]}
@@ -389,28 +393,47 @@ const HomePage = () => {
           ))}
         </div>
       </section>
-      {/* Contact Us Section */}
-      <section className={styles["contact-section"]} id="contact">
+      {/* Team Section */}
+      <section className={styles["team-section"]} id="team">
         <Container>
-          <h2>Contact Us</h2>
-          <form className={styles["contact-form"]}>
-            <Row>
-              <Col md={6}>
-                <input type="text" placeholder="Your Name" />
-              </Col>
-              <Col md={6}>
-                <input type="email" placeholder="Your Email" />
-              </Col>
-            </Row>
-            <Row>
-              <Col>
-                <textarea rows="4" placeholder="Your Message"></textarea>
-              </Col>
-            </Row>
-            <button type="submit">Send Message</button>
-          </form>
+          <h2>Meet Our Team</h2>
+          <Row className={styles["team-row"]}>
+            {/* Team Member 1 */}
+            <Col md={4} className={styles["team-member"]}>
+              <div className={styles["team-photo"]}>
+                <img src="/path-to-image/member1.jpg" alt="Team Member 1" />
+              </div>
+              <h3>Ubaid Ullah</h3>
+              <p>- Model Trianing</p>
+              <p>- Documentation</p>
+              <p>- Data Gathering</p>
+            </Col>
+
+            {/* Team Member 2 */}
+            <Col md={4} className={styles["team-member"]}>
+              <div className={styles["team-photo"]}>
+                <img src={ZainImg} alt="Team Member 2" />
+              </div>
+              <h3>Zain Ul Abdeen</h3>
+              <p>- Team Lead</p>
+              <p>- Java Web Developer</p>
+              <p>- Model Training</p>
+            </Col>
+
+            {/* Team Member 3 */}
+            <Col md={4} className={styles["team-member"]}>
+              <div className={styles["team-photo"]}>
+                <img src="/path-to-image/member3.jpg" alt="Team Member 3" />
+              </div>
+              <h3>Huzaifa Khan</h3>
+              <p>- App Developer</p>
+              <p>- Documentation</p>
+              <p>- Requirement Anlaysis</p>
+            </Col>
+          </Row>
         </Container>
       </section>
+
       {/* Give Feedback Section */}
       <section className={styles["give-feedback-section"]} id="give-feedback">
         <Container>

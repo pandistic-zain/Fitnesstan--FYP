@@ -39,6 +39,15 @@
      id="defs1">
     <inkscape:path-effect
        effect="powerclip"
+       id="path-effect8"
+       is_visible="true"
+       lpeversion="1"
+       inverse="true"
+       flatten="false"
+       hide_clip="false"
+       message="Use fill-rule evenodd on &lt;b&gt;fill and stroke&lt;/b&gt; dialog if no flatten result after convert clip to paths." />
+    <inkscape:path-effect
+       effect="powerclip"
        id="path-effect6"
        is_visible="true"
        lpeversion="1"
@@ -105,8 +114,34 @@
          id="lpe_path-effect6"
          style="fill:#ff0000;stroke-width:0.264583"
          class="powerclip"
-         d="M -748.77728,193.27291 H 2634.6312 V 1762.6694 H -748.77728 Z M 5.9868374,11.973675 1927.7616,17.960512" />
+         d="M -748.77728,193.27285 H 2634.6312 V 1762.6694 H -748.77728 Z M 5.9868374,11.973675 1927.7616,17.960512" />
     </clipPath>
+    <clipPath
+       clipPathUnits="userSpaceOnUse"
+       id="clipath_lpe_path-effect8">
+      <path
+         style="display:none;fill:#ff0000;stroke-width:0.264583"
+         d="M 5.9868374,11.973675 1927.7616,17.960512"
+         id="path8" />
+      <path
+         id="lpe_path-effect8"
+         style="fill:#ff0000;stroke-width:0.264583"
+         class="powerclip"
+         d="M -416.51066,750.92268 H 2374.2063 V 1781.5096 H -416.51066 Z M 5.9868374,11.973675 1927.7616,17.960512" />
+    </clipPath>
+    <filter
+       inkscape:collect="always"
+       style="color-interpolation-filters:sRGB"
+       id="filter9"
+       x="-0.090931044"
+       y="-0.41006521"
+       width="1.181862"
+       height="1.8201304">
+      <feGaussianBlur
+         inkscape:collect="always"
+         stdDeviation="23.753185"
+         id="feGaussianBlur9" />
+    </filter>
   </defs>
   <g
      inkscape:label="Layer 1"
@@ -116,9 +151,10 @@
        id="g4"
        clip-path="url(#clipPath5)"
        inkscape:path-effect="#path-effect6"
-       transform="translate(5.9868378,-197.56564)">
+       transform="translate(5.9868378,-197.56564)"
+       style="fill:#1a1a1a">
       <path
-         style="mix-blend-mode:normal;fill:#ffffff;stroke-width:0.264583;filter:url(#filter1);fill-opacity:1"
+         style="mix-blend-mode:normal;fill:#1a1a1a;fill-opacity:1;stroke-width:0.264583;filter:url(#filter1)"
          id="rect1"
          width="1939.7354"
          height="389.14444"
@@ -132,10 +168,31 @@
        id="g3"
        clip-path="url(#clipPath4)"
        inkscape:path-effect="#path-effect5"
-       transform="translate(-83.815723,-209.53931)">
+       transform="matrix(1.0032062,0,0,0.95238521,-63.006799,-131.28817)"
+       style="opacity:1;fill:#1a1a1a;fill-opacity:1;stroke-width:1.00013;stroke-dasharray:none">
       <path
-         style="mix-blend-mode:normal;fill:#ffffff;stroke-width:0.264583;filter:url(#filter2);fill-opacity:1"
+         style="mix-blend-mode:normal;fill:#1a1a1a;fill-opacity:1;stroke-width:0.952771;stroke-dasharray:none;filter:url(#filter2)"
          id="rect2"
+         width="2352.8271"
+         height="508.8812"
+         x="-131.71042"
+         y="1059.6703"
+         transform="matrix(1,0,0,1.1018719,-65.855213,-181.7657)"
+         sodipodi:type="rect"
+         d="M -131.71042,1059.6703 H 2221.1167 v 508.8812 H -131.71042 Z" />
+    </g>
+    <g
+       id="g5"
+       clip-path="url(#clipath_lpe_path-effect8)"
+       inkscape:path-effect="#path-effect8"
+       transform="matrix(1.0032062,0,0,0.95238521,-57.01996,-600.37818)"
+       style="opacity:0.579439;fill:#1a1a1a;fill-opacity:1;stroke-width:1.00013;stroke-dasharray:none;filter:url(#filter9)"
+       inkscape:export-filename=".\ShadowBottomWhite.png"
+       inkscape:export-xdpi="25.4"
+       inkscape:export-ydpi="25.4">
+      <path
+         style="mix-blend-mode:normal;fill:#1a1a1a;fill-opacity:1;stroke-width:0.952771;stroke-dasharray:none;filter:url(#filter2)"
+         id="path3"
          width="2352.8271"
          height="508.8812"
          x="-131.71042"
