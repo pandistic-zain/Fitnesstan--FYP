@@ -404,9 +404,7 @@ const HomePage = () => {
                 <img src="/path-to-image/member1.jpg" alt="Team Member 1" />
               </div>
               <h3>Ubaid Ullah</h3>
-              <p>- Model Trianing</p>
-              <p>- Documentation</p>
-              <p>- Data Gathering</p>
+              <p>- ML Engineer</p>
             </Col>
 
             {/* Team Member 2 */}
@@ -417,7 +415,6 @@ const HomePage = () => {
               <h3>Zain Ul Abdeen</h3>
               <p>- Team Lead</p>
               <p>- Java Web Developer</p>
-              <p>- Model Training</p>
             </Col>
 
             {/* Team Member 3 */}
@@ -427,8 +424,6 @@ const HomePage = () => {
               </div>
               <h3>Huzaifa Khan</h3>
               <p>- App Developer</p>
-              <p>- Documentation</p>
-              <p>- Requirement Anlaysis</p>
             </Col>
           </Row>
         </Container>
