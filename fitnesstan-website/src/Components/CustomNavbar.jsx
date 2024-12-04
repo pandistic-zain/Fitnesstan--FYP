@@ -45,7 +45,7 @@ const CustomNavbar = () => {
     if (location.pathname === "/") {
       // Scroll to the Features section if on the homepage
       e.preventDefault();
-      document.getElementById("contact").scrollIntoView({ behavior: "smooth" });
+      document.getElementById("team").scrollIntoView({ behavior: "smooth" });
     }
   };
   return (
@@ -119,7 +119,7 @@ const CustomNavbar = () => {
             </Nav.Link>
             <Nav.Link
               as={location.pathname === "/" ? Link : NavLink}
-              to={location.pathname === "/" ? "#contact" : "/contact"}
+              to={location.pathname === "/" ? "#team" : "/team"}
               activeClassName="active"
               onClick={handleContactClick}
             >

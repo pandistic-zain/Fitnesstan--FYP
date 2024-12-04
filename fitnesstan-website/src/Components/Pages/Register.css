@@ -323,19 +323,34 @@
   opacity: 1;
 }
 
+
+/* Default styling for the toggle icon container */
 .show-password {
-  position: absolute;
-  right: 10px; /* Position inside input field */
-  cursor: pointer;
-  font-size: 18px;
-  color: #000000;
-  transition: color 0.3s ease, transform 0.3s ease;
+  position: absolute; /* Positioned inside the input field */
+  top: 50%; /* Vertically center the icon */
+  right: 10px; /* Spaced to the right */
+  transform: translateY(-50%); 
+  cursor: pointer; /* Pointer cursor for interactivity */
+  font-size: 18px; /* Icon size */
+  transition: color 0.5s ease, transform 0.5s ease; /* Smooth transitions */
 }
 
-.show-password:hover {
-  color: #ff0000;
-  transform: scale(1.3);
+/* Default icon styling (password hidden) */
+.show-password .fa-eye {
+  color: #1a1a1a; /* Dark grey when password is hidden */
 }
+
+/* Visible password icon styling */
+.show-password .fa-eye-slash {
+  color: #ffffff; /* White when password is visible */
+}
+
+/* Hover effect for interactivity */
+.show-password:hover {
+  transform: scale(1.3); /* Slightly enlarge on hover */
+  color: #300000; /* Change to red when hovered */
+}
+
 
 .form-fields{
   margin-top: 5px;
