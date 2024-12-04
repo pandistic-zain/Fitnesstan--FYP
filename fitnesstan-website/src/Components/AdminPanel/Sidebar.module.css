@@ -3,8 +3,8 @@
 /* Define CSS Variables for Reusability */
 :root {
   --primary-color: #ff0000; /* Red color */
-  --text-color: #000000; /* Black for text */
-  --hover-bg-color: #ffffff; /* White background on hover */
+  --text-color: #ffffff; /* Black for text */
+  --hover-bg-color: #1a1a1a; /* White background on hover */
   --light-gray-bg: #f5f5f5; /* Light grey background */
   --box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Hover shadow */
   --transition-speed: 0.3s; /* General transition speed */
@@ -111,6 +111,7 @@
 /* Hover effect for ML Plans navLink */
 .mlPlansNavLink:hover {
   background-color: #ffcdcd; /* Light background on hover */
+  color: #1a1a1a;
   transform: scale(1.02); /* Slight scaling on hover */
 }
 

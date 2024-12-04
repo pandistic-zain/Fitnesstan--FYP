@@ -2,7 +2,8 @@
 
 .adminDashboard {
   display: flex;
-  background-color: #F5F5F5; /* Light Grey */
+  background-color: #1a1a1a; /* Light Grey */
+  color: #ffffff;
   height: 100vh;
 }
 
@@ -13,7 +14,7 @@
 }
 
 .card {
-  background-color: #FFFFFF; /* White */
+  background-color: #ff0000; /* White */
   padding: 20px;
   margin-bottom: 20px;
   border-radius: 8px;
