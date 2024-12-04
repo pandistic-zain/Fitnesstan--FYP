@@ -119,16 +119,17 @@
   font-size: 1rem; /* Standard font size */
   line-height: 1.6; /* Line height for readability */
   padding: 15px; /* Padding for content */
-  background-color: #ffffff; /* White background for the overview */
+  background-color: #1A1A1A; /* White background for the overview */
   margin-left: 20px;
   margin-right: 20px;
   text-align: justify; /* Justify the text */
   font-weight:600;
+  color: #ffffff;
 }
 
 /* Main section styling */
 .mainSection {
-  background: #ffffff;
+  background: #1a1a1a;
   display: flex; /* Enable Flexbox */
   align-items: center; /* Align columns to stretch the full height */
   justify-content: center; /* Center alignment of columns */
@@ -147,7 +148,7 @@
   border-radius: 10px; /* Optional: Rounded corners for a softer look */
   margin-left: 20px;
   margin-right: 20px;
-  color:#000000;
+  color:#ffffff;
   margin-bottom: 30px;
 }
 /* Column styling */
@@ -162,20 +163,20 @@
   border-radius: 14px;
   margin-left: 20px;
   margin-right: 20px;
-  color:#000000;
+  color:#ffffff;
   margin-bottom: 30px;
 }
 .bcolumn h3{
   font-weight: bolder;
   margin-bottom: 15px;
   text-align: center;
-  color: #000000;
+  color: #ffffff;
 }
 .dcolumn h3{
   font-weight: bolder;
   text-align: center;
   margin-bottom: 15px;
-  color: #000000;
+  color: #ffffff;
 }
 
 /* Card with Supplement Image */
@@ -192,8 +193,8 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  box-shadow: 20px 20px 60px rgba(190, 190, 190, 0.5), 
-              -20px -20px 60px rgba(255, 255, 255, 0.5);
+  box-shadow: 20px 20px 60px rgba(30, 30, 30, 0.5), 
+              -20px -20px 60px rgba(30, 30, 30, 0.5);
   transition: transform 0.3s, box-shadow 0.3s;
 }
 
@@ -375,7 +376,7 @@
   font-size: 1rem; /* Standard font size */
   line-height: 1.75; /* Increased line height for better readability */
   margin-bottom: 2rem; /* Space below the paragraph */
-  color: #333333; /* Dark gray for softer contrast */
+  color: #ffffff; /* Dark gray for softer contrast */
   margin-left: 20px;
   margin-right: 20px;
   text-align: justify; /* Justify the text */
@@ -384,8 +385,16 @@
 
 
 .featureDivider {
-  border: 1px solid #ccc;
-  margin: 20px 0;
+  border: 1px solid #ff0000; /* Default border color */
+  margin: 20px 0; /* Spacing above and below */
+  box-shadow: 0 0 10px rgba(255, 0, 0, 0.5); /* Subtle red glow effect */
+  transition: box-shadow 0.3s ease, transform 0.3s ease; /* Smooth animation for interactions */
+}
+
+/* Hover Effect for Glowing Divider */
+.featureDivider:hover {
+  box-shadow: 0 0 20px rgba(255, 0, 0, 0.8), 0 0 40px rgba(255, 0, 0, 0.6); /* Brighter glow on hover */
+  transform: scaleX(1.05); /* Slight horizontal scaling */
 }
 .backToHomeBottom {
   display: block;
