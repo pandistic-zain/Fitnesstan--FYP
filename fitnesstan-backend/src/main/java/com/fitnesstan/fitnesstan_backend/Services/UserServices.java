@@ -117,8 +117,21 @@ public class UserServices {
     }
 
     private void sendVerificationEmail(String email, String otp) {
-        String subject = "Verify your email";
-        String message = "Your OTP for verification is: " + otp + "\nPlease enter this OTP to verify your email.";
+        String subject = "Account Verification - Fitnesstan";
+
+        String message = "Dear User,\n\n" +
+                 "Thank you for signing up with Fitnesstan! To complete your registration, please verify your email address by using the OTP provided below:\n\n" +
+                 "-----------------------------\n" +
+                 "Your OTP: " + otp + "\n" +
+                 "-----------------------------\n\n" +
+                 "Please enter this OTP in the verification section of our application to activate your account.\n\n" +
+                 "If you did not sign up for Fitnesstan, please ignore this email or contact our support team for assistance.\n\n" +
+                 "Best Regards,\n" +
+                 "The Fitnesstan Team\n\n" +
+                 "Fitnesstan | Empowering Your Fitness Journey\n" +
+                 "Email: zain.alphanetworks@gmail.com | Phone: +92 3445995192\n" +
+                 "Website: ------------------------------";
+
 
         SimpleMailMessage emailMessage = new SimpleMailMessage();
         emailMessage.setTo(email);
