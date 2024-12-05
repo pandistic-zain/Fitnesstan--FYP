@@ -79,28 +79,23 @@ const Register = () => {
     try {
       const response = await registerUser(signUpData);
       if (response.status === 201) {
-        setSuccessMessage(
-          "Registration successful! Please check your email to verify your account."
-        );
-        navigate(
-          `/email-verification?email=${encodeURIComponent(signUpData.email)}`
-        );
+        setSuccessMessage("Registration successful! Let's add some additional information.");
+        navigate(`/additional-info?email=${encodeURIComponent(signUpData.email)}`);
       } else {
         setErrorMessage(
-          response.data.message ||
-            "Sign-up failed. Please ensure all fields are filled correctly."
+          response.data.message || "Sign-up failed. Please ensure all fields are filled correctly."
         );
       }
     } catch (error) {
       console.error("Sign-up error: ", error.response?.data || error);
       setErrorMessage(
-        error.response?.data.message ||
-          "Email already in use or invalid input. Please try again."
+        error.response?.data.message || "Email already in use or invalid input. Please try again."
       );
     } finally {
       setLoading(false); // Stop loading
     }
   };
+  
 
   return (
     <>
