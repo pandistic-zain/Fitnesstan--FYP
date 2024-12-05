@@ -10,8 +10,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import com.mongodb.lang.NonNull;
-
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -22,21 +21,34 @@ import java.util.List;
 @Document(collection = "users") // Map this class to the "users" collection in MongoDB
 public class Users {
     @Id
-    private ObjectId id; // Use String instead of ObjectId for simplicity.
+    private ObjectId id; // Consider using String if preferred
 
-    @NonNull
     private String username;
 
     @Indexed(unique = true)
-    @NonNull
+
     private String email;
 
-    @NonNull
     private String password;
 
-    private List<String> roles; // Store roles as List<String> for multiple roles (e.g., ADMIN, USER)
+    private List<String> roles; // e.g., ADMIN, USER
+
     private String status; // e.g., "PENDING", "ACTIVE"
+
     private String verificationToken;
+
     private LocalDateTime createdAt;
+
     private LocalDateTime updatedAt;
+    private Double heightFt; // Height in feet
+    private LocalDate dob; // Date of Birth
+
+    private Double weightKg; // Weight in kilograms
+    private String gender; // Consider using an Enum for predefined values
+    private String occupation;
+    private String religion;
+    private String exerciseLevel; // Consider using an Enum (e.g., LOW, MEDIUM, HIGH)
+    private Double sleepHours; // Average sleep hours per night
+
+    private List<String> medicalHistory; // List of medical conditions
 }

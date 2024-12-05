@@ -39,13 +39,26 @@ public class UserServices {
     }
 
     @Transactional
-    public void saveUser(Users user) throws Exception {
-        // Check if email already exists in database
+    public void saveUserToDatabase(Users user) {
+        userRepository.save(user);
+    }
+
+    // Encode password
+    public String encodePassword(String password) {
+        return passwordEncoder.encode(password);
+    }
+
+    @Transactional
+    public void saveUser(Users user, Users additionalInfo) throws Exception {
+        // Validate email uniqueness
         if (isEmailExists(user.getEmail()) || otpStore.containsKey(user.getEmail())) {
-            throw new Exception("Username or email already exists.");
+            throw new Exception("Email already exists.");
         }
 
-        // Prepare user details with PENDING status and save to temporary store
+        // Validate and set additional information
+        validateAndSetAdditionalInfo(user, additionalInfo);
+
+        // Prepare user details
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setRoles(Arrays.asList("USER"));
         user.setStatus("PENDING");
@@ -53,9 +66,49 @@ public class UserServices {
         user.setCreatedAt(LocalDateTime.now());
         user.setUpdatedAt(LocalDateTime.now());
 
-        // Store OTP in memory and send the verification email
+        // Store user in OTP store and send verification email
         otpStore.put(user.getEmail(), user);
         sendVerificationEmail(user.getEmail(), user.getVerificationToken());
+    }
+
+    private void validateAndSetAdditionalInfo(Users user, Users additionalInfo) throws Exception {
+        // Validate additional information
+        if (additionalInfo.getHeightFt() == null || additionalInfo.getHeightFt() <= 0) {
+            throw new Exception("Height is mandatory and must be greater than 0.");
+        }
+        if (additionalInfo.getDob() == null) {
+            throw new Exception("Date of Birth is mandatory.");
+        }
+        if (additionalInfo.getWeightKg() == null || additionalInfo.getWeightKg() <= 0) {
+            throw new Exception("Weight is mandatory and must be greater than 0.");
+        }
+        if (additionalInfo.getGender() == null || additionalInfo.getGender().isEmpty()) {
+            throw new Exception("Gender is mandatory.");
+        }
+        if (additionalInfo.getOccupation() == null || additionalInfo.getOccupation().isEmpty()) {
+            throw new Exception("Occupation is mandatory.");
+        }
+        if (additionalInfo.getReligion() == null || additionalInfo.getReligion().isEmpty()) {
+            throw new Exception("Religion is mandatory.");
+        }
+        if (additionalInfo.getExerciseLevel() == null || additionalInfo.getExerciseLevel().isEmpty()) {
+            throw new Exception("Exercise Level is mandatory.");
+        }
+        if (additionalInfo.getSleepHours() == null || additionalInfo.getSleepHours() < 0
+                || additionalInfo.getSleepHours() > 24) {
+            throw new Exception("Sleep Hours must be between 0 and 24.");
+        }
+
+        // Set additional information to the user object
+        user.setHeightFt(additionalInfo.getHeightFt());
+        user.setDob(additionalInfo.getDob());
+        user.setWeightKg(additionalInfo.getWeightKg());
+        user.setGender(additionalInfo.getGender());
+        user.setOccupation(additionalInfo.getOccupation());
+        user.setReligion(additionalInfo.getReligion());
+        user.setExerciseLevel(additionalInfo.getExerciseLevel());
+        user.setSleepHours(additionalInfo.getSleepHours());
+        user.setMedicalHistory(additionalInfo.getMedicalHistory());
     }
 
     private boolean isEmailExists(String email) {
@@ -147,6 +200,7 @@ public class UserServices {
         }
         return null;
     }
+
     public boolean updateUser(String id, Users user) {
         Optional<Users> existingUser = userRepository.findById(new ObjectId(id));
         if (existingUser.isPresent()) {

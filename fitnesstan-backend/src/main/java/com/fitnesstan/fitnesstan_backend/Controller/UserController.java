@@ -5,13 +5,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import com.fitnesstan.fitnesstan_backend.DAO.UserRepository;
-import com.fitnesstan.fitnesstan_backend.Entity.Users;  // Adjust import based on your UserEntity class
+import com.fitnesstan.fitnesstan_backend.Entity.Users;
 import com.fitnesstan.fitnesstan_backend.Services.UserServices;
 
 @RestController
@@ -24,20 +20,68 @@ public class UserController {
     @Autowired
     private UserRepository userRepository;
 
-    // Endpoint to update the user details
+    // Endpoint to update user details
     @PutMapping
-    public ResponseEntity<String> updateUser(@RequestBody Users user) {
+    public ResponseEntity<String> updateUser(@RequestBody Users updatedUser) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String username = auth.getName();
-        Users userInDb = userServices.findByUsername(username);  // Ensure this method is implemented in your service
+        String username = auth.getName(); // Get logged-in username
+        Users existingUser = userServices.findByUsername(username);
+
+        if (existingUser == null) {
+            return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
+        }
 
         try {
-            userInDb.setUsername(user.getUsername());
-            userInDb.setPassword(user.getPassword());
-            userServices.saveUser(userInDb); // Ensure saveUser method is implemented in your service
-            return new ResponseEntity<>("Update User Successfully", HttpStatus.OK);
+            // Update allowed fields
+            if (updatedUser.getUsername() != null && !updatedUser.getUsername().isEmpty()) {
+                existingUser.setUsername(updatedUser.getUsername());
+            }
+
+            if (updatedUser.getPassword() != null && !updatedUser.getPassword().isEmpty()) {
+                existingUser.setPassword(userServices.encodePassword(updatedUser.getPassword())); // Use your encoding method
+            }
+
+            if (updatedUser.getHeightFt() != null) {
+                existingUser.setHeightFt(updatedUser.getHeightFt());
+            }
+
+            if (updatedUser.getWeightKg() != null) {
+                existingUser.setWeightKg(updatedUser.getWeightKg());
+            }
+
+            if (updatedUser.getGender() != null && !updatedUser.getGender().isEmpty()) {
+                existingUser.setGender(updatedUser.getGender());
+            }
+
+            if (updatedUser.getDob() != null) {
+                existingUser.setDob(updatedUser.getDob());
+            }
+
+            if (updatedUser.getOccupation() != null && !updatedUser.getOccupation().isEmpty()) {
+                existingUser.setOccupation(updatedUser.getOccupation());
+            }
+
+            if (updatedUser.getReligion() != null && !updatedUser.getReligion().isEmpty()) {
+                existingUser.setReligion(updatedUser.getReligion());
+            }
+
+            if (updatedUser.getExerciseLevel() != null && !updatedUser.getExerciseLevel().isEmpty()) {
+                existingUser.setExerciseLevel(updatedUser.getExerciseLevel());
+            }
+
+            if (updatedUser.getSleepHours() != null) {
+                existingUser.setSleepHours(updatedUser.getSleepHours());
+            }
+
+            if (updatedUser.getMedicalHistory() != null) {
+                existingUser.setMedicalHistory(updatedUser.getMedicalHistory());
+            }
+
+            // Save updated user
+            userServices.saveUserToDatabase(existingUser);
+            return new ResponseEntity<>("User updated successfully", HttpStatus.OK);
         } catch (Exception e) {
-            return new ResponseEntity<>("Failed to Update User: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>("Failed to update user: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -46,11 +90,17 @@ public class UserController {
     public ResponseEntity<String> deleteUser() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String username = auth.getName();
+
         try {
-            userRepository.deleteByUsername(username);  // Ensure this method is implemented in your repository
-            return new ResponseEntity<>("User Deleted Successfully", HttpStatus.OK);
+            Users user = userServices.findByUsername(username);
+            if (user == null) {
+                return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
+            }
+
+            userRepository.deleteById(user.getId()); // Use appropriate method based on your repository implementation
+            return new ResponseEntity<>("User deleted successfully", HttpStatus.OK);
         } catch (Exception e) {
-            return new ResponseEntity<>("Failed to Delete User: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>("Failed to delete user: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }

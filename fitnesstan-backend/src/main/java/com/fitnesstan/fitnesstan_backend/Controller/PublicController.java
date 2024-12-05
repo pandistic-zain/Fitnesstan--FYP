@@ -15,7 +15,7 @@ import com.fitnesstan.fitnesstan_backend.Services.UserServices;
 public class PublicController {
 
     @Autowired
-    private UserServices userServices; 
+    private UserServices userServices;
 
     // Health check endpoint
     @GetMapping("/health-check")
@@ -23,16 +23,18 @@ public class PublicController {
         return new ResponseEntity<>("OK", HttpStatus.OK);
     }
 
-    // User creation endpoint
-    @PostMapping("/create-user")
-    public ResponseEntity<String> saveUser(@RequestBody Users user) {
-        try {
-            userServices.saveUser(user);  // Save user with PENDING status
-            return new ResponseEntity<>("User saved successfully. Please verify your email.", HttpStatus.CREATED);
-        } catch (Exception e) {
-            return new ResponseEntity<>("Failed to save user: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
+    // // User creation endpoint
+    // @PostMapping("/create-user")
+    // public ResponseEntity<String> saveUser(@RequestBody Users user) {
+    // try {
+    // userServices.saveUser(user); // Save user with PENDING status
+    // return new ResponseEntity<>("User saved successfully. Please verify your
+    // email.", HttpStatus.CREATED);
+    // } catch (Exception e) {
+    // return new ResponseEntity<>("Failed to save user: " + e.getMessage(),
+    // HttpStatus.INTERNAL_SERVER_ERROR);
+    // }
+    // }
 
     // Login endpoint
     @PostMapping("/login")
@@ -41,10 +43,10 @@ public class PublicController {
             Users loggedInUser = userServices.validateUser(user.getEmail(), user.getPassword());
 
             if (loggedInUser != null) {
-                if (!"PASS".equals(loggedInUser.getStatus())) {  // Ensure user is verified
+                if (!"PASS".equals(loggedInUser.getStatus())) { // Ensure user is verified
                     return new ResponseEntity<>("Please verify your email to log in.", HttpStatus.FORBIDDEN);
                 }
-                return new ResponseEntity<>(loggedInUser, HttpStatus.OK);  // Login successful
+                return new ResponseEntity<>(loggedInUser, HttpStatus.OK); // Login successful
             } else {
                 return new ResponseEntity<>("Invalid email or password", HttpStatus.UNAUTHORIZED);
             }
@@ -54,16 +56,16 @@ public class PublicController {
         }
     }
 
-// Email verification endpoint
-@GetMapping("/verify-email")
-public ResponseEntity<String> verifyEmail(@RequestParam("email") String email, @RequestParam("otp") String otp) {
-    try {
-        userServices.verifyEmail(email, otp);
-        return new ResponseEntity<>("Email verified successfully. You can now log in.", HttpStatus.OK);
-    } catch (Exception e) {
-        return new ResponseEntity<>("Email verification failed: " + e.getMessage(), HttpStatus.BAD_REQUEST);
+    // Email verification endpoint
+    @GetMapping("/verify-email")
+    public ResponseEntity<String> verifyEmail(@RequestParam("email") String email, @RequestParam("otp") String otp) {
+        try {
+            userServices.verifyEmail(email, otp);
+            return new ResponseEntity<>("Email verified successfully. You can now log in.", HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>("Email verification failed: " + e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
     }
-}
 
     // New endpoint for resending OTP
     @PostMapping("/resend-otp")
@@ -74,6 +76,19 @@ public ResponseEntity<String> verifyEmail(@RequestParam("email") String email, @
             return ResponseEntity.ok("OTP resent successfully.");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
+    @PostMapping("/user-info")
+    public ResponseEntity<String> saveUserWithInfo(@RequestBody Map<String, Users> payload) {
+        try {
+            Users user = payload.get("user"); // Basic user info
+            Users additionalInfo = payload.get("additionalInfo"); // Additional information
+
+            userServices.saveUser(user, additionalInfo);
+            return new ResponseEntity<>("User saved successfully. Please verify your email.", HttpStatus.CREATED);
+        } catch (Exception e) {
+            return new ResponseEntity<>("Failed to save user: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }
