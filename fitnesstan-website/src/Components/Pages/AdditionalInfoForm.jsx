@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Form, Button, Container, Row, Col } from "react-bootstrap";
-import { registerUser } from "../../API/RegisterAPI";
-import styles from "./AdditionalInfoForm.module.css"; // Import the CSS module
+import { registerUser } from "../../API/RegisterAPI"; // Import the API call for user registration
 
 const AdditionalInfoForm = () => {
+  // State for form data
   const [formData, setFormData] = useState({
     heightFt: "",
     dob: "",
@@ -17,46 +17,30 @@ const AdditionalInfoForm = () => {
     medicalHistory: "",
   });
 
+  // State for error messages
   const [errorMessage, setErrorMessage] = useState("");
+
   const navigate = useNavigate();
   const location = useLocation();
 
+  // Retrieve basic user data passed from the Sign-Up form
   const { signUpData } = location.state || {};
+
   if (!signUpData) {
+    // Redirect back to the Sign-Up page if no sign-up data is available
     navigate("/");
     return null;
   }
 
+  // Handle input change for form fields
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
-  const handleMedicalHistoryChange = (e, value) => {
-    const isChecked = e.target.checked;
-  
-    if (value === "None" && isChecked) {
-      // If "None" is selected, clear all other selections
-      setFormData({ ...formData, medicalHistory: ["None"] });
-    } else if (isChecked) {
-      // Add selected value to the array, excluding "None"
-      setFormData({
-        ...formData,
-        medicalHistory: formData.medicalHistory
-          .filter((item) => item !== "None")
-          .concat(value),
-      });
-    } else {
-      // Remove the unchecked value
-      setFormData({
-        ...formData,
-        medicalHistory: formData.medicalHistory.filter((item) => item !== value),
-      });
-    }
-  };
-  
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setErrorMessage("");
+    setErrorMessage(""); // Clear previous error messages
 
     const payload = {
       user: {
@@ -67,12 +51,18 @@ const AdditionalInfoForm = () => {
       additionalInfo: formData,
     };
 
+    console.log("Payload being sent:", payload);
+
     try {
+      // Call the API with the properly structured payload
       await registerUser(payload);
+
+      // Navigate to the email verification page
       navigate(
         `/email-verification?email=${encodeURIComponent(signUpData.email)}`
       );
     } catch (error) {
+      console.error("Error submitting user data:", error.response || error);
       setErrorMessage(
         error.response?.data?.message ||
           "Failed to submit user data. Please try again."
@@ -81,10 +71,10 @@ const AdditionalInfoForm = () => {
   };
 
   return (
-    <Container className={styles.container}>
-      <Row className={styles.row}>
-        <Col md={8} className={styles.col}>
-          <h2 className={styles["text-center"]}>Additional Information</h2>
+    <Container className="mt-5">
+      <Row className="justify-content-center">
+        <Col md={8}>
+          <h2 className="text-center mb-4">Additional Information</h2>
           <Form onSubmit={handleSubmit}>
             {/* Height (Feet) */}
             <Form.Group controlId="heightFt" className="mb-3">
@@ -96,7 +86,6 @@ const AdditionalInfoForm = () => {
                 placeholder="Enter your height in feet"
                 value={formData.heightFt}
                 onChange={handleChange}
-                className={styles["form-control"]}
                 required
               />
             </Form.Group>
@@ -109,7 +98,6 @@ const AdditionalInfoForm = () => {
                 name="dob"
                 value={formData.dob}
                 onChange={handleChange}
-                className={styles["form-control"]}
                 required
               />
             </Form.Group>
@@ -124,7 +112,6 @@ const AdditionalInfoForm = () => {
                 placeholder="Enter your weight in kilograms"
                 value={formData.weightKg}
                 onChange={handleChange}
-                className={styles["form-control"]}
                 required
               />
             </Form.Group>
@@ -141,7 +128,6 @@ const AdditionalInfoForm = () => {
                   value="Male"
                   checked={formData.gender === "Male"}
                   onChange={handleChange}
-                  className={styles["form-check-input"]}
                   required
                 />
                 <Form.Check
@@ -152,7 +138,6 @@ const AdditionalInfoForm = () => {
                   value="Female"
                   checked={formData.gender === "Female"}
                   onChange={handleChange}
-                  className={styles["form-check-input"]}
                   required
                 />
                 <Form.Check
@@ -163,7 +148,6 @@ const AdditionalInfoForm = () => {
                   value="Other"
                   checked={formData.gender === "Other"}
                   onChange={handleChange}
-                  className={styles["form-check-input"]}
                   required
                 />
               </div>
@@ -176,7 +160,6 @@ const AdditionalInfoForm = () => {
                 name="occupation"
                 value={formData.occupation}
                 onChange={handleChange}
-                className={styles["form-select"]}
                 required
               >
                 <option value="">Select your occupation</option>
@@ -200,7 +183,6 @@ const AdditionalInfoForm = () => {
                   value="Christianity"
                   checked={formData.religion === "Christianity"}
                   onChange={handleChange}
-                  className={styles["form-check-input"]}
                   required
                 />
                 <Form.Check
@@ -211,7 +193,6 @@ const AdditionalInfoForm = () => {
                   value="Islam"
                   checked={formData.religion === "Islam"}
                   onChange={handleChange}
-                  className={styles["form-check-input"]}
                   required
                 />
                 <Form.Check
@@ -222,7 +203,6 @@ const AdditionalInfoForm = () => {
                   value="Hinduism"
                   checked={formData.religion === "Hinduism"}
                   onChange={handleChange}
-                  className={styles["form-check-input"]}
                   required
                 />
                 <Form.Check
@@ -233,7 +213,6 @@ const AdditionalInfoForm = () => {
                   value="Other"
                   checked={formData.religion === "Other"}
                   onChange={handleChange}
-                  className={styles["form-check-input"]}
                   required
                 />
               </div>
@@ -246,7 +225,6 @@ const AdditionalInfoForm = () => {
                 name="exerciseLevel"
                 value={formData.exerciseLevel}
                 onChange={handleChange}
-                className={styles["form-select"]}
                 required
               >
                 <option value="">Select your exercise level</option>
@@ -263,7 +241,6 @@ const AdditionalInfoForm = () => {
                 name="sleepHours"
                 value={formData.sleepHours}
                 onChange={handleChange}
-                className={styles["form-select"]}
                 required
               >
                 <option value="">Select your average sleep hours</option>
@@ -280,54 +257,33 @@ const AdditionalInfoForm = () => {
             {/* Medical History */}
             <Form.Group controlId="medicalHistory" className="mb-3">
               <Form.Label>Medical History</Form.Label>
-              <div>
-                {/* None */}
-                <Form.Check
-                  type="checkbox"
-                  label="None"
-                  value="None"
-                  checked={formData.medicalHistory.includes("None")}
-                  onChange={(e) => handleMedicalHistoryChange(e, "None")}
-                  disabled={
-                    formData.medicalHistory.includes("Heart Disease") ||
-                    formData.medicalHistory.includes("Diabetic")
-                  }
-                  className={styles["form-check-input"]}
-                />
-
-                {/* Diabetic */}
-                <Form.Check
-                  type="checkbox"
-                  label="Diabetic"
-                  value="Diabetic"
-                  checked={formData.medicalHistory.includes("Diabetic")}
-                  onChange={(e) => handleMedicalHistoryChange(e, "Diabetic")}
-                  disabled={formData.medicalHistory.includes("None")}
-                  className={styles["form-check-input"]}
-                />
-
-                {/* Heart Disease */}
-                <Form.Check
-                  type="checkbox"
-                  label="Heart Disease"
-                  value="Heart Disease"
-                  checked={formData.medicalHistory.includes("Heart Disease")}
-                  onChange={(e) =>
-                    handleMedicalHistoryChange(e, "Heart Disease")
-                  }
-                  disabled={formData.medicalHistory.includes("None")}
-                  className={styles["form-check-input"]}
-                />
-              </div>
+              <Form.Select
+                name="medicalHistory"
+                value={formData.medicalHistory}
+                onChange={(e) => {
+                  // Convert the selectedOptions into an array of values
+                  const selectedValues = Array.from(
+                    e.target.selectedOptions,
+                    (option) => option.value
+                  );
+                  setFormData({ ...formData, medicalHistory: selectedValues });
+                }}
+                multiple
+                required
+              >
+                <option value="None">None</option>
+                <option value="Diabetes">Diabetes</option>
+                <option value="Asthma">Asthma</option>
+                <option value="Heart Disease">Heart Disease</option>
+                <option value="Other">Other</option>
+              </Form.Select>
             </Form.Group>
 
             {/* Submit Button */}
-            <Button type="submit" className={styles["btn-primary"]}>
+            <Button variant="primary" type="submit" className="w-100">
               Submit
             </Button>
-            {errorMessage && (
-              <p className={styles["text-danger"]}>{errorMessage}</p>
-            )}
+            {errorMessage && <p className="text-danger mt-2">{errorMessage}</p>}
           </Form>
         </Col>
       </Row>

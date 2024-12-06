@@ -36,7 +36,7 @@
   
   /* Radio buttons and checkboxes */
   .form-check-input {
-    accent-color: #ff4c4c; /* Red accent color */
+    accent-color: #ff4c4c !important; /* Red accent color */
   }
   
   .form-check-label {
