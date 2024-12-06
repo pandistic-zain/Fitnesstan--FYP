@@ -75,28 +75,10 @@ const Register = () => {
       setErrorMessage("Passwords do not match.");
       return;
     }
-    setLoading(true); // Start loading
-    try {
-      const response = await registerUser(signUpData);
-      if (response.status === 201) {
-        setSuccessMessage("Registration successful! Let's add some additional information.");
-        navigate(`/additional-info?email=${encodeURIComponent(signUpData.email)}`);
-      } else {
-        setErrorMessage(
-          response.data.message || "Sign-up failed. Please ensure all fields are filled correctly."
-        );
-      }
-    } catch (error) {
-      console.error("Sign-up error: ", error.response?.data || error);
-      setErrorMessage(
-        error.response?.data.message || "Email already in use or invalid input. Please try again."
-      );
-    } finally {
-      setLoading(false); // Stop loading
-    }
-  };
-  
 
+    // Navigate to Additional Info Page with user data
+    navigate("/AdditionalInfoForm", { state: { signUpData } });
+  };
   return (
     <>
       {loading && <Loader />} {/* Conditionally render the loader */}

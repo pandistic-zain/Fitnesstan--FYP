@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Form, Button, Container, Row, Col } from "react-bootstrap";
-import { submitAdditionalInfo } from "../../API/RegisterAPI"; // Ensure this API method is implemented in your backend
+import { registerUser } from "../../API/RegisterAPI"; // Import the API call for user registration
 
 const AdditionalInfoForm = () => {
+  // State for form data
   const [formData, setFormData] = useState({
     heightFt: "",
     dob: "",
@@ -16,12 +17,22 @@ const AdditionalInfoForm = () => {
     medicalHistory: "",
   });
 
+  // State for error messages
+  const [errorMessage, setErrorMessage] = useState("");
+  
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Extract email from query params
-  const email = new URLSearchParams(location.search).get("email");
+  // Retrieve basic user data passed from the Sign-Up form
+  const { signUpData } = location.state || {};
 
+  if (!signUpData) {
+    // Redirect back to the Sign-Up page if no sign-up data is available
+    navigate("/");
+    return null;
+  }
+
+  // Handle input change for form fields
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
@@ -29,17 +40,32 @@ const AdditionalInfoForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try {
-      // Submit additional information
-      await submitAdditionalInfo({ ...formData, email });
+    setErrorMessage(""); // Clear previous error messages
 
-      // Navigate to verify email page
-      navigate(`/email-verification?email=${encodeURIComponent(email)}`);
+    try {
+        const payload = {
+            user: {
+                username: signUpData.username,
+                email: signUpData.email,
+                password: signUpData.password,
+            },
+            additionalInfo: formData,
+        };
+
+        // Call the API with the properly structured payload
+        await registerUser(payload);
+        console.log("Payload being sent:", payload);
+
+        // Navigate to the email verification page
+        navigate(`/email-verification?email=${encodeURIComponent(signUpData.email)}`);
     } catch (error) {
-      console.error("Error submitting additional information: ", error);
-      alert("Failed to submit additional information. Please try again.");
+        console.error("Error submitting user data:", error);
+        setErrorMessage(
+            error.response?.data?.message || "Failed to submit user data. Please try again."
+        );
     }
-  };
+};
+
 
   return (
     <Container className="mt-5">
@@ -247,6 +273,7 @@ const AdditionalInfoForm = () => {
             <Button variant="primary" type="submit" className="w-100">
               Submit
             </Button>
+            {errorMessage && <p className="text-danger mt-2">{errorMessage}</p>}
           </Form>
         </Col>
       </Row>
