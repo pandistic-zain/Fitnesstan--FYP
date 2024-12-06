@@ -1,10 +1,11 @@
 import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Form, Button, Container, Row, Col } from "react-bootstrap";
-import { registerUser } from "../../API/RegisterAPI"; // Import the API call for user registration
+import { registerUser } from "../../API/RegisterAPI";
+import Loader from "../Loader"; // Import the Loader component
+import styles from "./AdditionalInfoForm.module.css"; // Import the CSS module
 
 const AdditionalInfoForm = () => {
-  // State for form data
   const [formData, setFormData] = useState({
     heightFt: "",
     dob: "",
@@ -14,33 +15,51 @@ const AdditionalInfoForm = () => {
     religion: "",
     exerciseLevel: "",
     sleepHours: "",
-    medicalHistory: "",
+    medicalHistory: [],
   });
 
-  // State for error messages
   const [errorMessage, setErrorMessage] = useState("");
-
+  const [loading, setLoading] = useState(false); // Loader state
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Retrieve basic user data passed from the Sign-Up form
   const { signUpData } = location.state || {};
-
   if (!signUpData) {
-    // Redirect back to the Sign-Up page if no sign-up data is available
     navigate("/");
     return null;
   }
 
-  // Handle input change for form fields
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
+  const handleMedicalHistoryChange = (e, value) => {
+    const isChecked = e.target.checked;
+
+    if (value === "None" && isChecked) {
+      setFormData({ ...formData, medicalHistory: ["None"] });
+    } else if (isChecked) {
+      setFormData({
+        ...formData,
+        medicalHistory: formData.medicalHistory
+          .filter((item) => item !== "None")
+          .concat(value),
+      });
+    } else {
+      setFormData({
+        ...formData,
+        medicalHistory: formData.medicalHistory.filter(
+          (item) => item !== value
+        ),
+      });
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setErrorMessage(""); // Clear previous error messages
+    setErrorMessage("");
+    setLoading(true); // Start the loader
 
     const payload = {
       user: {
@@ -51,32 +70,28 @@ const AdditionalInfoForm = () => {
       additionalInfo: formData,
     };
 
-    console.log("Payload being sent:", payload);
-
     try {
-      // Call the API with the properly structured payload
       await registerUser(payload);
-
-      // Navigate to the email verification page
       navigate(
         `/email-verification?email=${encodeURIComponent(signUpData.email)}`
       );
     } catch (error) {
-      console.error("Error submitting user data:", error.response || error);
       setErrorMessage(
         error.response?.data?.message ||
-          "Failed to submit user data. Please try again."
+        "Failed to submit user data. Please try again."
       );
+    } finally {
+      setLoading(false); // Stop the loader in all cases
     }
   };
 
   return (
-    <Container className="mt-5">
+    <Container className={styles.container}>
       <Row className="justify-content-center">
         <Col md={8}>
-          <h2 className="text-center mb-4">Additional Information</h2>
+          <h2 className={styles.title}>Additional Information</h2>
+          {loading && <Loader />} {/* Show loader */}
           <Form onSubmit={handleSubmit}>
-            {/* Height (Feet) */}
             <Form.Group controlId="heightFt" className="mb-3">
               <Form.Label>Height (ft)</Form.Label>
               <Form.Control
@@ -90,7 +105,6 @@ const AdditionalInfoForm = () => {
               />
             </Form.Group>
 
-            {/* Date of Birth */}
             <Form.Group controlId="dob" className="mb-3">
               <Form.Label>Date of Birth</Form.Label>
               <Form.Control
@@ -102,7 +116,6 @@ const AdditionalInfoForm = () => {
               />
             </Form.Group>
 
-            {/* Weight (kg) */}
             <Form.Group controlId="weightKg" className="mb-3">
               <Form.Label>Weight (kg)</Form.Label>
               <Form.Control
@@ -116,44 +129,25 @@ const AdditionalInfoForm = () => {
               />
             </Form.Group>
 
-            {/* Gender */}
             <Form.Group controlId="gender" className="mb-3">
               <Form.Label>Gender</Form.Label>
               <div>
-                <Form.Check
-                  inline
-                  label="Male"
-                  name="gender"
-                  type="radio"
-                  value="Male"
-                  checked={formData.gender === "Male"}
-                  onChange={handleChange}
-                  required
-                />
-                <Form.Check
-                  inline
-                  label="Female"
-                  name="gender"
-                  type="radio"
-                  value="Female"
-                  checked={formData.gender === "Female"}
-                  onChange={handleChange}
-                  required
-                />
-                <Form.Check
-                  inline
-                  label="Other"
-                  name="gender"
-                  type="radio"
-                  value="Other"
-                  checked={formData.gender === "Other"}
-                  onChange={handleChange}
-                  required
-                />
+                {["Male", "Female", "Other"].map((gender) => (
+                  <Form.Check
+                    key={gender}
+                    inline
+                    label={gender}
+                    name="gender"
+                    type="radio"
+                    value={gender}
+                    checked={formData.gender === gender}
+                    onChange={handleChange}
+                    required
+                  />
+                ))}
               </div>
             </Form.Group>
 
-            {/* Occupation */}
             <Form.Group controlId="occupation" className="mb-3">
               <Form.Label>Occupation</Form.Label>
               <Form.Select
@@ -163,62 +157,41 @@ const AdditionalInfoForm = () => {
                 required
               >
                 <option value="">Select your occupation</option>
-                <option value="Software Engineer">Software Engineer</option>
-                <option value="Doctor">Doctor</option>
-                <option value="Teacher">Teacher</option>
-                <option value="Student">Student</option>
-                <option value="Other">Other</option>
+                {[
+                  "Software Engineer",
+                  "Doctor",
+                  "Teacher",
+                  "Student",
+                  "Other",
+                ].map((occupation) => (
+                  <option key={occupation} value={occupation}>
+                    {occupation}
+                  </option>
+                ))}
               </Form.Select>
             </Form.Group>
 
-            {/* Religion */}
             <Form.Group controlId="religion" className="mb-3">
               <Form.Label>Religion</Form.Label>
               <div>
-                <Form.Check
-                  inline
-                  label="Christianity"
-                  name="religion"
-                  type="radio"
-                  value="Christianity"
-                  checked={formData.religion === "Christianity"}
-                  onChange={handleChange}
-                  required
-                />
-                <Form.Check
-                  inline
-                  label="Islam"
-                  name="religion"
-                  type="radio"
-                  value="Islam"
-                  checked={formData.religion === "Islam"}
-                  onChange={handleChange}
-                  required
-                />
-                <Form.Check
-                  inline
-                  label="Hinduism"
-                  name="religion"
-                  type="radio"
-                  value="Hinduism"
-                  checked={formData.religion === "Hinduism"}
-                  onChange={handleChange}
-                  required
-                />
-                <Form.Check
-                  inline
-                  label="Other"
-                  name="religion"
-                  type="radio"
-                  value="Other"
-                  checked={formData.religion === "Other"}
-                  onChange={handleChange}
-                  required
-                />
+                {["Christianity", "Islam", "Hinduism", "Other"].map(
+                  (religion) => (
+                    <Form.Check
+                      key={religion}
+                      inline
+                      label={religion}
+                      name="religion"
+                      type="radio"
+                      value={religion}
+                      checked={formData.religion === religion}
+                      onChange={handleChange}
+                      required
+                    />
+                  )
+                )}
               </div>
             </Form.Group>
 
-            {/* Exercise Level */}
             <Form.Group controlId="exerciseLevel" className="mb-3">
               <Form.Label>Exercise Level</Form.Label>
               <Form.Select
@@ -228,13 +201,14 @@ const AdditionalInfoForm = () => {
                 required
               >
                 <option value="">Select your exercise level</option>
-                <option value="Low">Low</option>
-                <option value="Medium">Medium</option>
-                <option value="High">High</option>
+                {["Low", "Medium", "High"].map((level) => (
+                  <option key={level} value={level}>
+                    {level}
+                  </option>
+                ))}
               </Form.Select>
             </Form.Group>
 
-            {/* Sleep Hours */}
             <Form.Group controlId="sleepHours" className="mb-3">
               <Form.Label>Sleep Hours</Form.Label>
               <Form.Select
@@ -244,46 +218,38 @@ const AdditionalInfoForm = () => {
                 required
               >
                 <option value="">Select your average sleep hours</option>
-                <option value="4">4 hours</option>
-                <option value="5">5 hours</option>
-                <option value="6">6 hours</option>
-                <option value="7">7 hours</option>
-                <option value="8">8 hours</option>
-                <option value="9">9 hours</option>
-                <option value="10">10 hours</option>
+                {Array.from({ length: 10 }, (_, i) => i + 1).map((hours) => (
+                  <option key={hours} value={hours}>
+                    {hours} hours
+                  </option>
+                ))}
               </Form.Select>
             </Form.Group>
 
-            {/* Medical History */}
             <Form.Group controlId="medicalHistory" className="mb-3">
               <Form.Label>Medical History</Form.Label>
-              <Form.Select
-                name="medicalHistory"
-                value={formData.medicalHistory}
-                onChange={(e) => {
-                  // Convert the selectedOptions into an array of values
-                  const selectedValues = Array.from(
-                    e.target.selectedOptions,
-                    (option) => option.value
-                  );
-                  setFormData({ ...formData, medicalHistory: selectedValues });
-                }}
-                multiple
-                required
-              >
-                <option value="None">None</option>
-                <option value="Diabetes">Diabetes</option>
-                <option value="Asthma">Asthma</option>
-                <option value="Heart Disease">Heart Disease</option>
-                <option value="Other">Other</option>
-              </Form.Select>
+              <div>
+                {["None", "Diabetic", "Heart Disease"].map((condition) => (
+                  <Form.Check
+                    key={condition}
+                    type="checkbox"
+                    label={condition}
+                    value={condition}
+                    checked={formData.medicalHistory.includes(condition)}
+                    onChange={(e) => handleMedicalHistoryChange(e, condition)}
+                    disabled={
+                      formData.medicalHistory.includes("None") &&
+                      condition !== "None"
+                    }
+                  />
+                ))}
+              </div>
             </Form.Group>
 
-            {/* Submit Button */}
-            <Button variant="primary" type="submit" className="w-100">
+            <Button type="submit" variant="primary" disabled={loading}>
               Submit
             </Button>
-            {errorMessage && <p className="text-danger mt-2">{errorMessage}</p>}
+            {errorMessage && <p className="text-danger">{errorMessage}</p>}
           </Form>
         </Col>
       </Row>
