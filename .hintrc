@@ -9,7 +9,9 @@
         "ignore": [
           "backdrop-filter",
           "min-height: auto",
-          "user-select"
+          "user-select",
+          "scrollbar-width",
+          "scrollbar-width: none"
         ]
       }
     ]
