@@ -1,0 +1,118 @@
+/* Container styling */
+.container {
+    background-color: #1a1a1a; /* Dark grey background */
+    border-radius: 20px; /* Smooth rounded edges */
+    padding: 40px; /* Space around the content */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6); /* Subtle shadow for depth */
+    color: #e0e0e0; /* Light grey text for readability */
+    margin-top: 30px; /* Spacing from the top */
+  }
+  
+  /* Heading styling */
+  .text-center {
+    color: #ff4c4c; /* Bright red for title */
+    text-shadow: 0 0 8px rgba(255, 76, 76, 0.6); /* Subtle glow effect */
+    font-size: 2rem; /* Slightly larger font for emphasis */
+    font-weight: bold;
+  }
+  
+  /* Form input styling */
+  .form-control {
+    background-color: #121212; /* Input background to match theme */
+    color: #e0e0e0; /* Light grey text */
+    border: 1px solid #ff4c4c; /* Red border for inputs */
+    border-radius: 8px; /* Rounded corners */
+    padding: 10px; /* Input padding */
+    margin-bottom: 15px; /* Space between inputs */
+    transition: all 0.3s ease; /* Smooth hover and focus animations */
+  }
+  
+  /* Input focus and hover */
+  .form-control:focus,
+  .form-control:hover {
+    border-color: #ff0000; /* Brighter red border on focus */
+    box-shadow: 0 0 10px rgba(255, 0, 0, 0.6); /* Glow effect */
+  }
+  
+  /* Radio buttons and checkboxes */
+  .form-check-input {
+    accent-color: #ff4c4c; /* Red accent color */
+  }
+  
+  .form-check-label {
+    color: #e0e0e0; /* Light grey for labels */
+  }
+  
+  /* Dropdown (select) styling */
+  .form-select {
+    background-color: #121212; /* Dropdown background */
+    color: #e0e0e0; /* Dropdown text */
+    border: 1px solid #ff4c4c; /* Red border */
+    border-radius: 8px; /* Smooth rounded edges */
+    padding: 10px; /* Padding for dropdowns */
+    transition: all 0.3s ease;
+  }
+  
+  /* Dropdown focus and hover */
+  .form-select:focus,
+  .form-select:hover {
+    border-color: #ff0000; /* Brighter red border */
+    box-shadow: 0 0 10px rgba(255, 0, 0, 0.6); /* Glow effect */
+  }
+  
+  /* Submit button */
+  .btn-primary {
+    background-color: #ff4c4c; /* Red button */
+    border: none; /* Remove default border */
+    border-radius: 50px; /* Rounded button */
+    padding: 12px 30px; /* Padding for button */
+    font-weight: bold; /* Bold text */
+    font-size: 1.1rem; /* Slightly larger font */
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    color: #ffffff; /* White text */
+  }
+  
+  .btn-primary:hover {
+    background-color: #ff0000; /* Brighter red on hover */
+    transform: scale(1.05); /* Slight scaling */
+    box-shadow: 0 0 15px rgba(255, 0, 0, 0.8); /* Glow effect */
+  }
+  
+  /* Error message styling */
+  .text-danger {
+    color: #ff4c4c; /* Match theme with red color */
+    font-weight: bold;
+  }
+  
+  /* Row styling */
+  .row {
+    justify-content: center;
+  }
+  
+  /* Column styling */
+  .col-md-8 {
+    margin: 0 auto; /* Center-align content */
+  }
+  .form-check-input {
+    accent-color: #ff4c4c; /* Red checkbox color */
+  }
+  
+  .form-check-label {
+    color: #e0e0e0; /* Light grey for text */
+  }
+  
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .container {
+      padding: 20px; /* Adjust padding for smaller screens */
+    }
+  
+    .text-center {
+      font-size: 1.5rem; /* Smaller heading font size */
+    }
+  
+    .btn-primary {
+      font-size: 1rem; /* Adjust button size */
+    }
+  }
+  
