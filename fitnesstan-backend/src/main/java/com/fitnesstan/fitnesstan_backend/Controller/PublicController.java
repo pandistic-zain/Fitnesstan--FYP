@@ -6,8 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import com.fitnesstan.fitnesstan_backend.Entity.UserRegistrationDTO;
 import com.fitnesstan.fitnesstan_backend.Entity.Users;
 import com.fitnesstan.fitnesstan_backend.Services.UserServices;
 
@@ -81,11 +79,12 @@ public class PublicController {
         }
     }
 
-    @PostMapping("/user-info")
-    public ResponseEntity<String> saveUserWithInfo(@RequestBody UserRegistrationDTO payload) {
+    @PostMapping("/required-info")
+    public ResponseEntity<String> saveUserWithInfo(@RequestBody Map<String, Users> payload) {
+        System.out.println("Payload received: " + payload); // Log payload
         try {
-            Users user = payload.getUser(); // Basic user info
-            Users additionalInfo = payload.getAdditionalInfo(); // Additional information
+            Users user = payload.get("user"); // Basic user info
+            Users additionalInfo = payload.get("additionalInfo"); // Additional information
 
             userServices.saveUser(user, additionalInfo);
             return new ResponseEntity<>("User saved successfully. Please verify your email.", HttpStatus.CREATED);
@@ -93,5 +92,4 @@ public class PublicController {
             return new ResponseEntity<>("Failed to save user: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
 }

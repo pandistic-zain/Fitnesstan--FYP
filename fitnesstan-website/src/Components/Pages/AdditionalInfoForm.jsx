@@ -51,10 +51,10 @@ const AdditionalInfoForm = () => {
             },
             additionalInfo: formData,
         };
-
+        console.log("Payload being sent:", payload);
         // Call the API with the properly structured payload
         await registerUser(payload);
-        console.log("Payload being sent:", payload);
+        
 
         // Navigate to the email verification page
         navigate(`/email-verification?email=${encodeURIComponent(signUpData.email)}`);
