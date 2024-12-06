@@ -129,7 +129,7 @@ public class UserServices {
                  "Best Regards,\n" +
                  "The Fitnesstan Team\n\n" +
                  "Fitnesstan | Empowering Your Fitness Journey\n" +
-                 "Email: zain.alphanetworks@gmail.com | Phone: +92 3445995192\n" +
+                 "Email: zain.alphanetworks@gmail.com | Phone: +92 3446558870\n" +
                  "Website: ------------------------------";
 
 

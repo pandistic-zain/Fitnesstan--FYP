@@ -1,6 +1,10 @@
 // src/API/RegisterAPI.jsx
 import axios from 'axios';
 
+// Set Axios default configurations globally
+axios.defaults.withCredentials = false;
+axios.defaults.headers.post['Content-Type'] = 'application/json';
+
 const API_URL = 'http://localhost:8080/register'; // Your Spring Boot backend URL
 
 export const registerUser = async (userData) => {
@@ -8,10 +12,8 @@ export const registerUser = async (userData) => {
         headers: {
             'Content-Type': 'application/json',
         },
-        withCredentials: false, // Include cookies or session info
     });
 };
-
 export const loginUser = async (userData) => {
     return await axios.post(`${API_URL}/login`, userData);
 };

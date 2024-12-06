@@ -1,4 +1,5 @@
 package com.fitnesstan.fitnesstan_backend.Configure;
+
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,9 +33,12 @@ public class SpringSecurity {
         return http
                 .cors(Customizer.withDefaults()) // Enable CORS using global configuration
                 .authorizeHttpRequests(request -> request
+                        // Explicitly allow OPTIONS for all routes
+                        .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/register/**").permitAll()
                         .requestMatchers("/users/**", "/trainer/**").authenticated()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
+
                         .anyRequest().authenticated())
                 .httpBasic(Customizer.withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)
@@ -55,7 +59,8 @@ public class SpringSecurity {
     }
 
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration)
+            throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
     }
 
@@ -63,9 +68,9 @@ public class SpringSecurity {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:3000")); // Set allowed origin for the frontend
+        configuration.setAllowedOrigins(List.of("http://localhost:3000"));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(List.of("Authorization", "Content-Type"));
+        configuration.setAllowedHeaders(List.of("Authorization", "Content-Type", "Accept"));
         configuration.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

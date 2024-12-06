@@ -42,29 +42,31 @@ const AdditionalInfoForm = () => {
     e.preventDefault();
     setErrorMessage(""); // Clear previous error messages
 
+    const payload = {
+        user: {
+            username: signUpData.username,
+            email: signUpData.email,
+            password: signUpData.password,
+        },
+        additionalInfo: formData,
+    };
+
+    console.log("Payload being sent:", payload);
+
     try {
-        const payload = {
-            user: {
-                username: signUpData.username,
-                email: signUpData.email,
-                password: signUpData.password,
-            },
-            additionalInfo: formData,
-        };
-        console.log("Payload being sent:", payload);
         // Call the API with the properly structured payload
         await registerUser(payload);
-        
 
         // Navigate to the email verification page
         navigate(`/email-verification?email=${encodeURIComponent(signUpData.email)}`);
     } catch (error) {
-        console.error("Error submitting user data:", error);
+        console.error("Error submitting user data:", error.response || error);
         setErrorMessage(
             error.response?.data?.message || "Failed to submit user data. Please try again."
         );
     }
 };
+
 
 
   return (
