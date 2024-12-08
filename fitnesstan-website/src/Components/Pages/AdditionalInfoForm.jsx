@@ -164,7 +164,6 @@ const AdditionalInfoForm = () => {
                   <option value="">Select your occupation</option>
                   {[
                     "Software Engineer",
-                    "Doctor",
                     "Teacher",
                     "Student",
                     "Other",
@@ -179,7 +178,7 @@ const AdditionalInfoForm = () => {
               <Form.Group controlId="religion" className="mb-3">
                 <Form.Label>Religion</Form.Label>
                 <div>
-                  {["Christianity", "Islam", "Hinduism", "Other"].map(
+                  {["Muslim", "Non Muslim"].map(
                     (religion) => (
                       <Form.Check
                         key={religion}
@@ -207,7 +206,7 @@ const AdditionalInfoForm = () => {
                   required
                 >
                   <option value="">Select your exercise level</option>
-                  {["Low", "Medium", "High"].map((level) => (
+                  {["3 days a week", "4 days a week", "5 days a week", "6 days a week", "7 days a week"].map((level) => (
                     <option key={level} value={level}>
                       {level}
                     </option>
