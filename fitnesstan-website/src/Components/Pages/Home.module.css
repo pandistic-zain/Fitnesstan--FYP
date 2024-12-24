@@ -453,11 +453,11 @@ p {
 /* Testimonials Section */
 .testimonialsSection {
   background: radial-gradient(circle at center, #1a1a1a 50%, #1a1a1a 100%); /* Subtle radial gradient for depth */
-  padding: 60px 0; /* Maintain padding for spacing */
+  padding-top: 40px; /* Maintain padding for spacing */
+  padding-bottom: 150px;
   position: relative; /* Necessary for any absolutely positioned child elements */
   text-align: center; /* Center-align text */
   color: #E0E0E0; /* Light grey for default text */
-
 }
 
 .sectionTitle {
@@ -579,20 +579,54 @@ p {
     height: 100px; /* Smaller blob on mobile */
   }
 }
+
+.horizontalDividerFinalfeedback {
+  height: 40px;
+  background-color: #ff0000;
+  position: absolute; /* Positioned at the bottom of the previous section */
+  bottom: 0;
+  width: 95%; /* 90% of the parent section's width */
+  left: 50%; /* Center horizontally */
+  transform: translateX(-50%); /* Adjust for centering */
+  z-index: 1; /* Behind overlapping elements */
+  border-radius: 25px; /* Makes the divider rounded */
+  box-shadow: 0 0 20px 5px rgba(255, 0, 0, 0.8); /* Initial glowing effect */
+  animation: glow-infinity 2s infinite alternate; /* Infinite glowing animation */
+}
+
+/* Glowing effect keyframes */
+@keyframes glow-infinity {
+  0% {
+    box-shadow: 0 0 20px 5px rgba(255, 0, 0, 0.8);
+  }
+  50% {
+    box-shadow: 0 0 30px 10px rgba(255, 0, 0, 1);
+  }
+  100% {
+    box-shadow: 0 0 20px 5px rgba(255, 0, 0, 0.8);
+  }
+}
+
+
 /* Team Section */
 .team-section {
   background-color: #ff0000; /* Slightly lighter dark grey for better contrast */
   padding: 60px 0;
   text-align: center;
   display: flex;
+  z-index: 2;
   justify-content: center;
   align-items: center; /* Ensures vertical alignment */
   border-radius: 20px; /* Smooth rounded corners */
-  transform: translateY(-45px); /* Moves the section up slightly */
+  transform: translateY(-105px); /* Moves the section up slightly */
   width: 85vw; /* Relative width for responsiveness */
   margin: 0 auto; /* Centers the section horizontally */
-  box-shadow: 0 10px 25px rgba(255, 0, 0, 0.7); /* Adds a shadow for depth */
+  box-shadow: 0 0 20px 5px rgba(255, 0, 0, 0.8); /* Initial glowing effect */
+  position: relative; /* Ensures stacking context for the section */
+  animation: glow-infinity 2s infinite alternate; /* Infinite glowing animation */
 }
+
+
 
 .team-section h2 {
   color: #1a1a1a; /* Bright red heading */
