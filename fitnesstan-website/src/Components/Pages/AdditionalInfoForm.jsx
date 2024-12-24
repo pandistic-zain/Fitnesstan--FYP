@@ -5,6 +5,7 @@ import { registerUser } from "../../API/RegisterAPI";
 import Loader from "../Loader";
 import styles from "./AdditionalInfoForm.module.css"; // Import CSS module
 
+
 const AdditionalInfoForm = () => {
   const [formData, setFormData] = useState({
     heightFt: "",
