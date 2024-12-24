@@ -19,6 +19,8 @@ import {
 import { useNavigate } from "react-router-dom";
 import headerImg from "../../Assets/header-img.png";
 import ZainImg from "../../Assets/zain.jpg";
+import UbaidImg from "../../Assets/ubaid.png";
+import HuzaifaImg from "../../Assets/ubaid.png";
 
 const supplementsData = [
   {
@@ -401,7 +403,7 @@ const HomePage = () => {
             {/* Team Member 1 */}
             <Col md={4} className={styles["team-member"]}>
               <div className={styles["team-photo"]}>
-                <img src="/path-to-image/member1.jpg" alt="Team Member 1" />
+                <img src={UbaidImg} alt="Team Member 1" />
               </div>
               <h3>Ubaid Ullah</h3>
               <p>- ML Engineer</p>
@@ -420,7 +422,7 @@ const HomePage = () => {
             {/* Team Member 3 */}
             <Col md={4} className={styles["team-member"]}>
               <div className={styles["team-photo"]}>
-                <img src="/path-to-image/member3.jpg" alt="Team Member 3" />
+                <img src={HuzaifaImg} alt="Team Member 3" />
               </div>
               <h3>Huzaifa Khan</h3>
               <p>- App Developer</p>
