@@ -19,6 +19,7 @@ const AdditionalInfoForm = () => {
     medicalHistory: [],
   });
 
+  
   const [errorMessage, setErrorMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
