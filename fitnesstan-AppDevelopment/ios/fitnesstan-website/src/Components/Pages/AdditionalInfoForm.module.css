@@ -1,0 +1,152 @@
+.backgroundDiv {
+  background-image: url("../../Assets/bannerBg.png");
+  background-size: cover !important; /* Cover the entire viewport */
+  background-position: center !important; /* Center the image */
+  height: 100vh !important; /* Full viewport height */
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  overflow: hidden !important; /* Prevent scroll for background */
+}
+
+/* General container styling */
+/* General container styling */
+.container {
+  background-color: #ffffff !important; /* White background */
+  border-radius: 20px !important; /* Smooth rounded edges */
+  padding: 40px !important; /* Space around the content */
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1) !important; /* Subtle shadow for depth */
+  color: #333333 !important; /* Dark grey text */
+  margin-top: 0 !important; /* Center vertically */
+  max-width: 70vw !important; /* Limit container width */
+  max-height: 85vh !important; /* Limit container height */
+  overflow-y: auto !important; /* Enable vertical scrolling */
+  margin-left: auto !important;
+  margin-right: auto !important; /* Center container horizontally */
+  transition: all 0.3s ease !important; /* Smooth hover effects */
+  scrollbar-width:none; /* Hide scrollbar in Firefox */
+  -ms-overflow-style: none; /* Hide scrollbar in IE/Edge */
+}
+
+.container:hover {
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2) !important; /* Enhanced shadow on hover */
+  transform: translateY(-3px) !important; /* Slight lift effect */
+}
+
+/* Title styling */
+.textCenter {
+  color: #ff0000 !important; /* Bright red color */
+  font-size: 2rem !important; /* Larger font size */
+  font-weight: 700 !important; /* Bold font weight */
+  text-align: center !important; /* Center alignment */
+  margin-bottom: 20px !important; /* Add spacing below the title */
+}
+
+/* Input field labels */
+.form-label {
+  color: #ff0000 !important; /* Bright red for labels */
+  font-weight: 500 !important; /* Medium font weight */
+  margin-bottom: 10px !important; /* Add spacing below labels */
+  font-size: 1rem !important; /* Standard label font size */
+}
+
+/* Form input fields */
+.formControl {
+  background-color: #f9f9f9 !important; /* Light grey input background */
+  color: #333333 !important; /* Dark grey text */
+  border: none !important; /* Remove border */
+  border-radius: 8px !important; /* Rounded corners */
+  padding: 12px !important; /* Comfortable padding */
+  margin-bottom: 20px !important; /* Space between inputs */
+  font-size: 1rem !important; /* Standard font size */
+  transition: all 0.3s ease !important; /* Smooth hover and focus */
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1) !important; /* Subtle inset shadow */
+}
+
+.formControl:focus,
+.formControl:hover {
+  box-shadow: 0 0 10px rgba(211, 47, 47, 0.6) !important; /* Glow effect */
+  background-color: #ffffff !important; /* Keep white background on focus */
+}
+
+/* Select (dropdown) styling */
+.formSelect {
+  background-color: #f9f9f9 !important; /* Light grey dropdown background */
+  color: #333333 !important; /* Dark grey text */
+  border: none !important; /* Remove border */
+  border-radius: 8px !important; /* Rounded corners */
+  padding: 12px !important; /* Comfortable padding */
+  font-size: 1rem !important; /* Standard font size */
+  transition: all 0.3s ease !important; /* Smooth hover and focus */
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1) !important; /* Subtle inset shadow */
+}
+
+.formSelect:focus,
+.formSelect:hover {
+  box-shadow: 0 0 10px rgba(211, 47, 47, 0.6) !important; /* Glow effect */
+}
+
+/* Checkboxes and radio buttons */
+.form-check-input {
+  accent-color: #d32f2f !important; /* Red accent */
+  transform: scale(1.1) !important; /* Slightly larger for better accessibility */
+}
+
+.form-check-label {
+  color: #333333 !important; /* Dark grey label text */
+  font-weight: 500 !important; /* Medium font weight */
+}
+
+/* Button styling */
+.btnPrimary {
+  background-color: #d32f2f !important; /* Red button */
+  border: none !important; /* Remove default border */
+  border-radius: 50px !important; /* Fully rounded button */
+  padding: 14px 40px !important; /* Comfortable padding */
+  font-weight: 700 !important; /* Bold text */
+  font-size: 1.2rem !important; /* Slightly larger font */
+  color: #ffffff !important; /* White text */
+  transition: all 0.3s ease !important; /* Smooth hover effects */
+  box-shadow: 0 4px 12px rgba(211, 47, 47, 0.4) !important; /* Button shadow */
+  display: block !important; /* Make button a block-level element */
+  margin: 20px auto 0 !important; /* Center button horizontally and add spacing */
+}
+
+.btnPrimary:hover {
+  background-color: #b71c1c !important; /* Darker red on hover */
+  box-shadow: 0 8px 20px rgba(211, 47, 47, 0.6) !important; /* Stronger shadow */
+  transform: scale(1.05) !important; /* Slightly larger on hover */
+}
+
+/* Error message styling */
+.textDanger {
+  color: #b71c1c !important; /* Dark red for error text */
+  font-weight: bold !important;
+  font-size: 1rem !important; /* Slightly larger font */
+  margin-top: 10px !important; /* Space above error messages */
+}
+
+/* Responsive row styling */
+.row {
+  justify-content: center !important; /* Center-align rows */
+}
+
+.col-md-8 {
+  margin: 0 auto !important; /* Center-align content */
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .container {
+    padding: 20px !important; /* Reduce padding for smaller screens */
+    max-height: 90vh !important; /* Adjust height for smaller screens */
+  }
+
+  .textCenter {
+    font-size: 1.8rem !important; /* Smaller font for headings */
+  }
+
+  .btnPrimary {
+    font-size: 1rem !important; /* Adjust button size */
+  }
+}

@@ -1,0 +1,750 @@
+
+html{
+  scroll-behavior: smooth;
+  background: #1a1a1a;
+}
+body {
+  background: #1a1a1a !important; /* Dark grey background matching your theme */
+  margin: 0; /* Removes any default margin causing white spaces */
+  padding: 0;
+}
+.hero-section {
+  background: radial-gradient(circle at center, #1a1a1a 40%, #000000 100%) !important; /* Improved gradient with a smoother transition */
+  color: #E0E0E0 !important; /* Light grey for supporting text */
+  padding: 50px;
+  position: relative; /* For overlay effects */
+  overflow: hidden; /* Ensures child elements like decorations are contained */
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.8); /* Adds depth to the section */
+}
+
+/* Adding animated subtle glow effect around the hero section */
+.hero-section::before {
+  content: '';
+  position: absolute;
+  top: -20%;
+  left: -20%;
+  width: 140%;
+  height: 140%;
+  background: radial-gradient(circle, rgba(255, 0, 0, 0.2) 0%, transparent 60%);
+  animation: section-glow 5s infinite alternate ease-in-out;
+  z-index: 0; /* Places this layer beneath the content */
+}
+
+/* Glow animation */
+@keyframes section-glow {
+  0% {
+    transform: scale(1);
+    opacity: 0.6;
+  }
+  100% {
+    transform: scale(1.2);
+    opacity: 0.4;
+  }
+}
+/* Background gradient for hero section */
+.hero-section h1 {
+  font-size: 3rem;
+  font-weight: bold;
+  color: #ff0000; /* Bright red text */
+  /* text-shadow: 0 0 8px #ff0000, 0 0 12px #8a8a8a, 0 0 20px #8a8a8a;  */
+}
+/* Ensure content is above the glow */
+.hero-section * {
+  position: relative;
+  z-index: 1;
+}
+.hero-section p {
+  color: #ffffff;
+  font-size: 1.2rem;
+  margin-bottom: 20px;
+}
+
+button {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+  outline: none;
+  border: 0;
+  vertical-align: middle;
+  text-decoration: none;
+  background: transparent;
+  padding: 0;
+  font-size: inherit;
+  font-family: inherit;
+}
+
+button.learn-more {
+  margin-top: 10px;
+  width: 12rem;
+  height: auto;
+}
+
+button.learn-more .circle {
+  transition: all 0.45s cubic-bezier(0.65, 0, 0.076, 1);
+  position: relative;
+  display: block;
+  margin: 0;
+  width: 3rem;
+  height: 3rem;
+  background: #ff0000;
+  border-radius: 1.625rem;
+}
+
+button.learn-more .circle .icon {
+  transition: all 0.45s cubic-bezier(0.65, 0, 0.076, 1);
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  margin: auto;
+  background: #fff;
+}
+
+button.learn-more .circle .icon.arrow {
+  transition: all 0.45s cubic-bezier(0.65, 0, 0.076, 1);
+  left: 0.625rem;
+  width: 1.125rem;
+  height: 0.125rem;
+  background: none;
+}
+
+button.learn-more .circle .icon.arrow::before {
+  position: absolute;
+  content: "";
+  top: -0.29rem;
+  right: 0.0625rem;
+  width: 0.625rem;
+  height: 0.625rem;
+  border-top: 0.125rem solid #fff;
+  border-right: 0.125rem solid #fff;
+  transform: rotate(45deg);
+}
+
+button.learn-more .button-text {
+  transition: all 0.45s cubic-bezier(0.65, 0, 0.076, 1);
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 0.75rem 0;
+  margin: 0 0 0 1.85rem;
+  color: #ff0000;
+  font-weight: 700;
+  line-height: 1.6;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+button:hover .circle {
+  width: 100%;
+  box-shadow: 0 0 15px #FF0000, 0 0 30px #FF0000, 0 0 45px #FF0000; /* Shining red glow */
+  transition: width 0.3s ease-in-out, box-shadow 0.3s ease-in-out; /* Smooth transition for the glow effect */
+}
+
+button:hover .circle .icon.arrow {
+  background: #fff;
+  transform: translate(1rem, 0);
+}
+
+button:hover .button-text {
+  color: #fff;
+}
+/* Features Section */
+.featuresSection {
+  display: flex; /* Ensure flex is applied to the section */
+  flex-direction: column; /* Stack elements vertically */
+  align-items: center; /* Center items horizontally */
+  padding: 60px 0;
+  background-color: #1a1a1a !important;
+  position: relative;
+  overflow: hidden;
+}
+
+.featuresSection::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 1000px; /* Increased height for testing */
+  background-image: url("../../Assets/ShadowBottomRed.png");
+  z-index: 2;
+}
+
+.sectionTitle {
+  font-size: 2.8rem;
+  text-align: center;
+  margin-bottom: 50px;
+  color: #ff0000 ;
+  font-weight: bold;
+}
+
+.featureRow {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 60px;
+  position: relative;
+}
+
+.featureImageCol,
+.featureTextCol {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 45%;
+}
+
+.featureImage img {
+  max-width: 400px;
+  height: auto;
+  border-radius: 12px;
+}
+
+.featureCard {
+  background-color: #ff0000; /* Slightly lighter dark grey for card background */
+  max-width: 400px;
+  border-radius: 12px; /* Rounded corners for a modern look */
+  padding: 30px;
+  box-shadow: 0 10px 25px rgba(210, 0, 0, 0.3); /* Subtle red glow for shadow */
+  text-align: center;
+  z-index: 1;
+  transform: translateX(150px); /* Keep smooth translation */
+  transition: box-shadow 0.3s ease, transform 0.3s ease; /* Smooth hover animations */
+}
+
+/* Add hover effect for interactivity */
+.featureCard:hover {
+  box-shadow: 0 15px 30px rgba(210, 0, 0, 0.6); /* Intense red glow on hover */
+  transform: translateX(160px) scale(1.05); /* Slight scale-up effect */
+}
+
+.featureIcon {
+  font-size: 50px;
+  color: #1a1a1a; /* Vibrant red for the icon */
+  margin-bottom: 20px;
+  text-shadow: 0 0 10px rgba(55, 76, 76, 0.8), /* Inner glow */
+               0 0 20px rgba(55, 76, 76, 0.6), 
+               0 0 30px rgba(55, 76, 76, 0.4); /* Outer glow */
+  transition: text-shadow 0.3s ease-in-out, transform 0.3s ease-in-out; /* Smooth glow animation */
+}
+
+
+.featureTextCol h5 {
+  font-size: 1.8rem;
+  margin-bottom: 10px;
+  color: #1a1a1a;
+  font-weight: 600;
+}
+
+.featureTextCol p {
+  font-size: 1.1rem;
+  color: #ffffff;
+  line-height: 1.6;
+}
+
+.verticalDivider {
+  border: 1px solid #ff0000; /* Make this consistent with the red theme */
+  border-radius: 20px;
+  width: 1px !important;
+  height: 100%;
+  background-color: #ff0000; /* Fixed the comment "Pakistani green" mismatch */
+  position: absolute;
+  left: 50%;
+  top: 0;
+  transform: translateX(-50%);
+}
+
+.horizontalDivider {
+  height: 2px;
+  background-color: #ff0000;
+  margin: 120px 0;
+}
+
+.horizontalDividerFinal {
+  height: 3px;
+  background-color: #ff0000;
+  z-index: 5; /* Increased z-index to ensure it's above other elements */
+  margin-top: 30px;
+  position: relative; /* Make sure it's positioned correctly */
+}
+.comicbutton {
+  display: inline-block; /* Ensure button is treated as block for centering */
+  padding: 10px 20px;
+  font-size: 24px;
+  font-weight: 600;
+  text-align: center;
+  text-decoration: none;
+  color: #ffffff;
+  background-color: #ff0000;
+  border: 2px solid #1a1a1a;
+  border-radius: 10px;
+  box-shadow: 5px 5px 0px #1a1a1a;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  z-index: 6;
+  margin: 20px auto; /* Center the button */
+  width: auto; /* Maintain button size */
+}
+
+/* Ensure the button hover/active states are the same */
+.comicbutton:hover {
+  background-color: #fff;
+  color: #ff0000;
+  border: 2px solid #000000;
+  box-shadow: 5px 5px 0px #000000;
+}
+
+.comicbutton:active {
+  background-color: #fcf414; /* Adjusted for better visibility */
+  box-shadow: none;
+  transform: translateY(4px);
+}
+
+/* Supplement Section */
+.supplement-section {
+  background-color: #ff0000;
+  padding-top: 20px;
+  padding-bottom: 30px;
+  position: relative; /* Add this line */
+  overflow: hidden; /* Add this line */
+}
+
+.supplement-section::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%; /* Use 100% for the parent container width */
+  height: 1500px; /* Adjust height as needed */
+  background-image: url("../../Assets/ShadowBottomWhite.png");
+  background-size: cover;
+  background-repeat: no-repeat; /* Ensure the background image does not repeat */
+  background-position: center; /* Centers the image */
+  z-index: 2;
+  pointer-events: none; /* Prevent the pseudo-element from interfering with user interactions */
+}
+.section-title {
+  color: #1a1a1a;
+  text-align: center;
+  font-weight: bolder;
+  margin: 20px 0; /* Reduced margin from top */
+}
+
+.supplement-section h4 {
+  color: #1a1a1a;
+  font-size:xx-large;
+  font-weight: bold;
+  font-style: italic;
+}
+.supplement-section h1 {
+  color: #1a1a1a;
+  font-style: italic;
+}
+.supplement-section h6 {
+  margin-top: 15px;
+  margin-bottom: 30px;
+  transform: translateX(30px);
+  color: #1a1a1a;
+  font-style:oblique;
+}
+
+.supplement-section ul {
+  list-style-type: disc; 
+  padding-left: 20px;               
+}
+
+.supplement-section ul li {
+  color: #ffffff;
+  margin: 10px 0;
+  font-size: 1.1rem;
+  font-style: oblique;
+  font-weight: bold;
+  margin-left: 30px;
+}
+
+/* Book-like flip card style */
+.book {
+  position: relative;
+  border-radius: 20px;
+  width: 100%;
+  min-height: 300px; /* Minimum height set to 300px */
+  height: auto; /* Adjust height based on content */
+  background-color: #1a1a1a;
+  box-shadow: 1px 1px 12px #1a1a1a;
+  transform-style: preserve-3d;
+  perspective: 2000px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #1a1a1a;
+  margin-bottom: 30px;
+}
+
+.cover {
+  position: absolute;
+  background-color: #ff0000;
+  width: 100%;
+  height: 100%;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.5s;
+  transform-origin: left;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 1px 1px 12px #1a1a1a;
+}
+
+.book:hover .cover {
+  transform: rotateY(-82deg); /* Flips on hover */
+}
+
+p {
+  font-size: 20px;
+  font-weight: bolder;
+}
+
+.divider {
+  margin-top: 30px;
+  margin-bottom: 20px;
+  border: 1px solid #1a1a1a;
+}
+
+.horizontalDividerFinalSupplements {
+  height: 3px;
+  background-color: #ff0000;
+  z-index: 5; /* Increased z-index to ensure it's above other elements */
+  margin-top: 30px;
+  position: relative; /* Make sure it's positioned correctly */
+}
+.supplementcomicbutton {
+  display: inline-block; /* Ensure button is treated as block for centering */
+  padding: 10px 20px;
+  font-size: 24px;
+  font-weight: 600;
+  text-align: center;
+  text-decoration: none;
+  color: #ff0000;
+  background-color: #1a1a1a;
+  border: 2px solid #ff0000;
+  border-radius: 10px;
+  box-shadow: 5px 5px 0px #ff0000;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  z-index: 6;
+  margin: 20px auto; /* Center the button */
+  width: auto; /* Maintain button size */
+}
+
+/* Ensure the button hover/active states are the same */
+.supplementcomicbutton:hover {
+  background-color: #ff0000;
+  color: #1a1a1a;
+  border: 2px solid #000000;
+  box-shadow: 5px 5px 0px #000000;
+}
+
+.supplementcomicbutton:active {
+  background-color: #fcf414; /* Adjusted for better visibility */
+  box-shadow: none;
+  color: #000000;
+  transform: translateY(4px);
+}
+/* Testimonials Section */
+.testimonialsSection {
+  background: radial-gradient(circle at center, #1a1a1a 50%, #1a1a1a 100%); /* Subtle radial gradient for depth */
+  padding: 60px 0; /* Maintain padding for spacing */
+  position: relative; /* Necessary for any absolutely positioned child elements */
+  text-align: center; /* Center-align text */
+  color: #E0E0E0; /* Light grey for default text */
+
+}
+
+.sectionTitle {
+  font-size: 2.5rem; /* Title font size */
+  font-weight: bolder; /* Title weight */
+  color: #ff0000 !important; /* Title color */
+  margin-bottom: 40px; /* Space below the title */
+}
+
+.testimonialRow {
+  display: flex; /* Flexbox for layout */
+  flex-wrap: wrap; /* Allow wrapping of cards to the next line */
+  justify-content: center; /* Center cards horizontally */
+  align-items: stretch; /* Align cards to stretch to the same height */
+  gap: 20px; /* Space between cards */
+  margin-left: 30px;
+  margin-right: 30px;
+  margin-bottom: 30px;
+}
+.card {
+  position: relative; /* Positioning context for child elements */
+  flex: 1 1 calc(25% - 20px);
+  max-width: 350px;
+  min-width: 30px;
+  height: auto;
+  border-radius: 14px;
+  z-index: 1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 20px 20px 60px rgba(100, 0, 0, 0.5), 
+              -20px -20px 60px rgba(100, 0, 0, 0.5);
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.card:hover {
+  transform: scale(1.05);
+  box-shadow: 25px 25px 70px rgba(150, 0, 0, 0.5), 
+              -25px -25px 70px rgba(150, 0, 0, 0.5);
+}
+
+.bg {
+  position: absolute;
+  top: 5px; /* Offset from the top */
+  left: 5px; /* Offset from the left */
+  width: calc(100% - 10px); 
+  height: calc(100% - 10px); 
+  z-index: -1; 
+  background: #1a1a1a;
+  
+  backdrop-filter: blur(24px);
+  border-radius: 14px; /* Match card's border radius */
+  overflow: hidden;
+  outline: 2px solid #1a1a1a;
+}
+
+.blob {
+  position: absolute; /* Positioning within the card */
+  z-index: -2; /* Behind the background */
+  top: 50%; /* Center vertically */
+  left: 50%; /* Center horizontally */
+  width: calc(100% - 30px); /* Responsive width based on card */
+  height: calc(100% - 30px); /* Responsive height based on card */
+  border-radius: 50%; /* Make it circular */
+  background-color: #ff0000; /* Blob color */
+  opacity: 1; /* Fully visible */
+  filter: blur(12px); /* Blur effect for soft edges */
+  animation: blob-bounce 5s infinite ease; /* Animation */
+  transform: translate(-50%, -50%); /* Center the blob */
+}
+
+@keyframes blob-bounce {
+  0% {
+    transform: translate(-50%, -50%) translate(0%, 0%); /* Start at center */
+  }
+  25% {
+    transform: translate(-50%, -50%) translate(30%, -30%); /* Move to top right */
+  }
+  50% {
+    transform: translate(-50%, -50%) translate(30%, 30%); /* Move to bottom right */
+  }
+  75% {
+    transform: translate(-50%, -50%) translate(-30%, 30%); /* Move to bottom left */
+  }
+  100% {
+    transform: translate(-50%, -50%) translate(0%, 0%); /* Back to center */
+  }
+}
+
+.testimonialText {
+  font-size: 1.1rem; /* Text size for testimonials */
+  font-style: italic; /* Italic text */
+  margin: 10px 0; /* Vertical margin */
+  color: #ffffff; /* Text color */
+  padding: 0 10px; /* Padding around text */
+  text-align: center; /* Center-align text */
+}
+
+.testimonialAuthor {
+  font-size: 1.2rem; /* Author text size */
+  font-weight: bold; /* Author text weight */
+  color: #ff0000; /* Author text color */
+}
+
+@media (max-width: 768px) {
+  .testimonialRow {
+    flex-direction: column; /* Stack cards vertically */
+    gap: 30px; /* Increased gap */
+  }
+
+  .card {
+    width: 100%; /* Full width on smaller screens */
+  }
+
+  .blob {
+    width: 100px; /* Smaller blob on mobile */
+    height: 100px; /* Smaller blob on mobile */
+  }
+}
+/* Team Section */
+.team-section {
+  background-color: #ff0000; /* Slightly lighter dark grey for better contrast */
+  padding: 60px 0;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center; /* Ensures vertical alignment */
+  border-radius: 20px; /* Smooth rounded corners */
+  transform: translateY(-45px); /* Moves the section up slightly */
+  width: 85vw; /* Relative width for responsiveness */
+  margin: 0 auto; /* Centers the section horizontally */
+  box-shadow: 0 10px 25px rgba(255, 0, 0, 0.7); /* Adds a shadow for depth */
+}
+
+.team-section h2 {
+  color: #1a1a1a; /* Bright red heading */
+  font-size: 2.5rem;
+  margin-bottom: 40px;
+  text-shadow: 0 0 8px rgba(255, 76, 76, 0.7); /* Glow effect for the title */
+}
+
+/* Team Row */
+.team-row {
+  display: flex;
+  justify-content: space-around; /* Space out team members */
+  flex-wrap: wrap; /* Allow wrapping on smaller screens */
+}
+
+/* Team Member Card */
+.team-member {
+  text-align: center;
+  margin-bottom: 30px;
+  padding: 10px;
+}
+
+.team-member h3 {
+  color: #1a1a1a; /* Light grey for name */
+  font-size: 1.5rem;
+  margin: 10px 0 5px;
+}
+
+.team-member p {
+  color: #ffffff; /* Slightly darker grey for role */
+  font-size: 1rem;
+}
+
+/* Circular Photo Div */
+.team-photo {
+  width: 200px;
+  height: 200px;
+  margin: 0 auto 15px;
+  border-radius: 50%; /* Makes the div circular */
+  overflow: hidden; /* Ensures image fits within the circle */
+  border: 5px solid #1a1a1a; /* Red border around the image */
+  box-shadow: 0 0 15px rgba(20, 20, 20, 0.6); /* Subtle glow */
+}
+
+.team-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Ensures the image scales correctly */
+}
+
+/* FeedBack Section */
+.give-feedback-section {
+  background-color: #1a1a1a; /* Light background */
+  padding: 50px 20px; /* Increased padding for more space */
+  text-align: center;
+}
+
+.give-feedback-section h2 {
+  color: #FF0000;
+  font-size: 2rem; /* Larger font for the heading */
+  margin-bottom: 20px; /* Space below the heading */
+}
+
+.give-feedback-section p {
+  color: #ffffff;
+  font-size: 1.2rem; /* Slightly larger font for the paragraph */
+  margin-bottom: 30px; /* Space below the paragraph */
+}
+
+.feedback-form {
+  text-align: center;
+  max-width: 600px; /* Limit form width */
+  margin: 0 auto; /* Center the form */
+}
+
+.feedback-form .form-group {
+  margin-bottom: 25px; /* More space between fields */
+}
+
+.feedback-form label {
+  color: #ffffff;
+  font-weight: bold; /* Bold labels for better readability */
+  display: block; /* Make labels block elements */
+  margin: 8px; /* Space below labels */
+  font-size: 1rem; /* Consistent font size */
+}
+
+.feedback-form input,
+.feedback-form textarea {
+  width: 100%; /* Full width fields */
+  padding: 12px; /* Increased padding inside fields */
+  border-radius: 5px; /* Rounded corners */
+  transition: border-color 0.3s; /* Smooth border transition */
+  font-size: 1rem; /* Consistent font size */
+}
+
+.feedback-form input:focus,
+.feedback-form textarea:focus {
+  border-color: #ff0000 !important; /* Green border on focus */
+  outline: none; /* Remove default outline */
+}
+.feedback-form input:active,
+.feedback-form textarea:active {
+  border-color: #ff0000 !important; /* Green border on focus */
+  outline: none; /* Remove default outline */
+}
+
+.feedback-form button {
+  width: 10em;
+  position: relative;
+  height: 3.5em;
+  border: 3px ridge #ff0000;
+  outline: none;
+  background-color: transparent;
+  color: rgb(255, 255, 255);
+  transition: 1s;
+  border-radius: 0.3em;
+  font-size: 18px;
+  font-weight: bolder;
+  cursor: pointer;
+  margin-top: 20px;
+}
+
+.feedback-form button::after {
+  content: "";
+  position: absolute;
+  top: -10px;
+  left: 3%;
+  width: 95%;
+  height: 40%;
+  background-color: #1a1a1a;
+  transition: 0.5s;
+  transform-origin: center;
+}
+
+.feedback-form button::before {
+  content: "";
+  transform-origin: center;
+  position: absolute;
+  top: 80%;
+  left: 3%;
+  width: 95%;
+  height: 40%;
+  background-color: #1a1a1a;
+  background-color: #1a1a1a;
+  transition: 0.5s;
+}
+
+.feedback-form button:hover::before, .feedback-form button:hover::after {
+  transform: scale(0)
+}
+
+.feedback-form button:hover {
+  box-shadow: inset 0px 0px 25px #ff0000;
+}
