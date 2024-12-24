@@ -1,0 +1,26 @@
+/* src/components/AdminDashboard/AdminDashboard.module.css */
+
+.adminDashboard {
+  display: flex;
+  background-color: #1a1a1a; /* Light Grey */
+  color: #ffffff;
+  height: 100vh;
+}
+
+.dashboardContent {
+  flex: 1;
+  padding: 20px;
+  margin-left: 250px; /* Ensure content doesn't overlap the sidebar */
+}
+
+.card {
+  background-color: #ff0000; /* White */
+  padding: 20px;
+  margin-bottom: 20px;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+h2 {
+  color: #FF6347; /* Tomato */
+}
