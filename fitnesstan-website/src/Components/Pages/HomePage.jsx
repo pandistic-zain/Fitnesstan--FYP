@@ -20,7 +20,7 @@ import { useNavigate } from "react-router-dom";
 import headerImg from "../../Assets/header-img.png";
 import ZainImg from "../../Assets/zain.jpg";
 import UbaidImg from "../../Assets/ubaid.png";
-import HuzaifaImg from "../../Assets/ubaid.png";
+import HuzaifaImg from "../../Assets/huzaifa.png";
 
 const supplementsData = [
   {
