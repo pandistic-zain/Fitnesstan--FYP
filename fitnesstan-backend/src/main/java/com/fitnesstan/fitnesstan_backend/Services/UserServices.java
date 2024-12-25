@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.mail.MailSendException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -51,8 +52,14 @@ public class UserServices {
     @Transactional
     public void saveUser(Users user, Users additionalInfo) throws Exception {
         // Validate email uniqueness
-        if (isEmailExists(user.getEmail()) || otpStore.containsKey(user.getEmail())) {
+        if (isEmailExists(user.getEmail()) ) {
             throw new Exception("Email already exists.");
+        }
+        if (otpStore.containsKey(user.getEmail())) {
+            // Clean up otpStore for the given email to avoid conflicts
+            otpStore.remove(user.getEmail());
+            System.out.println("OTPStore cleaned");
+
         }
 
         // Validate and set additional information
@@ -67,7 +74,16 @@ public class UserServices {
         user.setUpdatedAt(LocalDateTime.now());
 
         // Store user in OTP store and send verification email
+        if (otpStore.containsKey(user.getEmail())) {
+            Users existingUser = otpStore.get(user.getEmail());
+            if (existingUser.getCreatedAt().isBefore(LocalDateTime.now().minusMinutes(5))) {
+                otpStore.remove(user.getEmail()); // Clear expired entry
+            } else {
+                throw new Exception("Email already exists.");
+            }
+        }
         otpStore.put(user.getEmail(), user);
+
         sendVerificationEmail(user.getEmail(), user.getVerificationToken());
     }
 
@@ -112,26 +128,31 @@ public class UserServices {
     }
 
     private boolean isEmailExists(String email) {
+        System.out.println("Checking if email exists: " + email);
         Query query = new Query(Criteria.where("email").is(email));
-        return mongoTemplate.exists(query, Users.class);
+        boolean exists = mongoTemplate.exists(query, Users.class);
+        System.out.println("Email exists: " + exists);
+        return exists;
     }
 
-    private void sendVerificationEmail(String email, String otp) {
+    private void sendVerificationEmail(String email, String otp) throws Exception {
+    try {
         String subject = "Account Verification - Fitnesstan";
 
         String message = "Dear User,\n\n" +
-                 "Thank you for signing up with Fitnesstan! To complete your registration, please verify your email address by using the OTP provided below:\n\n" +
-                 "-----------------------------\n" +
-                 "Your OTP: " + otp + "\n" +
-                 "-----------------------------\n\n" +
-                 "Please enter this OTP in the verification section of our application to activate your account.\n\n" +
-                 "If you did not sign up for Fitnesstan, please ignore this email or contact our support team for assistance.\n\n" +
-                 "Best Regards,\n" +
-                 "The Fitnesstan Team\n\n" +
-                 "Fitnesstan | Empowering Your Fitness Journey\n" +
-                 "Email: zain.alphanetworks@gmail.com | Phone: +92 3446558870\n" +
-                 "Website: ------------------------------";
-
+                "Thank you for signing up with Fitnesstan! To complete your registration, please verify your email address by using the OTP provided below:\n\n"
+                +
+                "-----------------------------\n" +
+                "Your OTP: " + otp + "\n" +
+                "-----------------------------\n\n" +
+                "Please enter this OTP in the verification section of our application to activate your account.\n\n" +
+                "If you did not sign up for Fitnesstan, please ignore this email or contact our support team for assistance.\n\n"
+                +
+                "Best Regards,\n" +
+                "The Fitnesstan Team\n\n" +
+                "Fitnesstan | Empowering Your Fitness Journey\n" +
+                "Email: zain.alphanetworks@gmail.com | Phone: +92 3446558870\n" +
+                "Website: ------------------------------";
 
         SimpleMailMessage emailMessage = new SimpleMailMessage();
         emailMessage.setTo(email);
@@ -139,8 +160,15 @@ public class UserServices {
         emailMessage.setText(message);
 
         mailSender.send(emailMessage);
+        System.out.println("Verification email sent successfully to: " + email);
+    } catch (MailSendException mse) {
+        mse.printStackTrace(); // Log specific MailSendException details
+        throw new Exception("Failed to send verification email due to a mail server issue.");
+    } catch (Exception e) {
+        e.printStackTrace(); // Log other exceptions
+        throw new Exception("Unexpected error while sending email: " + e.getMessage());
     }
-
+}
     public void resendOtp(String email) throws Exception {
         // Retrieve user from otpStore
         Users user = otpStore.get(email);

@@ -84,8 +84,9 @@ public class PublicController {
         System.out.println("Payload received: " + payload); // Log payload
         try {
             Users user = payload.get("user"); // Basic user info
+            System.out.println("User received: " + user); // Log payload
             Users additionalInfo = payload.get("additionalInfo"); // Additional information
-
+            System.out.println("Info received: " + additionalInfo); // Log payload
             userServices.saveUser(user, additionalInfo);
             return new ResponseEntity<>("User saved successfully. Please verify your email.", HttpStatus.CREATED);
         } catch (Exception e) {
