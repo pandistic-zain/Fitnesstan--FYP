@@ -5,7 +5,6 @@ import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 
-import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -20,13 +19,13 @@ import java.util.List;
 @Builder
 @Document(collection = "users") // Map this class to the "users" collection in MongoDB
 public class Users {
+
     @Id
-    private ObjectId id; // Consider using String if preferred
+    private String id; // Changed from ObjectId to String for flexibility
 
     private String username;
 
     @Indexed(unique = true)
-
     private String email;
 
     private String password;
@@ -40,15 +39,21 @@ public class Users {
     private LocalDateTime createdAt;
 
     private LocalDateTime updatedAt;
+
+    // Personal and Health Information
     private Double heightFt; // Height in feet
     private LocalDate dob; // Date of Birth
-
     private Double weightKg; // Weight in kilograms
-    private String gender; // Consider using an Enum for predefined values
+    private String gender; // Enum for predefined gender values
     private String occupation;
     private String religion;
-    private String exerciseLevel; // Consider using an Enum (e.g., LOW, MEDIUM, HIGH)
+    private String exerciseLevel; // Enum for predefined exercise levels
     private Double sleepHours; // Average sleep hours per night
-
     private List<String> medicalHistory; // List of medical conditions
+
+    // Calculated Fields
+    private Double bmi; // Body Mass Index
+    private Double ree; // Resting Metabolic Rate
+    private Double tdee; // Total Daily Energy Expenditure
+
 }

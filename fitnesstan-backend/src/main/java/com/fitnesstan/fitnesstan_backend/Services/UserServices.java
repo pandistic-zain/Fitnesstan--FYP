@@ -3,7 +3,9 @@ package com.fitnesstan.fitnesstan_backend.Services;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.Period;
 import java.security.SecureRandom;
 
 import org.bson.types.ObjectId;
@@ -52,7 +54,7 @@ public class UserServices {
     @Transactional
     public void saveUser(Users user, Users additionalInfo) throws Exception {
         // Validate email uniqueness
-        if (isEmailExists(user.getEmail()) ) {
+        if (isEmailExists(user.getEmail())) {
             throw new Exception("Email already exists.");
         }
         if (otpStore.containsKey(user.getEmail())) {
@@ -115,6 +117,52 @@ public class UserServices {
             throw new Exception("Sleep Hours must be between 0 and 24.");
         }
 
+        // Calculate BMI
+        double heightInMeters = additionalInfo.getHeightFt() * 0.3048; // Convert feet to meters
+        double bmi = additionalInfo.getWeightKg() / (heightInMeters * heightInMeters);
+
+        // Calculate REE (Mifflin-St Jeor Equation)
+        double ree;
+        if (additionalInfo.getGender().equalsIgnoreCase("male")) {
+            ree = 10 * additionalInfo.getWeightKg() + 6.25 * (heightInMeters * 100)
+                    - 5 * calculateAge(additionalInfo.getDob()) + 5;
+        } else {
+            ree = 10 * additionalInfo.getWeightKg() + 6.25 * (heightInMeters * 100)
+                    - 5 * calculateAge(additionalInfo.getDob()) - 161;
+        }
+
+        // Calculate TDEE based on exercise level
+        double tdee;
+        switch (additionalInfo.getExerciseLevel().toLowerCase()) {
+            case "No Exercise":
+                tdee = ree;
+                break;
+            case "1 days a week":
+                tdee = ree * 1.1;
+                break;
+            case "2 days a week":
+                tdee = ree * 1.2;
+                break;
+            case "3 days a week":
+                tdee = ree * 1.375;
+                break;
+            case "4 days a week":
+                tdee = ree * 1.46;
+                break;
+            case "5 days a week":
+                tdee = ree * 1.55;
+                break;
+            case "6 days a week":
+                tdee = ree * 1.725;
+                break;
+            case "7 days a week":
+                tdee = ree * 1.9;
+                break;
+            
+            default:
+                throw new Exception("Invalid Exercise Level.");
+        }
+
         // Set additional information to the user object
         user.setHeightFt(additionalInfo.getHeightFt());
         user.setDob(additionalInfo.getDob());
@@ -125,6 +173,16 @@ public class UserServices {
         user.setExerciseLevel(additionalInfo.getExerciseLevel());
         user.setSleepHours(additionalInfo.getSleepHours());
         user.setMedicalHistory(additionalInfo.getMedicalHistory());
+
+        // Set calculated values
+        user.setBmi(bmi);
+        user.setRee(ree);
+        user.setTdee(tdee);
+    }
+
+    // Helper method to calculate age from date of birth
+    private int calculateAge(LocalDate dob) {
+        return Period.between(dob, LocalDate.now()).getYears();
     }
 
     private boolean isEmailExists(String email) {
@@ -136,39 +194,41 @@ public class UserServices {
     }
 
     private void sendVerificationEmail(String email, String otp) throws Exception {
-    try {
-        String subject = "Account Verification - Fitnesstan";
+        try {
+            String subject = "Account Verification - Fitnesstan";
 
-        String message = "Dear User,\n\n" +
-                "Thank you for signing up with Fitnesstan! To complete your registration, please verify your email address by using the OTP provided below:\n\n"
-                +
-                "-----------------------------\n" +
-                "Your OTP: " + otp + "\n" +
-                "-----------------------------\n\n" +
-                "Please enter this OTP in the verification section of our application to activate your account.\n\n" +
-                "If you did not sign up for Fitnesstan, please ignore this email or contact our support team for assistance.\n\n"
-                +
-                "Best Regards,\n" +
-                "The Fitnesstan Team\n\n" +
-                "Fitnesstan | Empowering Your Fitness Journey\n" +
-                "Email: zain.alphanetworks@gmail.com | Phone: +92 3446558870\n" +
-                "Website: ------------------------------";
+            String message = "Dear User,\n\n" +
+                    "Thank you for signing up with Fitnesstan! To complete your registration, please verify your email address by using the OTP provided below:\n\n"
+                    +
+                    "-----------------------------\n" +
+                    "Your OTP: " + otp + "\n" +
+                    "-----------------------------\n\n" +
+                    "Please enter this OTP in the verification section of our application to activate your account.\n\n"
+                    +
+                    "If you did not sign up for Fitnesstan, please ignore this email or contact our support team for assistance.\n\n"
+                    +
+                    "Best Regards,\n" +
+                    "The Fitnesstan Team\n\n" +
+                    "Fitnesstan | Empowering Your Fitness Journey\n" +
+                    "Email: zain.alphanetworks@gmail.com | Phone: +92 3446558870\n" +
+                    "Website: ------------------------------";
 
-        SimpleMailMessage emailMessage = new SimpleMailMessage();
-        emailMessage.setTo(email);
-        emailMessage.setSubject(subject);
-        emailMessage.setText(message);
+            SimpleMailMessage emailMessage = new SimpleMailMessage();
+            emailMessage.setTo(email);
+            emailMessage.setSubject(subject);
+            emailMessage.setText(message);
 
-        mailSender.send(emailMessage);
-        System.out.println("Verification email sent successfully to: " + email);
-    } catch (MailSendException mse) {
-        mse.printStackTrace(); // Log specific MailSendException details
-        throw new Exception("Failed to send verification email due to a mail server issue.");
-    } catch (Exception e) {
-        e.printStackTrace(); // Log other exceptions
-        throw new Exception("Unexpected error while sending email: " + e.getMessage());
+            mailSender.send(emailMessage);
+            System.out.println("Verification email sent successfully to: " + email);
+        } catch (MailSendException mse) {
+            mse.printStackTrace(); // Log specific MailSendException details
+            throw new Exception("Failed to send verification email due to a mail server issue.");
+        } catch (Exception e) {
+            e.printStackTrace(); // Log other exceptions
+            throw new Exception("Unexpected error while sending email: " + e.getMessage());
+        }
     }
-}
+
     public void resendOtp(String email) throws Exception {
         // Retrieve user from otpStore
         Users user = otpStore.get(email);

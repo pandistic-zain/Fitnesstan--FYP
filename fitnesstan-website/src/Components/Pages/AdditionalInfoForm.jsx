@@ -208,7 +208,7 @@ const AdditionalInfoForm = () => {
                   required
                 >
                   <option value="">Select your exercise level</option>
-                  {["3 days a week", "4 days a week", "5 days a week", "6 days a week", "7 days a week"].map((level) => (
+                  {["No Exercise","1 days a week","2 days a week","3 days a week", "4 days a week", "5 days a week", "6 days a week", "7 days a week"].map((level) => (
                     <option key={level} value={level}>
                       {level}
                     </option>
