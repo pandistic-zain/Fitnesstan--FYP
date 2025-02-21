@@ -88,9 +88,8 @@ public class UserServices {
 
         sendVerificationEmail(user.getEmail(), user.getVerificationToken());
     }
-
     private void validateAndSetAdditionalInfo(Users user, Users additionalInfo) throws Exception {
-        // Validate additional information
+        // Validate user input
         if (additionalInfo.getHeightFt() == null || additionalInfo.getHeightFt() <= 0) {
             throw new Exception("Height is mandatory and must be greater than 0.");
         }
@@ -103,35 +102,62 @@ public class UserServices {
         if (additionalInfo.getGender() == null || additionalInfo.getGender().isEmpty()) {
             throw new Exception("Gender is mandatory.");
         }
-        if (additionalInfo.getOccupation() == null || additionalInfo.getOccupation().isEmpty()) {
-            throw new Exception("Occupation is mandatory.");
-        }
-        if (additionalInfo.getReligion() == null || additionalInfo.getReligion().isEmpty()) {
-            throw new Exception("Religion is mandatory.");
-        }
-        if (additionalInfo.getExerciseLevel() == null || additionalInfo.getExerciseLevel().isEmpty()) {
-            throw new Exception("Exercise Level is mandatory.");
-        }
-        if (additionalInfo.getSleepHours() == null || additionalInfo.getSleepHours() < 0
-                || additionalInfo.getSleepHours() > 24) {
-            throw new Exception("Sleep Hours must be between 0 and 24.");
-        }
-
+    
+        // Convert height from feet to meters
+        double heightInMeters = additionalInfo.getHeightFt() * 0.3048;
+    
         // Calculate BMI
-        double heightInMeters = additionalInfo.getHeightFt() * 0.3048; // Convert feet to meters
         double bmi = additionalInfo.getWeightKg() / (heightInMeters * heightInMeters);
-
+        
+        // Get age
+        int age = calculateAge(additionalInfo.getDob());
+    
+        // Determine optimal BMI range based on age & gender
+        double lowerBMI, upperBMI;
+        if (additionalInfo.getGender().equalsIgnoreCase("male")) {
+            if (age >= 18 && age <= 34) {
+                lowerBMI = 23.0; upperBMI = 25.9;
+            } else if (age >= 35 && age <= 44) {
+                lowerBMI = 23.0; upperBMI = 26.9;
+            } else if (age >= 45 && age <= 54) {
+                lowerBMI = 24.0; upperBMI = 27.9;
+            } else {
+                lowerBMI = 18.5; upperBMI = 24.9; // Default
+            }
+        } else { // Female
+            if (age >= 18 && age <= 34) {
+                lowerBMI = 15.5; upperBMI = 24.9;
+            } else if (age >= 35 && age <= 44) {
+                lowerBMI = 19.0; upperBMI = 23.9;
+            } else if (age >= 45 && age <= 54) {
+                lowerBMI = 20.0; upperBMI = 25.9;
+            } else {
+                lowerBMI = 15.5; upperBMI = 22.9; // Default
+            }
+        }
+    
         // Calculate REE (Mifflin-St Jeor Equation)
         double ree;
         if (additionalInfo.getGender().equalsIgnoreCase("male")) {
             ree = 10 * additionalInfo.getWeightKg() + 6.25 * (heightInMeters * 100)
-                    - 5 * calculateAge(additionalInfo.getDob()) + 5;
+                    - 5 * age + 5;
         } else {
             ree = 10 * additionalInfo.getWeightKg() + 6.25 * (heightInMeters * 100)
-                    - 5 * calculateAge(additionalInfo.getDob()) - 161;
+                    - 5 * age - 161;
         }
-
-        // Calculate TDEE based on exercise level
+    
+        // **Adjust REE based on age-specific BMI ranges**
+        if (bmi < lowerBMI) {
+            ree += 500; // Calorie surplus
+        } else if (bmi >= upperBMI && bmi < 30) {
+            ree -= 300; // Mild deficit
+        } else if (bmi >= 30 && bmi < 40) {
+            ree -= 600; // Moderate deficit
+        } else if (bmi >= 40) {
+            ree -= 1000; // Severe deficit
+        }
+    
+        // **Calculate TDEE based on Exercise Level**
         double tdee;
         switch (additionalInfo.getExerciseLevel().toLowerCase()) {
             case "no exercise":
@@ -158,10 +184,10 @@ public class UserServices {
             case "7 days a week":
                 tdee = ree * 1.9;
                 break;
-            
             default:
                 throw new Exception("Invalid Exercise Level.");
         }
+    
 
         // Set additional information to the user object
         user.setHeightFt(additionalInfo.getHeightFt());
