@@ -134,7 +134,7 @@ public class UserServices {
         // Calculate TDEE based on exercise level
         double tdee;
         switch (additionalInfo.getExerciseLevel().toLowerCase()) {
-            case "No Exercise":
+            case "no exercise":
                 tdee = ree;
                 break;
             case "1 days a week":

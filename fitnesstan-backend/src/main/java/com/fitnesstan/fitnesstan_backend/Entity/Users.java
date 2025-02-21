@@ -9,6 +9,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import org.bson.types.ObjectId;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -21,7 +22,7 @@ import java.util.List;
 public class Users {
 
     @Id
-    private String id; // Changed from ObjectId to String for flexibility
+    private ObjectId id; // Changed to ObjectId for MongoDB compatibility
 
     private String username;
 
@@ -55,5 +56,4 @@ public class Users {
     private Double bmi; // Body Mass Index
     private Double ree; // Resting Metabolic Rate
     private Double tdee; // Total Daily Energy Expenditure
-
 }
