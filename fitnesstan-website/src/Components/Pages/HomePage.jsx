@@ -394,7 +394,7 @@ const HomePage = () => {
             </div>
           ))}
         </div>
-        <div className={styles.horizontalDividerFinalfeedback}></div>
+        {/* <div className={styles.horizontalDividerFinalfeedback}></div> */}
       </section>
       {/* Team Section */}
       <section className={styles["team-section"]} id="team">
