@@ -37,20 +37,23 @@ const Register = () => {
     const { name, value } = e.target;
     setSignUpData({ ...signUpData, [name]: value });
   };
-
   const handleLoginSubmit = async (e) => {
     e.preventDefault();
     setLoading(true); // Start loading
     try {
+      console.log("[DEBUG] Sending login request with data:", loginData); // Debug line
+
       const response = await loginUser(loginData);
       const data = response.data;
+
+      console.log("[DEBUG] Response received from backend:", data); // Debug line
 
       if (response.status === 200) {
         // Store email and password in local storage for future API requests
         localStorage.setItem("email", loginData.email);
         localStorage.setItem("password", loginData.password); // Only do this for secure environments
 
-        if (data.roles.includes("ADMIN")) {
+        if (data.user.roles.includes("ADMIN")) {
           navigate("/AdminDashboard");
         } else {
           navigate("/user-dashboard");
@@ -59,7 +62,7 @@ const Register = () => {
         setErrorMessage(data.message || "Login failed. Please try again.");
       }
     } catch (error) {
-      console.error("Login error: ", error.response?.data || error);
+      console.error("[DEBUG] Login error: ", error.response?.data || error); // Debug line
       setErrorMessage(
         error.response?.data.message ||
           "Invalid email or password. Please try again."

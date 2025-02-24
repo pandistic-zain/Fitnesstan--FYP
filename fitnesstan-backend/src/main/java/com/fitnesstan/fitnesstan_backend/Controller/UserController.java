@@ -20,6 +20,17 @@ public class UserController {
     @Autowired
     private UserRepository userRepository;
 
+        // Endpoint to fetch data for a specific user by email
+        @GetMapping("/{email}")
+        public ResponseEntity<Users> getUserByEmail(@PathVariable String email) {
+            Users user = userRepository.findByEmail(email);
+            if (user != null) {
+                return ResponseEntity.ok(user);
+            } else {
+                return ResponseEntity.notFound().build();
+            }
+        }
+
     // Endpoint to update user details
     @PutMapping
     public ResponseEntity<String> updateUser(@RequestBody Users updatedUser) {
