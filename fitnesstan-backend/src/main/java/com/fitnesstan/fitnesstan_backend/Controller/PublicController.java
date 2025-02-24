@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
+import com.fitnesstan.fitnesstan_backend.DAO.UserRepository;
 import com.fitnesstan.fitnesstan_backend.Entity.Users;
 import com.fitnesstan.fitnesstan_backend.Services.UserServices;
 
@@ -22,6 +23,9 @@ public class PublicController {
 
     @Autowired
     private UserServices userServices;
+
+    @Autowired
+    private UserRepository userRepository;
 
     // Health check endpoint
     @GetMapping("/health-check")
@@ -108,11 +112,37 @@ public class PublicController {
 
     // Email verification endpoint
     @GetMapping("/verify-email")
-    public ResponseEntity<String> verifyEmail(@RequestParam("email") String email, @RequestParam("otp") String otp) {
+    public ResponseEntity<?> verifyEmail(@RequestParam("email") String email, @RequestParam("otp") String otp) {
+        System.out.println("[DEBUG] Inside verifyEmail method"); // Debug line
+        System.out.println("[DEBUG] Email: " + email + ", OTP: " + otp); // Debug line
+    
         try {
+            // Verify the email and update the user's status to PASS
             userServices.verifyEmail(email, otp);
-            return new ResponseEntity<>("Email verified successfully. You can now log in.", HttpStatus.OK);
+    
+            // Fetch the verified user from the database
+            Users verifiedUser = userRepository.findByEmail(email);
+            if (verifiedUser == null) {
+                throw new Exception("User not found after verification.");
+            }
+    
+            System.out.println("[DEBUG] User verified successfully: " + verifiedUser.getEmail()); // Debug line
+    
+            // Send user data to Flask server and get the response
+            Map<String, Object> modelResponse = sendUserDataToFlask(verifiedUser);
+    
+            System.out.println("[DEBUG] Model response received: " + modelResponse); // Debug line
+    
+            // Combine the user data and model response
+            Map<String, Object> response = new HashMap<>();
+            response.put("user", verifiedUser);
+            response.put("modelResponse", modelResponse);
+    
+            System.out.println("[DEBUG] Final response prepared: " + response); // Debug line
+    
+            return new ResponseEntity<>(response, HttpStatus.OK);
         } catch (Exception e) {
+            System.out.println("[DEBUG] Email verification failed: " + e.getMessage()); // Debug line
             return new ResponseEntity<>("Email verification failed: " + e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
@@ -130,16 +160,25 @@ public class PublicController {
     }
 
     @PostMapping("/required-info")
-    public ResponseEntity<String> saveUserWithInfo(@RequestBody Map<String, Users> payload) {
-        System.out.println("Payload received: " + payload); // Log payload
+    public ResponseEntity<?> saveUserWithInfo(@RequestBody Map<String, Users> payload) {
+        System.out.println("[DEBUG] Inside saveUserWithInfo method"); // Debug line
+        System.out.println("[DEBUG] Payload received: " + payload); // Debug line
+    
         try {
             Users user = payload.get("user"); // Basic user info
-            System.out.println("User received: " + user); // Log payload
             Users additionalInfo = payload.get("additionalInfo"); // Additional information
-            System.out.println("Info received: " + additionalInfo); // Log payload
+    
+            System.out.println("[DEBUG] User received: " + user); // Debug line
+            System.out.println("[DEBUG] Additional info received: " + additionalInfo); // Debug line
+    
+            // Save the user to the database with a PENDING status
             userServices.saveUser(user, additionalInfo);
+    
+            System.out.println("[DEBUG] User saved successfully with PENDING status: " + user.getEmail()); // Debug line
+    
             return new ResponseEntity<>("User saved successfully. Please verify your email.", HttpStatus.CREATED);
         } catch (Exception e) {
+            System.out.println("[DEBUG] Failed to save user: " + e.getMessage()); // Debug line
             return new ResponseEntity<>("Failed to save user: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

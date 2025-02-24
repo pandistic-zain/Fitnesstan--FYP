@@ -89,11 +89,11 @@ const AdditionalInfoForm = () => {
 
   return (
     <div className={styles.backgroundDiv}>
+       {loading && <Loader />}
       <Container className={styles.container}>
         <Row className="justify-content-center">
           <Col>
             <h2 className={styles.textCenter}>Additional Information</h2>
-            {loading && <Loader />}
             <Form onSubmit={handleSubmit}>
               <Form.Group controlId="heightFt" className="mb-3">
                 <Form.Label>Height (ft)</Form.Label>
