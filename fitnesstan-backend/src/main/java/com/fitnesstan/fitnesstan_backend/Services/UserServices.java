@@ -348,7 +348,6 @@ public class UserServices {
         Map<Integer, Map<String, List<MealItem>>> mealPlan = new HashMap<>();
         for (int day = 1; day <= 14; day++) {
             Map<String, List<MealItem>> meals = new HashMap<>();
-
             // Demo meal: Breakfast (meal1)
             MealItem oatmeal = MealItem.builder()
                     .name("Oatmeal")
