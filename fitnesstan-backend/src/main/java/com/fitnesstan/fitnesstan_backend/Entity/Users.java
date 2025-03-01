@@ -10,6 +10,8 @@ import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import org.bson.types.ObjectId;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -60,5 +62,6 @@ public class Users {
 
     // Mapping to Diet entity via DBRef to link the current 14-day diet plan
     @DBRef
+    @JsonIgnore 
     private Diet currentDiet;
 }

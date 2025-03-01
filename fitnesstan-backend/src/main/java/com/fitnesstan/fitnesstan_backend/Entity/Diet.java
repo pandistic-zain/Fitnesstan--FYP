@@ -9,6 +9,8 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import org.bson.types.ObjectId;
 import java.time.LocalDate;
 import java.util.List;
@@ -25,6 +27,7 @@ public class Diet {
     private ObjectId id;
     
     @DBRef
+    @JsonIgnore 
     private Users user; // Reference to the Users entity
     
     /**
