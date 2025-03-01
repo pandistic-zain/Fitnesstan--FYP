@@ -25,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.fitnesstan.fitnesstan_backend.Entity.Users;
 import com.fitnesstan.fitnesstan_backend.Entity.Diet;
+import com.fitnesstan.fitnesstan_backend.Entity.MealItem;
 import com.fitnesstan.fitnesstan_backend.DAO.UserRepository;
 import com.fitnesstan.fitnesstan_backend.DAO.DietRepository;
 
@@ -33,11 +34,11 @@ public class UserServices {
 
     @Autowired
     private UserRepository userRepository;
-    
+
     // Injecting the DietRepository to manage Diet entities
     @Autowired
     private DietRepository dietRepository;
-    
+
     @Autowired
     private MongoTemplate mongoTemplate;
     @Autowired
@@ -111,40 +112,48 @@ public class UserServices {
         if (additionalInfo.getGender() == null || additionalInfo.getGender().isEmpty()) {
             throw new Exception("Gender is mandatory.");
         }
-    
+
         // Convert height from feet to meters
         double heightInMeters = additionalInfo.getHeightFt() * 0.3048;
-    
+
         // Calculate BMI
         double bmi = additionalInfo.getWeightKg() / (heightInMeters * heightInMeters);
-        
+
         // Get age
         int age = calculateAge(additionalInfo.getDob());
-    
+
         // Determine optimal BMI range based on age & gender
         double lowerBMI, upperBMI;
         if (additionalInfo.getGender().equalsIgnoreCase("male")) {
             if (age >= 18 && age <= 34) {
-                lowerBMI = 23.0; upperBMI = 25.9;
+                lowerBMI = 23.0;
+                upperBMI = 25.9;
             } else if (age >= 35 && age <= 44) {
-                lowerBMI = 23.0; upperBMI = 26.9;
+                lowerBMI = 23.0;
+                upperBMI = 26.9;
             } else if (age >= 45 && age <= 54) {
-                lowerBMI = 24.0; upperBMI = 27.9;
+                lowerBMI = 24.0;
+                upperBMI = 27.9;
             } else {
-                lowerBMI = 18.5; upperBMI = 24.9; // Default
+                lowerBMI = 18.5;
+                upperBMI = 24.9; // Default
             }
         } else { // Female
             if (age >= 18 && age <= 34) {
-                lowerBMI = 15.5; upperBMI = 24.9;
+                lowerBMI = 15.5;
+                upperBMI = 24.9;
             } else if (age >= 35 && age <= 44) {
-                lowerBMI = 19.0; upperBMI = 23.9;
+                lowerBMI = 19.0;
+                upperBMI = 23.9;
             } else if (age >= 45 && age <= 54) {
-                lowerBMI = 20.0; upperBMI = 25.9;
+                lowerBMI = 20.0;
+                upperBMI = 25.9;
             } else {
-                lowerBMI = 15.5; upperBMI = 22.9; // Default
+                lowerBMI = 15.5;
+                upperBMI = 22.9; // Default
             }
         }
-    
+
         // Calculate REE (Mifflin-St Jeor Equation)
         double ree;
         if (additionalInfo.getGender().equalsIgnoreCase("male")) {
@@ -154,7 +163,7 @@ public class UserServices {
             ree = 10 * additionalInfo.getWeightKg() + 6.25 * (heightInMeters * 100)
                     - 5 * age - 161;
         }
-    
+
         // **Adjust REE based on age-specific BMI ranges**
         if (bmi < lowerBMI) {
             ree += 500; // Calorie surplus
@@ -165,7 +174,7 @@ public class UserServices {
         } else if (bmi >= 40) {
             ree -= 1000; // Severe deficit
         }
-    
+
         // **Calculate TDEE based on Exercise Level**
         double tdee;
         switch (additionalInfo.getExerciseLevel().toLowerCase()) {
@@ -196,7 +205,7 @@ public class UserServices {
             default:
                 throw new Exception("Invalid Exercise Level.");
         }
-    
+
         // Set additional information to the user object
         user.setHeightFt(additionalInfo.getHeightFt());
         user.setDob(additionalInfo.getDob());
@@ -232,12 +241,15 @@ public class UserServices {
             String subject = "Account Verification - Fitnesstan";
 
             String message = "Dear User,\n\n" +
-                    "Thank you for signing up with Fitnesstan! To complete your registration, please verify your email address by using the OTP provided below:\n\n" +
+                    "Thank you for signing up with Fitnesstan! To complete your registration, please verify your email address by using the OTP provided below:\n\n"
+                    +
                     "-----------------------------\n" +
                     "Your OTP: " + otp + "\n" +
                     "-----------------------------\n\n" +
-                    "Please enter this OTP in the verification section of our application to activate your account.\n\n" +
-                    "If you did not sign up for Fitnesstan, please ignore this email or contact our support team for assistance.\n\n" +
+                    "Please enter this OTP in the verification section of our application to activate your account.\n\n"
+                    +
+                    "If you did not sign up for Fitnesstan, please ignore this email or contact our support team for assistance.\n\n"
+                    +
                     "Best Regards,\n" +
                     "The Fitnesstan Team\n\n" +
                     "Fitnesstan | Empowering Your Fitness Journey\n" +
@@ -319,7 +331,7 @@ public class UserServices {
         otpStore.put(admin.getEmail(), admin);
         sendVerificationEmail(admin.getEmail(), admin.getVerificationToken());
     }
-    
+
     // ============================================
     // NEW METHOD: Add demo meals for a specific user
     // ============================================
@@ -332,14 +344,67 @@ public class UserServices {
         }
         Users user = optionalUser.get();
 
-        // Create a demo meal plan for 14 days
-        Map<Integer, Map<String, List<String>>> mealPlan = new HashMap<>();
+        // Create a demo meal plan for 14 days using MealItem objects
+        Map<Integer, Map<String, List<MealItem>>> mealPlan = new HashMap<>();
         for (int day = 1; day <= 14; day++) {
-            Map<String, List<String>> meals = new HashMap<>();
-            // Demo meal: Breakfast
-            meals.put("meal1", Arrays.asList("Oatmeal", "Fruit Salad", "Green Tea"));
-            // Demo meal: Lunch/Dinner
-            meals.put("meal2", Arrays.asList("Grilled Chicken", "Brown Rice", "Steamed Vegetables"));
+            Map<String, List<MealItem>> meals = new HashMap<>();
+
+            // Demo meal: Breakfast (meal1)
+            MealItem oatmeal = MealItem.builder()
+                    .name("Oatmeal")
+                    .protein(5.0)
+                    .carbs(27.0)
+                    .fats(3.0)
+                    .calories(150.0)
+                    .weight(40.0)
+                    .build();
+            MealItem fruitSalad = MealItem.builder()
+                    .name("Fruit Salad")
+                    .protein(1.0)
+                    .carbs(15.0)
+                    .fats(0.5)
+                    .calories(70.0)
+                    .weight(150.0)
+                    .build();
+            MealItem greenTea = MealItem.builder()
+                    .name("Green Tea")
+                    .protein(0.0)
+                    .carbs(0.0)
+                    .fats(0.0)
+                    .calories(0.0)
+                    .weight(250.0)
+                    .build();
+            List<MealItem> breakfastItems = Arrays.asList(oatmeal, fruitSalad, greenTea);
+            meals.put("meal1", breakfastItems);
+
+            // Demo meal: Lunch/Dinner (meal2)
+            MealItem grilledChicken = MealItem.builder()
+                    .name("Grilled Chicken")
+                    .protein(30.0)
+                    .carbs(0.0)
+                    .fats(5.0)
+                    .calories(200.0)
+                    .weight(100.0)
+                    .build();
+            MealItem brownRice = MealItem.builder()
+                    .name("Brown Rice")
+                    .protein(3.0)
+                    .carbs(45.0)
+                    .fats(1.0)
+                    .calories(210.0)
+                    .weight(150.0)
+                    .build();
+            MealItem steamedVeggies = MealItem.builder()
+                    .name("Steamed Vegetables")
+                    .protein(2.0)
+                    .carbs(10.0)
+                    .fats(0.5)
+                    .calories(50.0)
+                    .weight(100.0)
+                    .build();
+            List<MealItem> lunchDinnerItems = Arrays.asList(grilledChicken, brownRice, steamedVeggies);
+            meals.put("meal2", lunchDinnerItems);
+
             mealPlan.put(day, meals);
         }
 
@@ -351,10 +416,8 @@ public class UserServices {
                 .endDate(LocalDate.now().plusDays(14))
                 .build();
 
-        // Save the Diet object
+        // Save the Diet object and associate it with the user
         dietRepository.save(demoDiet);
-
-        // Associate the new Diet with the user and update the user document
         user.setCurrentDiet(demoDiet);
         userRepository.save(user);
     }

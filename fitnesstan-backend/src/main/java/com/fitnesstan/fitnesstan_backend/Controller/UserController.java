@@ -20,16 +20,16 @@ public class UserController {
     @Autowired
     private UserRepository userRepository;
 
-        // Endpoint to fetch data for a specific user by email
-        @GetMapping("/{email}")
-        public ResponseEntity<Users> getUserByEmail(@PathVariable String email) {
-            Users user = userRepository.findByEmail(email);
-            if (user != null) {
-                return ResponseEntity.ok(user);
-            } else {
-                return ResponseEntity.notFound().build();
-            }
+    // Endpoint to fetch data for a specific user by email
+    @GetMapping("/{email}")
+    public ResponseEntity<Users> getUserByEmail(@PathVariable String email) {
+        Users user = userRepository.findByEmail(email);
+        if (user != null) {
+            return ResponseEntity.ok(user);
+        } else {
+            return ResponseEntity.notFound().build();
         }
+    }
 
     // Endpoint to update user details
     @PutMapping
@@ -49,7 +49,8 @@ public class UserController {
             }
 
             if (updatedUser.getPassword() != null && !updatedUser.getPassword().isEmpty()) {
-                existingUser.setPassword(userServices.encodePassword(updatedUser.getPassword())); // Use your encoding method
+                existingUser.setPassword(userServices.encodePassword(updatedUser.getPassword())); // Use your encoding
+                                                                                                  // method
             }
 
             if (updatedUser.getHeightFt() != null) {
@@ -114,4 +115,17 @@ public class UserController {
             return new ResponseEntity<>("Failed to delete user: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    // In UserController.java
+    @PostMapping("/demo-diet/{userId}")
+    public ResponseEntity<String> addDemoDietPlan(@PathVariable String userId) {
+        try {
+            userServices.addDemoMealsForUser(userId);
+            return ResponseEntity.ok("Demo diet plan added successfully for user with id: " + userId);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("Failed to add demo diet plan: " + e.getMessage());
+        }
+    }
+
 }

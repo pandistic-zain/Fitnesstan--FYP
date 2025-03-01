@@ -30,15 +30,13 @@ public class Diet {
     /**
      * A dynamic mapping for the 14-day meal plan.
      * The outer map's key is the day number (1 to 14).
-     * The inner map maps meal names (e.g., "meal1", "meal2") to a list of food items.
+     * The inner map maps meal names (e.g., "meal1", "meal2") to a list of MealItem objects.
      */
-    private Map<Integer, Map<String, List<String>>> mealPlan;
+    private Map<Integer, Map<String, List<MealItem>>> mealPlan;
     
     // The starting date of the 14-day diet plan.
     private LocalDate startDate;
     
     // The end date (startDate plus 14 days).
     private LocalDate endDate;
-    
-    // Optionally, you could add additional fields (e.g., status) to mark if the diet is active/expired.
 }
