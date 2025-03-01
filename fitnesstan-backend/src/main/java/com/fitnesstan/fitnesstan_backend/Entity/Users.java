@@ -8,6 +8,7 @@ import lombok.Builder;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 
 import org.bson.types.ObjectId;
 import java.time.LocalDate;
@@ -18,11 +19,11 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Document(collection = "users") // Map this class to the "users" collection in MongoDB
+@Document(collection = "users")
 public class Users {
 
     @Id
-    private ObjectId id; // Changed to ObjectId for MongoDB compatibility
+    private ObjectId id; // MongoDB ObjectId for user
 
     private String username;
 
@@ -56,4 +57,8 @@ public class Users {
     private Double bmi; // Body Mass Index
     private Double ree; // Resting Metabolic Rate
     private Double tdee; // Total Daily Energy Expenditure
+
+    // Mapping to Diet entity via DBRef to link the current 14-day diet plan
+    @DBRef
+    private Diet currentDiet;
 }

@@ -3,10 +3,13 @@ package com.fitnesstan.fitnesstan_backend.Services;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.HashMap;
+import java.util.Map;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Period;
 import java.security.SecureRandom;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,17 +21,23 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import java.util.concurrent.ConcurrentHashMap;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.fitnesstan.fitnesstan_backend.Entity.Users;
+import com.fitnesstan.fitnesstan_backend.Entity.Diet;
 import com.fitnesstan.fitnesstan_backend.DAO.UserRepository;
+import com.fitnesstan.fitnesstan_backend.DAO.DietRepository;
 
 @Service
 public class UserServices {
 
     @Autowired
     private UserRepository userRepository;
+    
+    // Injecting the DietRepository to manage Diet entities
+    @Autowired
+    private DietRepository dietRepository;
+    
     @Autowired
     private MongoTemplate mongoTemplate;
     @Autowired
@@ -61,7 +70,6 @@ public class UserServices {
             // Clean up otpStore for the given email to avoid conflicts
             otpStore.remove(user.getEmail());
             System.out.println("OTPStore cleaned");
-
         }
 
         // Validate and set additional information
@@ -88,6 +96,7 @@ public class UserServices {
 
         sendVerificationEmail(user.getEmail(), user.getVerificationToken());
     }
+
     private void validateAndSetAdditionalInfo(Users user, Users additionalInfo) throws Exception {
         // Validate user input
         if (additionalInfo.getHeightFt() == null || additionalInfo.getHeightFt() <= 0) {
@@ -188,7 +197,6 @@ public class UserServices {
                 throw new Exception("Invalid Exercise Level.");
         }
     
-
         // Set additional information to the user object
         user.setHeightFt(additionalInfo.getHeightFt());
         user.setDob(additionalInfo.getDob());
@@ -224,15 +232,12 @@ public class UserServices {
             String subject = "Account Verification - Fitnesstan";
 
             String message = "Dear User,\n\n" +
-                    "Thank you for signing up with Fitnesstan! To complete your registration, please verify your email address by using the OTP provided below:\n\n"
-                    +
+                    "Thank you for signing up with Fitnesstan! To complete your registration, please verify your email address by using the OTP provided below:\n\n" +
                     "-----------------------------\n" +
                     "Your OTP: " + otp + "\n" +
                     "-----------------------------\n\n" +
-                    "Please enter this OTP in the verification section of our application to activate your account.\n\n"
-                    +
-                    "If you did not sign up for Fitnesstan, please ignore this email or contact our support team for assistance.\n\n"
-                    +
+                    "Please enter this OTP in the verification section of our application to activate your account.\n\n" +
+                    "If you did not sign up for Fitnesstan, please ignore this email or contact our support team for assistance.\n\n" +
                     "Best Regards,\n" +
                     "The Fitnesstan Team\n\n" +
                     "Fitnesstan | Empowering Your Fitness Journey\n" +
@@ -247,10 +252,10 @@ public class UserServices {
             mailSender.send(emailMessage);
             System.out.println("Verification email sent successfully to: " + email);
         } catch (MailSendException mse) {
-            mse.printStackTrace(); // Log specific MailSendException details
+            mse.printStackTrace();
             throw new Exception("Failed to send verification email due to a mail server issue.");
         } catch (Exception e) {
-            e.printStackTrace(); // Log other exceptions
+            e.printStackTrace();
             throw new Exception("Unexpected error while sending email: " + e.getMessage());
         }
     }
@@ -267,7 +272,7 @@ public class UserServices {
         user.setVerificationToken(newOtp);
         user.setUpdatedAt(LocalDateTime.now());
 
-        otpStore.put(email, user); // Update otpStore with new OTP
+        otpStore.put(email, user);
         sendVerificationEmail(email, newOtp);
     }
 
@@ -282,7 +287,7 @@ public class UserServices {
         // Retrieve user from otpStore
         Users user = otpStore.get(email);
         if (user == null || !user.getVerificationToken().equals(otp)) {
-            throw new Exception("Invalid verification token."); // OTP not found or does not match
+            throw new Exception("Invalid verification token.");
         }
 
         // Remove user from otpStore and set status to PASS
@@ -311,9 +316,47 @@ public class UserServices {
         admin.setCreatedAt(LocalDateTime.now());
         admin.setUpdatedAt(LocalDateTime.now());
 
-        // Store admin temporarily in otpStore and send OTP
         otpStore.put(admin.getEmail(), admin);
         sendVerificationEmail(admin.getEmail(), admin.getVerificationToken());
+    }
+    
+    // ============================================
+    // NEW METHOD: Add demo meals for a specific user
+    // ============================================
+    @Transactional
+    public void addDemoMealsForUser(String userId) throws Exception {
+        // Retrieve the user by their ID
+        Optional<Users> optionalUser = userRepository.findById(new ObjectId(userId));
+        if (!optionalUser.isPresent()) {
+            throw new Exception("User not found with id: " + userId);
+        }
+        Users user = optionalUser.get();
+
+        // Create a demo meal plan for 14 days
+        Map<Integer, Map<String, List<String>>> mealPlan = new HashMap<>();
+        for (int day = 1; day <= 14; day++) {
+            Map<String, List<String>> meals = new HashMap<>();
+            // Demo meal: Breakfast
+            meals.put("meal1", Arrays.asList("Oatmeal", "Fruit Salad", "Green Tea"));
+            // Demo meal: Lunch/Dinner
+            meals.put("meal2", Arrays.asList("Grilled Chicken", "Brown Rice", "Steamed Vegetables"));
+            mealPlan.put(day, meals);
+        }
+
+        // Create a new Diet object with a 14-day plan
+        Diet demoDiet = Diet.builder()
+                .user(user)
+                .mealPlan(mealPlan)
+                .startDate(LocalDate.now())
+                .endDate(LocalDate.now().plusDays(14))
+                .build();
+
+        // Save the Diet object
+        dietRepository.save(demoDiet);
+
+        // Associate the new Diet with the user and update the user document
+        user.setCurrentDiet(demoDiet);
+        userRepository.save(user);
     }
 
     public Users findByUsername(String username) {
@@ -345,7 +388,7 @@ public class UserServices {
 
     public boolean deleteUser(String id) {
         if (userRepository.existsById(new ObjectId(id))) {
-            userRepository.deleteById(new ObjectId(id)); // Delete or deactivate user
+            userRepository.deleteById(new ObjectId(id));
             return true;
         }
         return false;
