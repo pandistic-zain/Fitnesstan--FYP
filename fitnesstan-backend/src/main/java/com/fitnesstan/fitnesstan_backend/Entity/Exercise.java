@@ -25,6 +25,5 @@ public class Exercise {
     private String description;     // brief instructions or technique tips
 
     // Additional optional fields
-    private String difficultyLevel;
     private String equipment;     // e.g., "Dumbbell", "Barbell", "Bodyweight"
 }
