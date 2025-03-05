@@ -32,14 +32,3 @@ public class WorkoutPlan {
     // A list of days, each day containing a list of exercises
     private List<DayPlan> dayPlans;
 }
-
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
-public
-class DayPlan {
-    private int dayNumber;           // 1 through 14
-    @DBRef
-    private List<Exercise> exercises; // A set of exercises for that day
-}
