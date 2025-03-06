@@ -8,10 +8,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
@@ -32,64 +29,97 @@ public class ExerciseDBDataLoader implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
-        // Load exercises only if the collection is empty
+        // If the collection is empty, fetch exercises in batches
         if (exerciseRepository.count() == 0) {
-            loadExercisesFromExerciseDB();
+            fetchAllExercisesInBatches();
         }
     }
 
-    private void loadExercisesFromExerciseDB() {
-        RestTemplate restTemplate = new RestTemplate();
-        String url = "https://" + exercisedbApiHost + "/exercises";
+    /**
+     * Repeatedly fetch 10 exercises at a time (using offset) and add new exercises
+     * to the database. Stop when a batch returns zero new exercises.
+     */
+    public void fetchAllExercisesInBatches() {
+        System.out.println("Starting batch fetch from ExerciseDB...");
+        int offset = 0;
+        boolean newExercisesAdded = true;
+        int totalAdded = 0;
+        int batchCount = 0;
 
-        // Prepare HTTP headers required by RapidAPI
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("X-RapidAPI-Key", exercisedbApiKey);
-        headers.set("X-RapidAPI-Host", exercisedbApiHost);
-        HttpEntity<String> entity = new HttpEntity<>(headers);
+        while (newExercisesAdded) {
+            batchCount++;
+            List<ExerciseDBDto> batch = fetchExercisesWithOffset(offset, 10);
+            if (batch.isEmpty()) {
+                System.out.println("API returned empty batch, stopping.");
+                break;
+            }
 
-        // Retrieve a list of exercises from ExerciseDB API
-        ResponseEntity<List<ExerciseDBDto>> response = restTemplate.exchange(
-                url,
-                HttpMethod.GET,
-                entity,
-                new ParameterizedTypeReference<List<ExerciseDBDto>>() {}
-        );
+            int newlyAddedThisBatch = 0;
+            int totalInBatch = batch.size();
 
-        List<ExerciseDBDto> exerciseList = response.getBody();
-        if (exerciseList != null) {
-            int total = exerciseList.size();
-            for (int i = 0; i < total; i++) {
-                ExerciseDBDto dto = exerciseList.get(i);
+            for (int i = 0; i < totalInBatch; i++) {
+                ExerciseDBDto dto = batch.get(i);
 
-                // Use the bodyPart field as the muscle group
-                String muscleGroup = dto.getBodyPart();
+                // Check for duplicates by exercise name
+                if (!exerciseRepository.existsByName(dto.getName())) {
+                    // Build a description using target and equipment info
+                    String description = "Target: " + dto.getTarget() + ", Equipment: " + dto.getEquipment();
 
-                // Create a description combining target and equipment details
-                String description = "Target: " + dto.getTarget() + ", Equipment: " + dto.getEquipment();
-
-                // Build the Exercise entity using your updated Exercise class
-                Exercise exercise = Exercise.builder()
-                        .name(dto.getName())
-                        .muscleGroup(muscleGroup)
-                        .gifUrl(dto.getGifUrl())  // ExerciseDB returns a GIF URL for each exercise
-                        .description(description)
-                        .equipment(dto.getEquipment())
-                        .build();
-
-                // Save the Exercise entity into MongoDB
-                exerciseRepository.save(exercise);
+                    // Build and save the Exercise entity
+                    Exercise exercise = Exercise.builder()
+                            .name(dto.getName())
+                            .muscleGroup(dto.getBodyPart())   // Use bodyPart as the muscle group
+                            .gifUrl(dto.getGifUrl())            // GIF URL provided by ExerciseDB
+                            .description(description)
+                            .equipment(dto.getEquipment())
+                            .build();
+                    exerciseRepository.save(exercise);
+                    newlyAddedThisBatch++;
+                }
 
                 // -------------------------
                 // Console-based progress indicator
                 // -------------------------
                 int currentIndex = i + 1;
-                int progressPercent = (int) ((currentIndex / (double) total) * 100);
-                System.out.print("\rLoading exercises: " + progressPercent + "% (" + currentIndex + "/" + total + ")");
-                if (currentIndex == total) {
-                    System.out.println(); // New line on completion
+                int progressPercent = (int) ((currentIndex / (double) totalInBatch) * 100);
+                System.out.print("\rBatch " + batchCount + ": " + progressPercent + "% (" + currentIndex + "/" + totalInBatch + ")");
+                if (currentIndex == totalInBatch) {
+                    System.out.println(); // New line when batch is complete
                 }
             }
+
+            if (newlyAddedThisBatch == 0) {
+                System.out.println("No new exercises found in batch " + batchCount + ". Stopping.");
+                newExercisesAdded = false;
+            } else {
+                totalAdded += newlyAddedThisBatch;
+                offset += 10;  // Increase offset to get the next batch
+                System.out.println("Batch " + batchCount + " added " + newlyAddedThisBatch + " new exercises. Total so far: " + totalAdded);
+            }
         }
+
+        System.out.println("Finished fetching in batches. Total new exercises added: " + totalAdded);
+    }
+
+    /**
+     * Fetch a batch of exercises from the API using offset and limit.
+     */
+    private List<ExerciseDBDto> fetchExercisesWithOffset(int offset, int limit) {
+        RestTemplate restTemplate = new RestTemplate();
+        String url = "https://" + exercisedbApiHost + "/exercises?limit=" + limit + "&offset=" + offset;
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("X-RapidAPI-Key", exercisedbApiKey);
+        headers.set("X-RapidAPI-Host", exercisedbApiHost);
+        HttpEntity<String> requestEntity = new HttpEntity<>(headers);
+
+        ResponseEntity<List<ExerciseDBDto>> response = restTemplate.exchange(
+                url,
+                HttpMethod.GET,
+                requestEntity,
+                new ParameterizedTypeReference<List<ExerciseDBDto>>() {}
+        );
+
+        return response.getBody() != null ? response.getBody() : List.of();
     }
 }

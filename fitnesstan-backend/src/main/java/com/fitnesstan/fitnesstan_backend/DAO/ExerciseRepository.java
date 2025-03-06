@@ -5,5 +5,9 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import com.fitnesstan.fitnesstan_backend.Entity.Exercise;
 
 public interface ExerciseRepository extends MongoRepository<Exercise, ObjectId> {
-    // Add custom query methods here if needed
+    // For example, if you want to check by name:
+    boolean existsByName(String name);
+
+    // Or if you store the API's exercise ID in a custom field (e.g., apiId), you can do:
+    // boolean existsByApiId(String apiId);
 }
