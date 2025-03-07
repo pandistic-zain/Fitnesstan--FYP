@@ -1,14 +1,14 @@
 package com.fitnesstan.fitnesstan_backend.Services;
 
+import java.time.LocalDateTime;
+import java.time.LocalDate;
+import java.time.Period;
+import java.security.SecureRandom;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.HashMap;
 import java.util.Map;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.Period;
-import java.security.SecureRandom;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.bson.types.ObjectId;
@@ -24,6 +24,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.fitnesstan.fitnesstan_backend.Entity.Users;
+import com.fitnesstan.fitnesstan_backend.Entity.WorkoutPlan;
 import com.fitnesstan.fitnesstan_backend.Entity.Diet;
 import com.fitnesstan.fitnesstan_backend.Entity.MealItem;
 import com.fitnesstan.fitnesstan_backend.DAO.UserRepository;
@@ -38,6 +39,10 @@ public class UserServices {
     // Injecting the DietRepository to manage Diet entities
     @Autowired
     private DietRepository dietRepository;
+
+    // Injecting the WorkoutPlanServices to generate workout plans.
+    @Autowired
+    private WorkoutPlanServices workoutPlanServices;
 
     @Autowired
     private MongoTemplate mongoTemplate;
@@ -241,7 +246,7 @@ public class UserServices {
             String subject = "Account Verification - Fitnesstan";
 
             String message = "Dear User,\n\n" +
-                    "Thank you for signing up with Fitnesstan! To complete your registration, please verify your email address by using the OTP provided below:\n\n"
+                    "Thank you for signing up with Fitnesstan! To complete your registration, please  your email address by using the OTP provided below:\n\n"
                     +
                     "-----------------------------\n" +
                     "Your OTP: " + otp + "\n" +
@@ -296,23 +301,42 @@ public class UserServices {
 
     @Transactional
     public void verifyEmail(String email, String otp) throws Exception {
-        // Retrieve user from otpStore
+        // Retrieve user from otpStore and verify OTP.
         Users user = otpStore.get(email);
         if (user == null || !user.getVerificationToken().equals(otp)) {
+            System.out.println("[DEBUG] Email verification failed: Invalid verification token.");
             throw new Exception("Invalid verification token.");
         }
-
-        // Remove user from otpStore and set status to PASS
+        
+        // Remove the user from OTP store.
         otpStore.remove(email);
-
+        
+        // Update user status and clear the verification token.
         user.setStatus("PASS");
         user.setVerificationToken(null);
         user.setUpdatedAt(LocalDateTime.now());
-
-        // Persist verified user to the database
-        userRepository.save(user);
+        
+        // Save user to generate a valid ID.
+        Users savedUser = userRepository.save(user);
+        
+        // Generate workout plan and diet plan using the saved user's ID.
+        WorkoutPlan workoutPlan = workoutPlanServices.generateWorkoutPlan(savedUser.getId().toString());
+        Diet demoDiet = addDemoMealsForUserAndReturn(savedUser.getId().toString());
+        
+        // Update user with both references.
+        savedUser.setCurrentWorkoutPlan(workoutPlan);
+        savedUser.setCurrentDiet(demoDiet);
+        
+        // Save the updated user with both references.
+        userRepository.save(savedUser);
+        
+        // Debug output.
+        System.out.println("[DEBUG] Updated User - WorkoutPlan: " + savedUser.getCurrentWorkoutPlan());
+        System.out.println("[DEBUG] Updated User - Diet: " + savedUser.getCurrentDiet());
     }
+    
 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
     @Transactional
     public void createAdmin(Users admin) throws Exception {
         // Check if email already exists in database
@@ -336,14 +360,13 @@ public class UserServices {
     // NEW METHOD: Add demo meals for a specific user
     // ============================================
     @Transactional
-    public void addDemoMealsForUser(String userId) throws Exception {
-        // Retrieve the user by their ID
+    public Diet addDemoMealsForUserAndReturn(String userId) throws Exception {
         Optional<Users> optionalUser = userRepository.findById(new ObjectId(userId));
         if (!optionalUser.isPresent()) {
             throw new Exception("User not found with id: " + userId);
         }
         Users user = optionalUser.get();
-
+    
         // Create a demo meal plan for 14 days using MealItem objects
         Map<Integer, Map<String, List<MealItem>>> mealPlan = new HashMap<>();
         for (int day = 1; day <= 14; day++) {
@@ -375,7 +398,7 @@ public class UserServices {
                     .build();
             List<MealItem> breakfastItems = Arrays.asList(oatmeal, fruitSalad, greenTea);
             meals.put("meal1", breakfastItems);
-
+    
             // Demo meal: Lunch/Dinner (meal2)
             MealItem grilledChicken = MealItem.builder()
                     .name("Grilled Chicken")
@@ -403,10 +426,10 @@ public class UserServices {
                     .build();
             List<MealItem> lunchDinnerItems = Arrays.asList(grilledChicken, brownRice, steamedVeggies);
             meals.put("meal2", lunchDinnerItems);
-
+    
             mealPlan.put(day, meals);
         }
-
+    
         // Create a new Diet object with a 14-day plan
         Diet demoDiet = Diet.builder()
                 .user(user)
@@ -414,12 +437,11 @@ public class UserServices {
                 .startDate(LocalDate.now())
                 .endDate(LocalDate.now().plusDays(14))
                 .build();
-
-        // Save the Diet object and associate it with the user
-        dietRepository.save(demoDiet);
-        user.setCurrentDiet(demoDiet);
-        userRepository.save(user);
+    
+        demoDiet = dietRepository.save(demoDiet);
+        return demoDiet;
     }
+    
 
     public Users findByUsername(String username) {
         return userRepository.findByUsername(username);
@@ -454,5 +476,23 @@ public class UserServices {
             return true;
         }
         return false;
+    }
+
+    /**
+     * Fetches the current workout and diet plans for a user on login.
+     * Returns a map with keys "diet" and "workoutPlan".
+     */
+    public Map<String, Object> getUserPlans(String email) throws Exception {
+        Users user = userRepository.findByEmail(email);
+        if (user == null) {
+            throw new Exception("User not found.");
+        }
+        Map<String, Object> plans = new HashMap<>();
+        plans.put("diet", user.getCurrentDiet());
+        // Assuming that workout plan is fetched by user in WorkoutPlanRepository
+        // Alternatively, if you have stored currentWorkoutPlan in user, use that.
+        // For this example, we simply return a placeholder or null.
+        // plans.put("workoutPlan", user.getCurrentWorkoutPlan());
+        return plans;
     }
 }

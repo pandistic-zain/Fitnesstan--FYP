@@ -4,14 +4,12 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-
+import lombok.ToString;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.DBRef;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import org.bson.types.ObjectId;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -22,6 +20,7 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 @Document(collection = "users")
+@ToString(exclude = {"currentDiet", "currentWorkoutPlan"})
 public class Users {
 
     @Id
@@ -62,11 +61,10 @@ public class Users {
 
     // Mapping to Diet entity via DBRef to link the current 14-day diet plan
     @DBRef
-    @JsonIgnore
+    @JsonIgnore 
     private Diet currentDiet;
 
     @DBRef
     @JsonIgnore
     private WorkoutPlan currentWorkoutPlan;
-
 }

@@ -1,20 +1,20 @@
 package com.fitnesstan.fitnesstan_backend.Services;
 
+import com.fitnesstan.fitnesstan_backend.DAO.UserRepository;
+import com.fitnesstan.fitnesstan_backend.DAO.ExerciseRepository;
+import com.fitnesstan.fitnesstan_backend.DAO.WorkoutPlanRepository;
+import com.fitnesstan.fitnesstan_backend.Entity.Users;
+import com.fitnesstan.fitnesstan_backend.Entity.Exercise;
+import com.fitnesstan.fitnesstan_backend.Entity.WorkoutPlan;
+import com.fitnesstan.fitnesstan_backend.Entity.DayPlan;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.bson.types.ObjectId;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.fitnesstan.fitnesstan_backend.DAO.UserRepository;
-import com.fitnesstan.fitnesstan_backend.DAO.ExerciseRepository; // now assumed to manage Exercise entities
-import com.fitnesstan.fitnesstan_backend.DAO.WorkoutPlanRepository;   // for WorkoutPlan
-import com.fitnesstan.fitnesstan_backend.Entity.Users;
-import com.fitnesstan.fitnesstan_backend.Entity.Exercise;
-import com.fitnesstan.fitnesstan_backend.Entity.WorkoutPlan;
-import com.fitnesstan.fitnesstan_backend.Entity.DayPlan;
 
 @Service
 public class WorkoutPlanServices {
@@ -25,7 +25,6 @@ public class WorkoutPlanServices {
     @Autowired
     private WorkoutPlanRepository workoutPlanRepository;
 
-    // Renamed variable for clarity; this repository should manage Exercise entities
     @Autowired
     private ExerciseRepository exerciseRepository;
 
@@ -35,17 +34,15 @@ public class WorkoutPlanServices {
     public WorkoutPlan generateWorkoutPlan(String userId) throws Exception {
         Users user = userRepository.findById(new ObjectId(userId))
                 .orElseThrow(() -> new Exception("User not found with id: " + userId));
+        String exerciseLevel = user.getExerciseLevel(); // e.g., "7 days a week", "5 days a week", etc.
 
-        String exerciseLevel = user.getExerciseLevel(); 
-        // e.g. "1 days a week", "3 days a week", "6 days a week", etc.
-
-        // 1) Fetch all exercises from DB
+        // Fetch all exercises from DB.
         List<Exercise> allExercises = exerciseRepository.findAll();
 
-        // 2) Build 14-day plan logic
+        // Build the 14-day workout plan according to the user's exercise level.
         List<DayPlan> dayPlans = buildDayPlansBasedOnLevel(exerciseLevel, allExercises);
 
-        // 3) Create new WorkoutPlan object
+        // Create and save the workout plan.
         WorkoutPlan workoutPlan = WorkoutPlan.builder()
                 .user(user)
                 .planName("14-Day Plan for " + user.getUsername())
@@ -53,60 +50,155 @@ public class WorkoutPlanServices {
                 .endDate(LocalDate.now().plusDays(13))
                 .dayPlans(dayPlans)
                 .build();
-
-        // 4) Save plan to DB
         WorkoutPlan savedPlan = workoutPlanRepository.save(workoutPlan);
-
-        // (Optional) If you want to store a reference in the User object
-        // user.setCurrentWorkoutPlan(savedPlan);
-        // userRepository.save(user);
 
         return savedPlan;
     }
 
     /**
-     * Helper method to build day-by-day plan from user’s exerciseLevel.
+     * Build day-by-day plan based on the user's exercise level and the list of all exercises.
+     * The plan is always 14 days long.
      */
     private List<DayPlan> buildDayPlansBasedOnLevel(String exerciseLevel, List<Exercise> allExercises) {
         List<DayPlan> dayPlans = new ArrayList<>();
-        
-        // For instance, if a user works out "3 days a week", over 14 days that equates to 6 workout days.
-        int totalWorkoutDays = parseWorkoutDays(exerciseLevel); 
-        
-        // For demonstration, we'll sequentially assign workout days;
-        // In a more advanced logic you might spread them evenly across the 14 days.
-        int workoutDayCount = 0;
-        for (int i = 1; i <= 14; i++) {
-            List<Exercise> dailyExercises = new ArrayList<>();
-            // Only assign workouts if we haven't reached the total workout days
-            if (workoutDayCount < totalWorkoutDays) {
-                dailyExercises = pickSomeExercises(allExercises);
-                workoutDayCount++;
+        // Extract the numeric part from the exerciseLevel string.
+        int levelNum = Integer.parseInt(exerciseLevel.split(" ")[0]);
+
+        switch (levelNum) {
+            case 7: {
+                // 7 days a week: each day is a workout day.
+                // Use this sequence: ["Chest", "Back", "Shoulders", "Arms", "Legs", "Core", "Cardio"]
+                String[] groups7 = {"Chest", "Back", "Shoulders", "Arms", "Legs", "Core", "Cardio"};
+                for (int day = 1; day <= 14; day++) {
+                    String group = groups7[(day - 1) % 7];
+                    List<Exercise> exercisesForDay = selectExercisesForGroup(group, 8, allExercises);
+                    DayPlan dp = DayPlan.builder().dayNumber(day).exercises(exercisesForDay).build();
+                    dayPlans.add(dp);
+                }
+                break;
             }
-            DayPlan dp = DayPlan.builder()
-                    .dayNumber(i)
-                    .exercises(dailyExercises)
-                    .build();
-            dayPlans.add(dp);
+            case 6: {
+                // 6 days a week: workout 6 days, 1 rest day per week.
+                // For 14 days: week1: days 1-6 workout, day 7 rest; week2: days 8-13 workout, day 14 rest.
+                String[] groups6 = {"Chest", "Back", "Shoulders", "Arms", "Legs", "Core"};
+                for (int day = 1; day <= 14; day++) {
+                    if (day % 7 == 0) {
+                        // Rest day.
+                        dayPlans.add(DayPlan.builder().dayNumber(day).exercises(new ArrayList<>()).build());
+                    } else {
+                        String group = groups6[(day - 1) % 6];
+                        List<Exercise> exercisesForDay = selectExercisesForGroup(group, 8, allExercises);
+                        dayPlans.add(DayPlan.builder().dayNumber(day).exercises(exercisesForDay).build());
+                    }
+                }
+                break;
+            }
+            case 5: {
+                // 5 days a week: 5 workout days and 2 rest days per week.
+                // Workout days are:
+                // Day1: "Chest+Arms", Day2: "Back+Arms", Day3: "Shoulders", Day4: "Legs", Day5: "Core".
+                // For days with two groups, select 4 exercises per group (total 8).
+                String[] groups5 = {"Chest+Arms", "Back+Arms", "Shoulders", "Legs", "Core"};
+                // For 14 days, pattern: Week1: days1-5 workout, days6-7 rest; Week2: days8-12 workout, days13-14 rest.
+                for (int day = 1; day <= 14; day++) {
+                    int dayInWeek = (day - 1) % 7 + 1;
+                    if (dayInWeek > 5) {
+                        // Rest day.
+                        dayPlans.add(DayPlan.builder().dayNumber(day).exercises(new ArrayList<>()).build());
+                    } else {
+                        int index = (day <= 7) ? day - 1 : day - 8; // 0-based index for the workout day of the week.
+                        String group = groups5[index];
+                        List<Exercise> exercisesForDay;
+                        if (group.contains("+")) {
+                            String[] parts = group.split("\\+");
+                            List<Exercise> group1 = selectExercisesForGroup(parts[0].trim(), 4, allExercises);
+                            List<Exercise> group2 = selectExercisesForGroup(parts[1].trim(), 4, allExercises);
+                            exercisesForDay = new ArrayList<>();
+                            exercisesForDay.addAll(group1);
+                            exercisesForDay.addAll(group2);
+                        } else {
+                            exercisesForDay = selectExercisesForGroup(group, 8, allExercises);
+                        }
+                        dayPlans.add(DayPlan.builder().dayNumber(day).exercises(exercisesForDay).build());
+                    }
+                }
+                break;
+            }
+            case 4: {
+                // 4 days a week: 4 workout days, 3 rest days per week.
+                // Workout days: Day1: "Chest+Arms", Day2: "Back+Arms", Day3: "Shoulders+Arms", Day4: "Legs+Core".
+                String[] groups4 = {"Chest+Arms", "Back+Arms", "Shoulders+Arms", "Legs+Core"};
+                // For 14 days, week1: days1-4 workout, days5-7 rest; week2: days8-11 workout, days12-14 rest.
+                for (int day = 1; day <= 14; day++) {
+                    int dayInWeek = (day - 1) % 7 + 1;
+                    if (dayInWeek > 4) {
+                        // Rest day.
+                        dayPlans.add(DayPlan.builder().dayNumber(day).exercises(new ArrayList<>()).build());
+                    } else {
+                        int index = (day <= 7) ? day - 1 : day - 8;
+                        String group = groups4[index];
+                        List<Exercise> exercisesForDay;
+                        if (group.contains("+")) {
+                            String[] parts = group.split("\\+");
+                            List<Exercise> group1 = selectExercisesForGroup(parts[0].trim(), 4, allExercises);
+                            List<Exercise> group2 = selectExercisesForGroup(parts[1].trim(), 4, allExercises);
+                            exercisesForDay = new ArrayList<>();
+                            exercisesForDay.addAll(group1);
+                            exercisesForDay.addAll(group2);
+                        } else {
+                            exercisesForDay = selectExercisesForGroup(group, 8, allExercises);
+                        }
+                        dayPlans.add(DayPlan.builder().dayNumber(day).exercises(exercisesForDay).build());
+                    }
+                }
+                break;
+            }
+            default: {
+                // For level 3, 2, or 1: Full-body workout design.
+                // Each workout day will have 7 exercises (one from each of the following groups):
+                // ["Chest", "Back", "Shoulders", "Arms", "Legs", "Core", "Cardio"]
+                String[] fullBodyGroups = {"Chest", "Back", "Shoulders", "Arms", "Legs", "Core", "Cardio"};
+                // Workouts per week = levelNum. For a 14-day plan, fill each week accordingly.
+                int workoutsPerWeek = levelNum; // e.g., if level==3, then 3 workout days per week.
+                for (int day = 1; day <= 14; day++) {
+                    int dayInWeek = (day - 1) % 7 + 1;
+                    if (dayInWeek <= workoutsPerWeek) {
+                        List<Exercise> exercisesForDay = new ArrayList<>();
+                        // For full-body, pick one exercise per group.
+                        for (String group : fullBodyGroups) {
+                            List<Exercise> selected = selectExercisesForGroup(group, 1, allExercises);
+                            if (!selected.isEmpty()) {
+                                exercisesForDay.add(selected.get(0));
+                            }
+                        }
+                        dayPlans.add(DayPlan.builder().dayNumber(day).exercises(exercisesForDay).build());
+                    } else {
+                        // Rest day.
+                        dayPlans.add(DayPlan.builder().dayNumber(day).exercises(new ArrayList<>()).build());
+                    }
+                }
+                break;
+            }
         }
+
         return dayPlans;
     }
 
-    private List<Exercise> pickSomeExercises(List<Exercise> allExercises) {
-        // In real logic, filter by muscle group or user preference.
-        // For demo, simply pick the first exercise if available.
-        List<Exercise> subset = new ArrayList<>();
-        if (!allExercises.isEmpty()) {
-            subset.add(allExercises.get(0)); // simplest possible approach
+    /**
+     * Helper method to select a specific number of exercises for a given group from allExercises.
+     * Returns up to 'count' exercises that match the group (case-insensitive).
+     */
+    private List<Exercise> selectExercisesForGroup(String group, int count, List<Exercise> allExercises) {
+        List<Exercise> filtered = new ArrayList<>();
+        for (Exercise ex : allExercises) {
+            if (ex.getMuscleGroup() != null && ex.getMuscleGroup().equalsIgnoreCase(group)) {
+                filtered.add(ex);
+            }
         }
-        return subset;
-    }
-
-    private int parseWorkoutDays(String exerciseLevel) {
-        // Expecting a format like "6 days a week". For a 14-day plan,
-        // multiply the per-week workout days by 2.
-        String daysStr = exerciseLevel.split(" ")[0]; // e.g. "6"
-        int daysPerWeek = Integer.parseInt(daysStr);
-        return daysPerWeek * 2;
+        // If more than 'count' exercises available, return the first 'count'.
+        if (filtered.size() > count) {
+            return filtered.subList(0, count);
+        }
+        return filtered;
     }
 }
