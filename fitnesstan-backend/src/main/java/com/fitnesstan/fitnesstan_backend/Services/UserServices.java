@@ -336,10 +336,6 @@ public class UserServices {
 
         // Save the updated user with both references.
         userRepository.save(savedUser);
-
-        // Debug output.
-        System.out.println("[DEBUG] Updated User - WorkoutPlan: " + savedUser.getCurrentWorkoutPlan());
-        System.out.println("[DEBUG] Updated User - Diet: " + savedUser.getCurrentDiet());
     }
 
     @SuppressWarnings("unchecked")
