@@ -16,12 +16,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.mail.MailSendException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
 
 import com.fitnesstan.fitnesstan_backend.Entity.Users;
 import com.fitnesstan.fitnesstan_backend.Entity.WorkoutPlan;
@@ -307,34 +313,79 @@ public class UserServices {
             System.out.println("[DEBUG] Email verification failed: Invalid verification token.");
             throw new Exception("Invalid verification token.");
         }
-        
+
         // Remove the user from OTP store.
         otpStore.remove(email);
-        
+
         // Update user status and clear the verification token.
         user.setStatus("PASS");
         user.setVerificationToken(null);
         user.setUpdatedAt(LocalDateTime.now());
-        
+
         // Save user to generate a valid ID.
         Users savedUser = userRepository.save(user);
-        
+
         // Generate workout plan and diet plan using the saved user's ID.
         WorkoutPlan workoutPlan = workoutPlanServices.generateWorkoutPlan(savedUser.getId().toString());
-        Diet demoDiet = addDemoMealsForUserAndReturn(savedUser.getId().toString());
-        
+        Map<String, Object> flaskResponse = sendUserDataToFlask(savedUser);
+        Diet diet = addDietPlanFromFlaskResponse(savedUser.getId().toString(), flaskResponse);
+
         // Update user with both references.
         savedUser.setCurrentWorkoutPlan(workoutPlan);
-        savedUser.setCurrentDiet(demoDiet);
-        
+        savedUser.setCurrentDiet(diet);
+
         // Save the updated user with both references.
         userRepository.save(savedUser);
-        
+
         // Debug output.
         System.out.println("[DEBUG] Updated User - WorkoutPlan: " + savedUser.getCurrentWorkoutPlan());
         System.out.println("[DEBUG] Updated User - Diet: " + savedUser.getCurrentDiet());
     }
-    
+
+    @SuppressWarnings("unchecked")
+    private Map<String, Object> sendUserDataToFlask(Users user) {
+        System.out.println("[DEBUG] Inside sendUserDataToFlask method"); // Debug line
+
+        try {
+            String flaskUrl = "http://localhost:5000/user";
+            RestTemplate restTemplate = new RestTemplate();
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+
+            // Create a request payload with user data
+            Map<String, Object> userData = new HashMap<>();
+            userData.put("heightFt", user.getHeightFt());
+            userData.put("weightKg", user.getWeightKg());
+            userData.put("bmi", user.getBmi());
+            userData.put("ree", user.getRee());
+            userData.put("tdee", user.getTdee());
+            userData.put("exerciseLevel", user.getExerciseLevel());
+            userData.put("sleepHours", user.getSleepHours());
+            userData.put("medicalHistory", user.getMedicalHistory());
+            userData.put("gender", user.getGender());
+            userData.put("dob", user.getDob());
+
+            System.out.println("[DEBUG] User data prepared for Flask: " + userData); // Debug line
+
+            // Send the request to the Flask server
+            HttpEntity<Map<String, Object>> request = new HttpEntity<>(userData, headers);
+            @SuppressWarnings("rawtypes")
+            ResponseEntity<Map> response = restTemplate.postForEntity(flaskUrl, request, Map.class);
+
+            System.out.println("[DEBUG] Response received from Flask: " + response.getBody()); // Debug line
+
+            if (response.getStatusCode() == HttpStatus.OK) {
+                // Return the response body (model's output)
+                return response.getBody();
+            } else {
+                System.out.println("[DEBUG] Failed to get model response: " + response.getBody()); // Debug line
+                return Map.of("error", "Failed to get model response");
+            }
+        } catch (Exception e) {
+            System.out.println("[DEBUG] Error sending user data to Flask: " + e.getMessage()); // Debug line
+            return Map.of("error", "Error sending user data to Flask: " + e.getMessage());
+        }
+    }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     @Transactional
@@ -359,89 +410,73 @@ public class UserServices {
     // ============================================
     // NEW METHOD: Add demo meals for a specific user
     // ============================================
+    @SuppressWarnings("unchecked")
     @Transactional
-    public Diet addDemoMealsForUserAndReturn(String userId) throws Exception {
+    public Diet addDietPlanFromFlaskResponse(String userId, Map<String, Object> flaskResponse) throws Exception {
+        // Retrieve the user by their ID
         Optional<Users> optionalUser = userRepository.findById(new ObjectId(userId));
         if (!optionalUser.isPresent()) {
             throw new Exception("User not found with id: " + userId);
         }
         Users user = optionalUser.get();
-    
-        // Create a demo meal plan for 14 days using MealItem objects
-        Map<Integer, Map<String, List<MealItem>>> mealPlan = new HashMap<>();
-        for (int day = 1; day <= 14; day++) {
-            Map<String, List<MealItem>> meals = new HashMap<>();
-            // Demo meal: Breakfast (meal1)
-            MealItem oatmeal = MealItem.builder()
-                    .name("Oatmeal")
-                    .protein(5.0)
-                    .carbs(27.0)
-                    .fats(3.0)
-                    .calories(150.0)
-                    .weight(40.0)
-                    .build();
-            MealItem fruitSalad = MealItem.builder()
-                    .name("Fruit Salad")
-                    .protein(1.0)
-                    .carbs(15.0)
-                    .fats(0.5)
-                    .calories(70.0)
-                    .weight(150.0)
-                    .build();
-            MealItem greenTea = MealItem.builder()
-                    .name("Green Tea")
-                    .protein(0.0)
-                    .carbs(0.0)
-                    .fats(0.0)
-                    .calories(0.0)
-                    .weight(250.0)
-                    .build();
-            List<MealItem> breakfastItems = Arrays.asList(oatmeal, fruitSalad, greenTea);
-            meals.put("meal1", breakfastItems);
-    
-            // Demo meal: Lunch/Dinner (meal2)
-            MealItem grilledChicken = MealItem.builder()
-                    .name("Grilled Chicken")
-                    .protein(30.0)
-                    .carbs(0.0)
-                    .fats(5.0)
-                    .calories(200.0)
-                    .weight(100.0)
-                    .build();
-            MealItem brownRice = MealItem.builder()
-                    .name("Brown Rice")
-                    .protein(3.0)
-                    .carbs(45.0)
-                    .fats(1.0)
-                    .calories(210.0)
-                    .weight(150.0)
-                    .build();
-            MealItem steamedVeggies = MealItem.builder()
-                    .name("Steamed Vegetables")
-                    .protein(2.0)
-                    .carbs(10.0)
-                    .fats(0.5)
-                    .calories(50.0)
-                    .weight(100.0)
-                    .build();
-            List<MealItem> lunchDinnerItems = Arrays.asList(grilledChicken, brownRice, steamedVeggies);
-            meals.put("meal2", lunchDinnerItems);
-    
-            mealPlan.put(day, meals);
+
+        // Extract the mealPlan, startDate, and endDate from the Flask response.
+        Object mealPlanObj = flaskResponse.get("mealPlan");
+        if (mealPlanObj == null) {
+            throw new Exception("MealPlan is missing in the Flask response.");
         }
-    
-        // Create a new Diet object with a 14-day plan
-        Diet demoDiet = Diet.builder()
+
+        // Convert the mealPlan into the expected structure
+        Map<String, Object> flaskMealPlan = (Map<String, Object>) mealPlanObj;
+        Map<Integer, Map<String, List<MealItem>>> mealPlan = new HashMap<>();
+
+        for (Map.Entry<String, Object> dayEntry : flaskMealPlan.entrySet()) {
+            // Convert day number key from String to Integer
+            Integer dayNumber = Integer.parseInt(dayEntry.getKey());
+
+            // Each day's value is a Map: { "meal1": [...], "meal2": [...] }
+            Map<String, Object> mealMap = (Map<String, Object>) dayEntry.getValue();
+            Map<String, List<MealItem>> dayMeals = new HashMap<>();
+
+            for (Map.Entry<String, Object> mealEntry : mealMap.entrySet()) {
+                String mealName = mealEntry.getKey();
+                List<Object> itemsList = (List<Object>) mealEntry.getValue();
+                List<MealItem> mealItems = new java.util.ArrayList<>();
+
+                for (Object itemObj : itemsList) {
+                    Map<String, Object> itemMap = (Map<String, Object>) itemObj;
+                    MealItem mealItem = MealItem.builder()
+                            .name((String) itemMap.get("name"))
+                            .protein(Double.parseDouble(itemMap.get("protein").toString()))
+                            .carbs(Double.parseDouble(itemMap.get("carbs").toString()))
+                            .fats(Double.parseDouble(itemMap.get("fats").toString()))
+                            .calories(Double.parseDouble(itemMap.get("calories").toString()))
+                            .weight(Double.parseDouble(itemMap.get("weight").toString()))
+                            .build();
+                    mealItems.add(mealItem);
+                }
+                dayMeals.put(mealName, mealItems);
+            }
+            mealPlan.put(dayNumber, dayMeals);
+        }
+
+        // Parse startDate and endDate from the Flask response.
+        String startDateStr = (String) flaskResponse.get("startDate");
+        String endDateStr = (String) flaskResponse.get("endDate");
+        LocalDate startDate = LocalDate.parse(startDateStr);
+        LocalDate endDate = LocalDate.parse(endDateStr);
+
+        // Create and save the Diet object
+        Diet diet = Diet.builder()
                 .user(user)
                 .mealPlan(mealPlan)
-                .startDate(LocalDate.now())
-                .endDate(LocalDate.now().plusDays(14))
+                .startDate(startDate)
+                .endDate(endDate)
                 .build();
-    
-        demoDiet = dietRepository.save(demoDiet);
-        return demoDiet;
+        diet = dietRepository.save(diet);
+
+        return diet;
     }
-    
 
     public Users findByUsername(String username) {
         return userRepository.findByUsername(username);

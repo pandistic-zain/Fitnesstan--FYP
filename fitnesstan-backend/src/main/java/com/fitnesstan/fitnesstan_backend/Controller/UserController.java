@@ -116,16 +116,4 @@ public class UserController {
         }
     }
 
-    // In UserController.java
-    @PostMapping("/demo-diet/{userId}")
-    public ResponseEntity<String> addDemoDietPlan(@PathVariable String userId) {
-        try {
-            userServices.addDemoMealsForUserAndReturn(userId);
-            return ResponseEntity.ok("Demo diet plan added successfully for user with id: " + userId);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body("Failed to add demo diet plan: " + e.getMessage());
-        }
-    }
-
 }
