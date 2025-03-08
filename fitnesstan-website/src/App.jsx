@@ -6,6 +6,7 @@ import EmailVerification from './Components/Pages/EmailVerification';
 import AdditionalInfoForm from './Components/Pages/AdditionalInfoForm';
 import AdminDashboard from './Components/AdminPanel/AdminDashboard';
 import UserManagement from './Components/AdminPanel/UserManagement';
+import UserDashboard from './Components/UserPanel/UserDashboard';
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
         <Route path="/AdditionalInfoForm" element={<AdditionalInfoForm />} />
         <Route path="/AdminDashboard" element={<AdminDashboard />} />
         <Route path="/users" element={<UserManagement />} />
+        <Route path="/userdashboard" element={<UserDashboard />} />
       </Routes>
     </Router>
   );

@@ -1,0 +1,152 @@
+/* UserDashboard.module.css */
+
+  /* Container for the entire dashboard page */
+  .dashboardContainer {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+  
+  /* Navbar with Logo */
+  .navbar {
+    background-color: #ffffff;
+    padding: 10px 20px;
+    border-bottom: 1px solid #ddd;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .navbarLogo {
+    height: 50px;
+    width: auto;
+  }
+  
+  /* Dashboard Body: Sidebar + Main Content */
+  .dashboardBody {
+    display: flex;
+    flex: 1;
+  }
+  
+  /* Sidebar for User Actions */
+  .sidebar {
+    width: 220px;
+    background-color: #f8f9fa;
+    padding: 20px;
+    border-right: 1px solid #ddd;
+  }
+  
+  .sidebarList {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .sidebarListItem {
+    margin-bottom: 15px;
+  }
+  
+  .sidebarLink {
+    color: #333;
+    text-decoration: none;
+    font-size: 16px;
+  }
+  
+  .sidebarLink:hover {
+    color: #007bff;
+  }
+  
+  /* Main Content Area */
+  .dashboardContent {
+    flex: 1;
+    padding: 20px;
+  }
+  
+  /* Measurements Section (Three Square Boxes) */
+  .measurementsSection {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+  
+  .measurementBox {
+    flex: 1;
+    margin: 0 10px;
+    padding: 20px;
+    background-color: #ffffff;
+    border: 1px solid #ddd;
+    text-align: center;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .measurementTitle {
+    margin-bottom: 10px;
+    font-size: 18px;
+    color: #333;
+  }
+  
+  .measurementValue {
+    font-size: 16px;
+    font-weight: bold;
+    color: #555;
+  }
+  
+  /* Features Section (Diet and Exercise) */
+  .featuresSection {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+  
+  .dietSection,
+  .exerciseSection {
+    flex: 1;
+    min-width: 300px;
+    padding: 20px;
+    background-color: #ffffff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .sectionTitle {
+    margin-bottom: 15px;
+    font-size: 20px;
+    color: #333;
+  }
+  
+  /* Footer */
+  .footer {
+    background-color: #f8f9fa;
+    text-align: center;
+    padding: 10px 20px;
+    border-top: 1px solid #ddd;
+    font-size: 14px;
+    color: #666;
+  }
+  
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .dashboardBody {
+      flex-direction: column;
+    }
+    .sidebar {
+      width: 100%;
+      border-right: none;
+      border-bottom: 1px solid #ddd;
+    }
+    .dashboardContent {
+      padding: 10px;
+    }
+    .measurementsSection {
+      flex-direction: column;
+    }
+    .measurementBox {
+      margin: 10px 0;
+    }
+    .featuresSection {
+      flex-direction: column;
+    }
+  }
+  

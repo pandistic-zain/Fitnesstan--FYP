@@ -40,37 +40,55 @@ const Register = () => {
   const handleLoginSubmit = async (e) => {
     e.preventDefault();
     setLoading(true); // Start loading
+  
     try {
-      console.log("[DEBUG] Sending login request with data:", loginData); // Debug line
-
+      console.log("[DEBUG] Sending login request with data:", loginData);
+  
+      // Call your login API
       const response = await loginUser(loginData);
       const data = response.data;
-
-      console.log("[DEBUG] Response received from backend:", data); // Debug line
-
+  
+      console.log("Response status:", response.status);
+      console.log("Response data:", data);
+  
+      // Check if the server responded with 200 (OK)
       if (response.status === 200) {
-        // Store email and password in local storage for future API requests
+        // Store email and password in local storage (for future API requests)
         localStorage.setItem("email", loginData.email);
-        localStorage.setItem("password", loginData.password); // Only do this for secure environments
-
-        if (data.user.roles.includes("ADMIN")) {
+        localStorage.setItem("password", loginData.password);
+  
+        // Check if data?.user?.roles actually exists
+        if (data?.user?.roles?.includes("ADMIN")) {
+          // If the user is an admin, navigate to AdminDashboard
           navigate("/AdminDashboard");
+        } else if (data?.user?.roles) {
+          // If roles exist but do not include "ADMIN", navigate to userdashboard
+          navigate("/userdashboard");
         } else {
-          navigate("/user-dashboard");
+          // If we don't have data.user.roles at all, show an error or fallback
+          console.error("No user roles found in response:", data);
+          setErrorMessage("No user roles found in response.");
         }
       } else {
+        // Handle non-200 status
+        if (!data?.user) {
+          console.error("No user object found in response:", data);
+          return setErrorMessage("No user data returned.");
+        }
+        console.log("User roles:", data.user.roles);
         setErrorMessage(data.message || "Login failed. Please try again.");
       }
     } catch (error) {
-      console.error("[DEBUG] Login error: ", error.response?.data || error); // Debug line
+      // Log the error and set an appropriate message
+      console.error("[DEBUG] Login error:", error.response?.data || error);
       setErrorMessage(
-        error.response?.data.message ||
-          "Invalid email or password. Please try again."
+        error.response?.data?.message || "Invalid email or password."
       );
     } finally {
-      setLoading(false); // Stop loading
+      // Stop loading in both success and error cases
+      setLoading(false);
     }
-  };
+  };  
 
   const handleSignUpSubmit = async (e) => {
     e.preventDefault();

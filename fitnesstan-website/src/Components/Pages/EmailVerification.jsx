@@ -33,7 +33,7 @@ const EmailVerification = () => {
       if (response.status === 200) {
         setMessage("Email verified!");
         setErrorMessage(""); // Clear error if any
-        setTimeout(() => navigate("/user-dashboard"), 1000);
+        setTimeout(() => navigate("/userdashboard"), 10000);
       } else {
         setErrorMessage(response.data.message || "Invalid OTP. Try again.");
         setMessage(""); // Clear success message if any
