@@ -19,7 +19,7 @@
 
 /* ===== NAVBAR ===== */
 .navbarCustom {
-  background-color: #1a1a1a !important;
+  background-color: #ff0000 !important;
   /* Increase border thickness from 2px to 6px */
   border-bottom: 6px solid #ff0000;
   border-radius: 2;
@@ -145,25 +145,22 @@
   align-items: stretch;
 }
 
-/* SIDEBAR:
-   - Default width: 220px
-   - Hidden width: 0
-   - Red background with white text
-*/
 .sidebarContainer {
   background-color: #ff0000;
   color: #ffffff;
   width: 220px;
   transition: width 0.3s ease;
   overflow: hidden;
-  border-right: 2px solid #1a1a1a;
+  border-right: 6px solid #ff0000;
 }
 
+/* When Hidden */
 .sidebarHidden {
   width: 0;
+  border-right: 0px;
 }
 
-/* Sidebar internal list */
+/* Sidebar List */
 .sidebarList {
   list-style: none;
   padding: 20px;
@@ -185,6 +182,48 @@
   color: #000000;
 }
 
+/* Custom SIGN OUT Button Styles */
+.button {
+  --😀: #1a1a1a;
+  --😀😀: #333333;
+  --😀😀😀: #4d4d4d;
+  cursor: pointer;
+  width: 150px;
+  height: 48px;
+  display: flex;              /* Layout for the text inside the button */
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  font-size: 1.125em;
+  font-weight: 800;
+  letter-spacing: 2px;
+  color: #fff;
+  background: var(--😀);
+  border: 2px solid var(--😀😀);
+  border-radius: 0.75rem;
+  box-shadow: 0 8px 0 var(--😀😀);
+  transform: skew(-10deg);
+  transition: all 0.1s ease;
+  filter: drop-shadow(0 15px 20px var(--😀😀😀));
+}
+
+/* Pressed State */
+.button:active {
+  letter-spacing: 0px;
+  transform: skew(-10deg) translateY(8px);
+  box-shadow: 0 0 0 var(--😀😀😀);
+}
+
+/* 
+  Center the button horizontally within the .sidebarContainer
+  and add extra top margin
+*/
+.sidebarContainer .button {
+  margin: 2rem auto 0 auto; /* 2rem top, auto left/right, 0 bottom */
+  display: block;           /* Ensures margin auto centers horizontally */
+}
+
+
 /* MAIN CONTENT:
    - Flex: 1 ensures it fills the leftover horizontal space.
    - The container is already full height due to align-items: stretch.
@@ -200,7 +239,7 @@
 .measurementBox,
 .featureBox {
   background: #1a1a1a;
-  border: 1px solid #ff0000;
+  border: 3px solid #ff0000;
   border-radius: 8px;
   box-shadow: 0 0 15px rgba(255, 0, 0, 0.5);
   padding: 20px;

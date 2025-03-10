@@ -2,10 +2,12 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Container, Row, Col } from "react-bootstrap";
+import { MdDashboard } from "react-icons/md";
+import { FaAppleAlt, FaDumbbell, FaKey } from "react-icons/fa";
 
 import Footer from "../../Components/Footer"; // Adjust path if needed
 import styles from "./UserDashboard.module.css";
-import logo from "../../Assets/FIRNESSTAN_BARA_LOGO.png";
+import logo from "../../Assets/FITNESSTAN BARA LOGO_inverted.png";
 import BMIGauge from "./BMIGauge";
 import TDEEGauge from "./TDEEGauge";
 import REEGauge from "./REEGauge";
@@ -95,18 +97,32 @@ const UserDashboard = () => {
         >
           <ul className={styles.sidebarList}>
             <li>
-              <a href="/userdashboard">Dashboard</a>
+              <a href="/userdashboard">
+                <MdDashboard style={{ color: "#fff", marginRight: "8px" }} />
+                Dashboard
+              </a>
             </li>
             <li>
-              <a href="/diet">Diet Plan</a>
+              <a href="/diet">
+                <FaAppleAlt style={{ color: "#fff", marginRight: "8px" }} />
+                Diet Plan
+              </a>
             </li>
             <li>
-              <a href="/exercise">Exercise</a>
+              <a href="/exercise">
+                <FaDumbbell style={{ color: "#fff", marginRight: "8px" }} />
+                Exercise
+              </a>
             </li>
             <li>
-              <a href="/settings">Change Password</a>
+              <a href="/settings">
+                <FaKey style={{ color: "#fff", marginRight: "8px" }} />
+                Change Password
+              </a>
             </li>
           </ul>
+          {/* Custom SIGN OUT button */}
+          <button className={styles.button}>SIGN OUT</button>
         </div>
 
         {/* Main content area */}
@@ -119,15 +135,14 @@ const UserDashboard = () => {
             </Col>
             <Col md={4}>
               <div className={styles.measurementBox}>
-              <TDEEGauge tdeeValue= "2855" />
+                <TDEEGauge tdeeValue="2855" />
               </div>
             </Col>
             <Col md={4}>
               <div className={styles.measurementBox}>
-              <REEGauge reeValue="1600" />
+                <REEGauge reeValue="1600" />
               </div>
             </Col>
-            
           </Row>
 
           <Row className="mt-4">
