@@ -1,12 +1,17 @@
-/* UserDashboard.module.css */
+/* Remove default margins/padding */
+html,
+body {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+*,
+*::before,
+*::after {
+  box-sizing: inherit;
+}
 
-/* 
-  1) We use flex layout to stack:
-     - Navbar (top)
-     - Layout container (middle)
-     - Footer (bottom)
-  2) min-height: 100vh makes the page fill the full browser height.
-*/
+/* Main wrapper for the dashboard */
 .dashboardWrapper {
   display: flex;
   flex-direction: column;
@@ -20,23 +25,16 @@
 /* ===== NAVBAR ===== */
 .navbarCustom {
   background-color: #ff0000 !important;
-  /* Increase border thickness from 2px to 6px */
   border-bottom: 6px solid #ff0000;
-  border-radius: 2;
-  height: 80px; /* Fixed navbar height */
+  height: 80px;
   display: flex;
   align-items: center;
   position: relative;
   padding: 0 1rem;
-
-  /* Initial glow */
   box-shadow: 0 0 10px #ff0000;
-
-  /* Infinite pulsing glow animation */
   animation: glowBorder 2s infinite alternate ease-in-out;
 }
 
-/* Keyframes to animate the glow intensity */
 @keyframes glowBorder {
   0% {
     box-shadow: 0 0 10px #ff0000;
@@ -46,12 +44,11 @@
   }
 }
 
-/* Hide the checkbox visually */
+/* ===== CUSTOM TOGGLE ===== */
 .checkbox2 {
   display: none;
 }
 
-/* Container for the custom toggle */
 .customToggleContainer {
   margin-right: auto;
   display: flex;
@@ -59,7 +56,6 @@
   padding-left: 1rem;
 }
 
-/* Label that becomes the toggle button */
 .toggle2 {
   position: relative;
   width: 60px;
@@ -73,50 +69,44 @@
   transition-duration: 0.5s;
 }
 
-/* The common style for the 3 bars inside the toggle */
 .bars {
   width: 100%;
   height: 6px;
-  background-color: rgb(255, 255, 255);
+  background-color: #ffffff;
   border-radius: 6px;
 }
 
-/* Specific adjustments for the middle bar */
 .bar5 {
   transition-duration: 0.8s;
 }
 
-/* Outer bars are slightly shorter initially */
 .bar4,
 .bar6 {
   width: 80%;
 }
 
-/* When the checkbox is checked, transform the bars */
 .checkbox2:checked + .toggle2 .bars {
   position: absolute;
   transition-duration: 0.5s;
 }
 
-/* Middle bar shrinks to 0 when checked */
 .checkbox2:checked + .toggle2 .bar5 {
   transform: scaleX(0);
   transition-duration: 0.5s;
 }
 
-/* Outer bars rotate into an X shape */
 .checkbox2:checked + .toggle2 .bar4 {
   width: 100%;
   transform: rotate(45deg);
   transition-duration: 0.5s;
 }
+
 .checkbox2:checked + .toggle2 .bar6 {
   width: 100%;
   transform: rotate(-45deg);
   transition-duration: 0.5s;
 }
 
-/* Entire toggle rotates 180 deg */
 .checkbox2:checked + .toggle2 {
   transition-duration: 0.5s;
   transform: rotate(180deg);
@@ -130,31 +120,31 @@
 }
 
 .navbarLogoWrapper img {
-  height: 60px !important; /* Adjust as needed */
+  height: 60px !important;
   width: auto;
 }
 
-/* 
-  LAYOUT CONTAINER:
-  - Takes all remaining vertical space (flex: 1).
-  - "align-items: stretch" ensures both sidebar & main content are the same height.
-*/
+/* ===== LAYOUT CONTAINER ===== */
 .layoutContainer {
   display: flex;
   flex: 1;
   align-items: stretch;
+  margin: 0;
+  padding: 0;
 }
 
+/* ===== SIDEBAR ===== */
 .sidebarContainer {
   background-color: #ff0000;
   color: #ffffff;
-  width: 200px;
+  width: 250px;
   transition: width 0.3s ease;
   overflow: hidden;
   border-right: 6px solid #ff0000;
+  margin: 0;
+  padding: 0;
 }
 
-/* When Hidden */
 .sidebarHidden {
   width: 0;
   border-right: 0px;
@@ -166,51 +156,45 @@
   margin: 15px;
 }
 
-/* Each list item is styled as a 'row' or 'box' */
 .sidebarItem {
-  display: flex;             /* place icon + text side by side */
+  display: flex;
   align-items: center;
-  padding: 12px 16px;        /* box-like spacing */
-  border-bottom: 2px solid #565656; /* divider line in #1a1a1a */
+  padding: 12px 16px;
+  border-bottom: 2px solid #565656;
   font-size: 1.1rem;
 }
 
-/* Remove bottom border for the last item if desired */
 .sidebarItem:last-child {
   border-bottom: none;
 }
 
-/* The link inside each item */
 .sidebarItem a {
   display: flex;
   align-items: center;
   color: #ffffff;
   text-decoration: none;
-  width: 100%;       
-  margin-top: 5px;
-  margin-bottom: 5px; /* so the entire row is clickable */
+  width: 100%;
+  margin: 5px 0;
 }
 
-/* Hover effect on the link (optional) */
 .sidebarItem a:hover {
-  color: #000000;     /* or any color you like */
+  color: #000000;
 }
 
-/* Icon styling: bigger icon size + spacing from text */
 .icon {
-  font-size: 1.5rem;  /* increase icon size */
-  margin-right: 8px;  /* space between icon and text */
+  font-size: 1.5rem;
+  margin-right: 8px;
 }
 
-/* Custom SIGN OUT Button Styles */
+/* SIGN OUT Button */
 .button {
-  --😀: #1a1a1a;
-  --😀😀: #333333;
-  --😀😀😀: #4d4d4d;
+  --primary: #1a1a1a;
+  --secondary: #333333;
+  --tertiary: #4d4d4d;
   cursor: pointer;
   width: 150px;
   height: 48px;
-  display: flex;              /* Layout for the text inside the button */
+  display: flex;
   align-items: center;
   justify-content: center;
   gap: 1rem;
@@ -218,45 +202,115 @@
   font-weight: 800;
   letter-spacing: 2px;
   color: #fff;
-  background: var(--😀);
-  border: 2px solid var(--😀😀);
+  background: var(--primary);
+  border: 2px solid var(--secondary);
   border-radius: 0.75rem;
-  box-shadow: 0 8px 0 var(--😀😀);
+  box-shadow: 0 8px 0 var(--secondary);
   transform: skew(-10deg);
   transition: all 0.1s ease;
-  filter: drop-shadow(0 15px 20px var(--😀😀😀));
+  filter: drop-shadow(0 15px 20px var(--tertiary));
 }
 
-/* Pressed State */
 .button:active {
   letter-spacing: 0px;
   transform: skew(-10deg) translateY(8px);
-  box-shadow: 0 0 0 var(--😀😀😀);
+  box-shadow: 0 0 0 var(--tertiary);
 }
 
-/* 
-  Center the button horizontally within the .sidebarContainer
-  and add extra top margin
-*/
 .sidebarContainer .button {
-  margin: 2rem auto 0 auto; /* 2rem top, auto left/right, 0 bottom */
-  display: block;           /* Ensures margin auto centers horizontally */
+  margin: 2rem auto 0 auto;
+  display: block;
 }
 
+/* ===== HERO SECTION ===== */
+.heroSection {
+  margin: 0 !important;
+  padding: 0 !important;
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+}
 
-/* MAIN CONTENT:
-   - Flex: 1 ensures it fills the leftover horizontal space.
-   - The container is already full height due to align-items: stretch.
-*/
+.slideshowContainer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  animation: fadeSlideshow 16s infinite;
+  background-size: cover;
+  background-position: center;
+}
+
+@keyframes fadeSlideshow {
+  0%    { background-image: url("../../Assets/1.jpg"); }
+  12.5% { background-image: url("../../Assets/2.jpg"); }
+  25%   { background-image: url("../../Assets/3.jpg"); }
+  37.5% { background-image: url("../../Assets/4.jpg"); }
+  50%   { background-image: url("../../Assets/5.jpg"); }
+  62.5% { background-image: url("../../Assets/6.jpg"); }
+  75%   { background-image: url("../../Assets/7.jpg"); }
+  87.5% { background-image: url("../../Assets/8.jpg"); }
+  100%  { background-image: url("../../Assets/9.jpg"); }
+}
+
+.darkOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.8);
+  z-index: 1;
+}
+
+.greetingContainer {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #fff;
+  text-align: center;
+  z-index: 2;
+}
+
+.greetingContainer h1 {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+}
+
+.greetingContainer p {
+  font-size: 1.2rem;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* ===== MAIN CONTENT ===== */
 .mainContent {
   flex: 1;
-  padding: 20px;
+  /* padding: 20px; */
   transition: width 0.3s ease;
   overflow-x: hidden;
+  margin: 0;
+}
+.AfterHeroContent{
+   padding: 20px;
 }
 
-/* BOXES */
-.measurementBox,
+/* ===== BOXES ===== */
+.measurementBox {
+  background: #1a1a1a;
+  border: 3px solid #ff0000;
+  border-radius: 8px;
+  box-shadow: 0 0 15px rgba(255, 0, 0, 0.5);
+  padding: 20px;
+  margin-bottom: 20px;
+  color: #e0e0e0;
+  text-align: center;
+  height: 100%;
+}
+
 .featureBox {
   background: #1a1a1a;
   border: 3px solid #ff0000;

@@ -1,13 +1,14 @@
 // src/components/UserDashboard.js
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { Container, Row, Col } from "react-bootstrap";
+import { Row, Col } from "react-bootstrap";
 import { MdDashboard } from "react-icons/md";
 import { FaAppleAlt, FaDumbbell, FaKey } from "react-icons/fa";
 
-import Footer from "../../Components/Footer"; // Adjust path if needed
+import Footer from "../../Components/Footer"; 
 import styles from "./UserDashboard.module.css";
 import logo from "../../Assets/FITNESSTAN BARA LOGO_inverted.png";
+
 import BMIGauge from "./BMIGauge";
 import TDEEGauge from "./TDEEGauge";
 import REEGauge from "./REEGauge";
@@ -26,7 +27,19 @@ const UserDashboard = () => {
   // State to control sidebar visibility
   const [sidebarVisible, setSidebarVisible] = useState(true);
 
-  // Fetch user measurements
+  useEffect(() => {
+    // Example: close sidebar on scroll
+    const handleScroll = () => {
+      // If user scrolls, hide the sidebar
+      setSidebarVisible(false);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
+
+  // Fetch user data
   useEffect(() => {
     axios
       .get("http://localhost:8080/user/user@example.com")
@@ -58,12 +71,11 @@ const UserDashboard = () => {
     <div className={styles.dashboardWrapper}>
       {/* ===== NAVBAR ===== */}
       <nav className={`navbar navbar-expand-lg ${styles.navbarCustom}`}>
-        {/* Custom Toggle (checkbox + bars) */}
+        {/* Custom Toggle */}
         <div className={styles.customToggleContainer}>
           <input
             id="checkbox2"
             type="checkbox"
-            // If sidebar is visible, checkbox is checked => "X" shows
             checked={sidebarVisible}
             onChange={() => setSidebarVisible(!sidebarVisible)}
             className={styles.checkbox2}
@@ -77,11 +89,7 @@ const UserDashboard = () => {
 
         {/* Centered Logo */}
         <div className={styles.navbarLogoWrapper}>
-          <img
-            src={logo}
-            alt="Fitnesstan Logo"
-            style={{ height: "50px", width: "auto" }}
-          />
+          <img src={logo} alt="Fitnesstan Logo" style={{ height: "50px" }} />
         </div>
       </nav>
 
@@ -121,17 +129,31 @@ const UserDashboard = () => {
               </a>
             </li>
           </ul>
-
-          {/* Custom SIGN OUT button */}
           <button className={styles.button}>SIGN OUT</button>
         </div>
+        <div className={styles.mainContent}>
+        {/* ===== HERO SECTION ===== */}
+        <Row className="g-0">
+        <div className={styles.heroSection}>
+          <div className={styles.slideshowContainer}>
+            {/* Optionally place your slideshow logic here */}
+          </div>
+          {/* Dark overlay */}
+          <div className={styles.darkOverlay}></div>
+          {/* Greeting text */}
+          <div className={styles.greetingContainer}>
+            <h1>Welcome to Fitnesstan!</h1>
+            <p>Your personalized journey starts here.</p>
+          </div>
+        </div>
+        </Row>
 
         {/* Main content area */}
-        <div className={styles.mainContent}>
-          <Row className="mt-4">
+        <div className={styles.AfterHeroContent}>
+          <Row className="mt-4 align-items-stretch">
             <Col md={4}>
               <div className={styles.measurementBox}>
-                <BMIGauge bmiValue="24.2" />
+                <BMIGauge bmiValue="54.2" />
               </div>
             </Col>
             <Col md={4}>
@@ -171,6 +193,7 @@ const UserDashboard = () => {
               </div>
             </Col>
           </Row>
+          </div>
         </div>
       </div>
 
