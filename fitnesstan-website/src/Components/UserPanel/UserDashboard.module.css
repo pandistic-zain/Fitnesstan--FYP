@@ -20,12 +20,30 @@
 /* ===== NAVBAR ===== */
 .navbarCustom {
   background-color: #1a1a1a !important;
-  border-bottom: 2px solid #ff0000;
+  /* Increase border thickness from 2px to 6px */
+  border-bottom: 6px solid #ff0000;
+  border-radius: 2;
   height: 80px; /* Fixed navbar height */
   display: flex;
   align-items: center;
   position: relative;
   padding: 0 1rem;
+
+  /* Initial glow */
+  box-shadow: 0 0 10px #ff0000;
+
+  /* Infinite pulsing glow animation */
+  animation: glowBorder 2s infinite alternate ease-in-out;
+}
+
+/* Keyframes to animate the glow intensity */
+@keyframes glowBorder {
+  0% {
+    box-shadow: 0 0 10px #ff0000;
+  }
+  100% {
+    box-shadow: 0 0 25px #ff0000;
+  }
 }
 
 /* Hide the checkbox visually */
@@ -35,7 +53,7 @@
 
 /* Container for the custom toggle */
 .customToggleContainer {
-  margin-right: auto; 
+  margin-right: auto;
   display: flex;
   align-items: center;
   padding-left: 1rem;
@@ -104,7 +122,6 @@
   transform: rotate(180deg);
 }
 
-
 /* Center the logo absolutely */
 .navbarLogoWrapper {
   position: absolute;
@@ -167,8 +184,6 @@
 .sidebarList li a:hover {
   color: #000000;
 }
-
-
 
 /* MAIN CONTENT:
    - Flex: 1 ensures it fills the leftover horizontal space.
