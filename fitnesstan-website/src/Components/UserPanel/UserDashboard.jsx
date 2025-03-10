@@ -1,17 +1,11 @@
 // src/components/UserDashboard.js
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { Container, Row, Col } from "react-bootstrap";
 
-// React Bootstrap components
-import { Container, Row, Col, Navbar, Nav } from "react-bootstrap";
-
-// Import your custom module CSS (optional)
+import Footer from "../../Components/Footer"; // Adjust path if needed
 import styles from "./UserDashboard.module.css";
-
-// Your logo asset
 import logo from "../../Assets/FIRNESSTAN_BARA_LOGO.png";
-
-import Footer from "../../Components/Footer"; // Adjust the path as necessary
 
 const UserDashboard = () => {
   // State for measurements (BMI, REE, TDEE)
@@ -24,8 +18,8 @@ const UserDashboard = () => {
   // State for diet plan details
   const [diet, setDiet] = useState(null);
 
-    // State to control sidebar visibility
-    const [sidebarVisible, setSidebarVisible] = useState(true);
+  // State to control sidebar visibility
+  const [sidebarVisible, setSidebarVisible] = useState(true);
 
   // Fetch user measurements
   useEffect(() => {
@@ -54,26 +48,34 @@ const UserDashboard = () => {
         console.error("Error fetching diet plan:", error);
       });
   }, []);
-  
-  
+
   return (
     <div className={styles.dashboardWrapper}>
       {/* ===== NAVBAR ===== */}
       <nav className={`navbar navbar-expand-lg ${styles.navbarCustom}`}>
-        {/* Toggle Button (top-left) */}
-        <button
-          className={styles.toggleBtn}
-          onClick={() => setSidebarVisible(!sidebarVisible)}
-        >
-          <span className="navbar-toggler-icon"></span>
-        </button>
+        {/* Custom Toggle (checkbox + bars) */}
+        <div className={styles.customToggleContainer}>
+          <input
+            id="checkbox2"
+            type="checkbox"
+            // If sidebar is visible, checkbox is checked => "X" shows
+            checked={sidebarVisible}
+            onChange={() => setSidebarVisible(!sidebarVisible)}
+            className={styles.checkbox2}
+          />
+          <label className={styles.toggle2} htmlFor="checkbox2">
+            <div className={`${styles.bars} ${styles.bar4}`}></div>
+            <div className={`${styles.bars} ${styles.bar5}`}></div>
+            <div className={`${styles.bars} ${styles.bar6}`}></div>
+          </label>
+        </div>
 
         {/* Centered Logo */}
         <div className={styles.navbarLogoWrapper}>
           <img
             src={logo}
             alt="Fitnesstan Logo"
-            style={{ height: '50px', width: 'auto' }}
+            style={{ height: "50px", width: "auto" }}
           />
         </div>
       </nav>
@@ -90,10 +92,7 @@ const UserDashboard = () => {
         >
           <ul className={styles.sidebarList}>
             <li>
-              <a href="/dashboard">Dashboard</a>
-            </li>
-            <li>
-              <a href="/profile">Profile</a>
+              <a href="/userdashboard">Dashboard</a>
             </li>
             <li>
               <a href="/diet">Diet Plan</a>
@@ -102,7 +101,7 @@ const UserDashboard = () => {
               <a href="/exercise">Exercise</a>
             </li>
             <li>
-              <a href="/settings">Settings</a>
+              <a href="/settings">Change Password</a>
             </li>
           </ul>
         </div>

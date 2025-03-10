@@ -1,14 +1,17 @@
 /* UserDashboard.module.css */
 
-/* Entire page container:
-   - Stacks the navbar (top), layout container (middle), footer (bottom).
-   - If content is tall, the entire page scrolls.
+/* 
+  1) We use flex layout to stack:
+     - Navbar (top)
+     - Layout container (middle)
+     - Footer (bottom)
+  2) min-height: 100vh makes the page fill the full browser height.
 */
 .dashboardWrapper {
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
-  background: #1a1a1a; /* Dark background */
+  min-height: 100vh; /* Full viewport height */
+  background: #1a1a1a;
   color: #e0e0e0;
   margin: 0;
   padding: 0;
@@ -18,32 +21,89 @@
 .navbarCustom {
   background-color: #1a1a1a !important;
   border-bottom: 2px solid #ff0000;
-  height: 60px; /* Fixed height for the navbar */
+  height: 80px; /* Fixed navbar height */
   display: flex;
   align-items: center;
   position: relative;
   padding: 0 1rem;
 }
 
-/* Toggle button in the top-left */
-.toggleBtn {
-  background: none;
-  border: none;
-  color: #fff; /* White icon color */
-  font-size: 1.5rem;
-  z-index: 10;
-  margin-right: auto; /* Pushes the logo to the center */
-  display: flex;
-  align-items: center;
-  cursor: pointer;
+/* Hide the checkbox visually */
+.checkbox2 {
+  display: none;
 }
 
-/* Invert default Bootstrap toggler icon to white */
-.toggleBtn .navbar-toggler-icon {
-  width: 30px;
-  height: 30px;
-  filter: invert(1);
+/* Container for the custom toggle */
+.customToggleContainer {
+  margin-right: auto; 
+  display: flex;
+  align-items: center;
+  padding-left: 1rem;
 }
+
+/* Label that becomes the toggle button */
+.toggle2 {
+  position: relative;
+  width: 60px;
+  height: 60px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  transition-duration: 0.5s;
+}
+
+/* The common style for the 3 bars inside the toggle */
+.bars {
+  width: 100%;
+  height: 6px;
+  background-color: rgb(255, 255, 255);
+  border-radius: 6px;
+}
+
+/* Specific adjustments for the middle bar */
+.bar5 {
+  transition-duration: 0.8s;
+}
+
+/* Outer bars are slightly shorter initially */
+.bar4,
+.bar6 {
+  width: 80%;
+}
+
+/* When the checkbox is checked, transform the bars */
+.checkbox2:checked + .toggle2 .bars {
+  position: absolute;
+  transition-duration: 0.5s;
+}
+
+/* Middle bar shrinks to 0 when checked */
+.checkbox2:checked + .toggle2 .bar5 {
+  transform: scaleX(0);
+  transition-duration: 0.5s;
+}
+
+/* Outer bars rotate into an X shape */
+.checkbox2:checked + .toggle2 .bar4 {
+  width: 100%;
+  transform: rotate(45deg);
+  transition-duration: 0.5s;
+}
+.checkbox2:checked + .toggle2 .bar6 {
+  width: 100%;
+  transform: rotate(-45deg);
+  transition-duration: 0.5s;
+}
+
+/* Entire toggle rotates 180 deg */
+.checkbox2:checked + .toggle2 {
+  transition-duration: 0.5s;
+  transform: rotate(180deg);
+}
+
 
 /* Center the logo absolutely */
 .navbarLogoWrapper {
@@ -52,34 +112,41 @@
   transform: translateX(-50%);
 }
 
-/* ===== LAYOUT BELOW NAVBAR: SIDEBAR + MAIN CONTENT ===== */
-.layoutContainer {
-  display: flex;       /* Sidebar + main content in a row */
-  flex: 1;             /* Fill the remaining vertical space */
-  width: 100%;         /* Ensure it spans full width under navbar */
+.navbarLogoWrapper img {
+  height: 60px !important; /* Adjust as needed */
+  width: auto;
 }
 
-/* Sidebar:
+/* 
+  LAYOUT CONTAINER:
+  - Takes all remaining vertical space (flex: 1).
+  - "align-items: stretch" ensures both sidebar & main content are the same height.
+*/
+.layoutContainer {
+  display: flex;
+  flex: 1;
+  align-items: stretch;
+}
+
+/* SIDEBAR:
    - Default width: 220px
    - Hidden width: 0
-   - Extends naturally from below navbar down to footer, since it's in normal flow.
+   - Red background with white text
 */
 .sidebarContainer {
-  background-color: #ff0000; /* Red sidebar */
+  background-color: #ff0000;
   color: #ffffff;
-  min-width: 220px;
-  max-width: 220px;
-  transition: all 0.3s ease;
-  overflow: hidden;  /* Hide content if shrunk to 0 */
+  width: 220px;
+  transition: width 0.3s ease;
+  overflow: hidden;
   border-right: 2px solid #1a1a1a;
 }
 
 .sidebarHidden {
-  min-width: 0;
-  max-width: 0;
+  width: 0;
 }
 
-/* Sidebar list */
+/* Sidebar internal list */
 .sidebarList {
   list-style: none;
   padding: 20px;
@@ -98,20 +165,23 @@
 }
 
 .sidebarList li a:hover {
-  color: #000000; /* Dark hover color for contrast */
+  color: #000000;
 }
 
-/* Main content:
-   - Flex 1 ensures it expands when sidebar shrinks
-   - We’ll use bootstrap’s Row/Col *inside* here for measurements & features
+
+
+/* MAIN CONTENT:
+   - Flex: 1 ensures it fills the leftover horizontal space.
+   - The container is already full height due to align-items: stretch.
 */
 .mainContent {
   flex: 1;
   padding: 20px;
-  transition: all 0.3s ease;
+  transition: width 0.3s ease;
+  overflow-x: hidden;
 }
 
-/* ===== MEASUREMENT & FEATURE BOXES ===== */
+/* BOXES */
 .measurementBox,
 .featureBox {
   background: #1a1a1a;
@@ -127,4 +197,16 @@
 .measurementBox h3,
 .featureBox h2 {
   color: #ff0000;
+}
+
+/* FOOTER:
+   - Placed at the bottom of the layout (after .layoutContainer).
+   - Sticks at the bottom if content is short; scrolls with the page if content is long.
+*/
+.footer {
+  background: #1a1a1a;
+  color: #ffffff;
+  text-align: center;
+  padding: 20px;
+  border-top: 2px solid #ff0000;
 }
