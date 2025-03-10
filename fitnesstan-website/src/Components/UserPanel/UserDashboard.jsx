@@ -96,31 +96,32 @@ const UserDashboard = () => {
           }
         >
           <ul className={styles.sidebarList}>
-            <li>
+            <li className={styles.sidebarItem}>
               <a href="/userdashboard">
-                <MdDashboard style={{ color: "#fff", marginRight: "8px" }} />
+                <MdDashboard className={styles.icon} />
                 Dashboard
               </a>
             </li>
-            <li>
+            <li className={styles.sidebarItem}>
               <a href="/diet">
-                <FaAppleAlt style={{ color: "#fff", marginRight: "8px" }} />
+                <FaAppleAlt className={styles.icon} />
                 Diet Plan
               </a>
             </li>
-            <li>
+            <li className={styles.sidebarItem}>
               <a href="/exercise">
-                <FaDumbbell style={{ color: "#fff", marginRight: "8px" }} />
+                <FaDumbbell className={styles.icon} />
                 Exercise
               </a>
             </li>
-            <li>
+            <li className={styles.sidebarItem}>
               <a href="/settings">
-                <FaKey style={{ color: "#fff", marginRight: "8px" }} />
+                <FaKey className={styles.icon} />
                 Change Password
               </a>
             </li>
           </ul>
+
           {/* Custom SIGN OUT button */}
           <button className={styles.button}>SIGN OUT</button>
         </div>
