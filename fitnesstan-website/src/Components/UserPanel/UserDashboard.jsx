@@ -25,7 +25,8 @@ const UserDashboard = () => {
   const [diet, setDiet] = useState(null);
 
   // State to control sidebar visibility
-  const [sidebarVisible, setSidebarVisible] = useState(true);
+  const [sidebarVisible, setSidebarVisible] = useState(false);
+
 
   useEffect(() => {
     // Example: close sidebar on scroll
