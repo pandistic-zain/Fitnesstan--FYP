@@ -24,6 +24,9 @@ const UserDashboard = () => {
   // State for diet plan details
   const [diet, setDiet] = useState(null);
 
+    // State to control sidebar visibility
+    const [sidebarVisible, setSidebarVisible] = useState(true);
+
   // Fetch user measurements
   useEffect(() => {
     axios
@@ -51,113 +54,111 @@ const UserDashboard = () => {
         console.error("Error fetching diet plan:", error);
       });
   }, []);
-
+  
+  
   return (
     <div className={styles.dashboardWrapper}>
-      {/* ========== NAVBAR ========== */}
-      <Navbar expand="lg" className="mb-3">
-        <Container fluid>
-          <Navbar.Brand href="#">
-            <img
-              src={logo}
-              alt="Fitnesstan Logo"
-              style={{ height: "50px", width: "auto" }}
-            />
-          </Navbar.Brand>
-          <Navbar.Toggle aria-controls="basic-navbar-nav" />
-          <Navbar.Collapse id="basic-navbar-nav">
-            {/* Example Nav links (optional) */}
-            <Nav className="ms-auto">
-              <Nav.Link href="/dashboard">Home</Nav.Link>
-              <Nav.Link href="/profile">Profile</Nav.Link>
-              <Nav.Link href="/settings">Settings</Nav.Link>
-            </Nav>
-          </Navbar.Collapse>
-        </Container>
-      </Navbar>
+      {/* ===== NAVBAR ===== */}
+      <nav className={`navbar navbar-expand-lg ${styles.navbarCustom}`}>
+        {/* Toggle Button (top-left) */}
+        <button
+          className={styles.toggleBtn}
+          onClick={() => setSidebarVisible(!sidebarVisible)}
+        >
+          <span className="navbar-toggler-icon"></span>
+        </button>
 
-      {/* ========== MAIN CONTENT ========== */}
-      <Container fluid>
-        <Row>
-          {/* SIDEBAR */}
-          <Col md={2} className={styles.sidebar}>
-            <ul className={styles.sidebarList}>
-              <li>
-                <a href="/dashboard">Dashboard</a>
-              </li>
-              <li>
-                <a href="/profile">Profile</a>
-              </li>
-              <li>
-                <a href="/diet">Diet Plan</a>
-              </li>
-              <li>
-                <a href="/exercise">Exercise</a>
-              </li>
-              <li>
-                <a href="/settings">Settings</a>
-              </li>
-            </ul>
-          </Col>
+        {/* Centered Logo */}
+        <div className={styles.navbarLogoWrapper}>
+          <img
+            src={logo}
+            alt="Fitnesstan Logo"
+            style={{ height: '50px', width: 'auto' }}
+          />
+        </div>
+      </nav>
 
-          {/* DASHBOARD CONTENT */}
-          <Col md={10} className={styles.mainContent}>
-            {/* ========== ROW FOR MEASUREMENTS (3 COLUMNS) ========== */}
-            <Row className="mt-4">
-              <Col md={4}>
-                <div className={styles.measurementBox}>
-                  <h3>BMI</h3>
-                  <p>{measurements.bmi}</p>
-                </div>
-              </Col>
-              <Col md={4}>
-                <div className={styles.measurementBox}>
-                  <h3>REE</h3>
-                  <p>{measurements.ree}</p>
-                </div>
-              </Col>
-              <Col md={4}>
-                <div className={styles.measurementBox}>
-                  <h3>TDEE</h3>
-                  <p>{measurements.tdee}</p>
-                </div>
-              </Col>
-            </Row>
+      {/* ===== SIDEBAR + MAIN CONTENT ===== */}
+      <div className={styles.layoutContainer}>
+        {/* Sidebar */}
+        <div
+          className={
+            sidebarVisible
+              ? styles.sidebarContainer
+              : `${styles.sidebarContainer} ${styles.sidebarHidden}`
+          }
+        >
+          <ul className={styles.sidebarList}>
+            <li>
+              <a href="/dashboard">Dashboard</a>
+            </li>
+            <li>
+              <a href="/profile">Profile</a>
+            </li>
+            <li>
+              <a href="/diet">Diet Plan</a>
+            </li>
+            <li>
+              <a href="/exercise">Exercise</a>
+            </li>
+            <li>
+              <a href="/settings">Settings</a>
+            </li>
+          </ul>
+        </div>
 
-            {/* ========== ROW FOR DIET & EXERCISE FEATURES (2 COLUMNS) ========== */}
-            <Row className="mt-4">
-              <Col md={6}>
-                <div className={styles.featureBox}>
-                  <h2>Diet Plan</h2>
-                  {diet ? (
-                    <div>
-                      <p>
-                        <strong>Plan Start:</strong> {diet.startDate}
-                      </p>
-                      <p>
-                        <strong>Plan End:</strong> {diet.endDate}
-                      </p>
-                      {/* Additional meal plan details */}
-                    </div>
-                  ) : (
-                    <p>Loading diet plan...</p>
-                  )}
-                </div>
-              </Col>
+        {/* Main content area */}
+        <div className={styles.mainContent}>
+          <Row className="mt-4">
+            <Col md={4}>
+              <div className={styles.measurementBox}>
+                <h3>BMI</h3>
+                <p>{measurements.bmi}</p>
+              </div>
+            </Col>
+            <Col md={4}>
+              <div className={styles.measurementBox}>
+                <h3>REE</h3>
+                <p>{measurements.ree}</p>
+              </div>
+            </Col>
+            <Col md={4}>
+              <div className={styles.measurementBox}>
+                <h3>TDEE</h3>
+                <p>{measurements.tdee}</p>
+              </div>
+            </Col>
+          </Row>
 
-              <Col md={6}>
-                <div className={styles.featureBox}>
-                  <h2>Exercise Features</h2>
-                  <p>Track your exercise routines and progress here.</p>
-                  {/* Additional exercise UI elements */}
-                </div>
-              </Col>
-            </Row>
-          </Col>
-        </Row>
-      </Container>
+          <Row className="mt-4">
+            <Col md={6}>
+              <div className={styles.featureBox}>
+                <h2>Diet Plan</h2>
+                {diet ? (
+                  <div>
+                    <p>
+                      <strong>Plan Start:</strong> {diet.startDate}
+                    </p>
+                    <p>
+                      <strong>Plan End:</strong> {diet.endDate}
+                    </p>
+                  </div>
+                ) : (
+                  <p>Loading diet plan...</p>
+                )}
+              </div>
+            </Col>
+            <Col md={6}>
+              <div className={styles.featureBox}>
+                <h2>Exercise Features</h2>
+                <p>Track your exercise routines and progress here.</p>
+              </div>
+            </Col>
+          </Row>
+        </div>
+      </div>
 
-      {/* ========== FOOTER ========== */}
+      {/* ===== FOOTER ===== */}
       <Footer />
     </div>
   );

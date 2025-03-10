@@ -1,24 +1,88 @@
 /* UserDashboard.module.css */
 
-/* Overall dashboard container */
+/* Entire page container:
+   - Stacks the navbar (top), layout container (middle), footer (bottom).
+   - If content is tall, the entire page scrolls.
+*/
 .dashboardWrapper {
-  background: #1a1a1a;
-  color: #E0E0E0;
+  display: flex;
+  flex-direction: column;
   min-height: 100vh;
-  padding: 20px;
-  scroll-behavior: smooth;
+  background: #1a1a1a; /* Dark background */
+  color: #e0e0e0;
+  margin: 0;
+  padding: 0;
 }
 
-/* Sidebar styling */
-.sidebar {
-  background: #1a1a1a;
-  padding: 20px;
-  border-right: 2px solid #ff0000;
+/* ===== NAVBAR ===== */
+.navbarCustom {
+  background-color: #1a1a1a !important;
+  border-bottom: 2px solid #ff0000;
+  height: 60px; /* Fixed height for the navbar */
+  display: flex;
+  align-items: center;
+  position: relative;
+  padding: 0 1rem;
 }
 
+/* Toggle button in the top-left */
+.toggleBtn {
+  background: none;
+  border: none;
+  color: #fff; /* White icon color */
+  font-size: 1.5rem;
+  z-index: 10;
+  margin-right: auto; /* Pushes the logo to the center */
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+/* Invert default Bootstrap toggler icon to white */
+.toggleBtn .navbar-toggler-icon {
+  width: 30px;
+  height: 30px;
+  filter: invert(1);
+}
+
+/* Center the logo absolutely */
+.navbarLogoWrapper {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+/* ===== LAYOUT BELOW NAVBAR: SIDEBAR + MAIN CONTENT ===== */
+.layoutContainer {
+  display: flex;       /* Sidebar + main content in a row */
+  flex: 1;             /* Fill the remaining vertical space */
+  width: 100%;         /* Ensure it spans full width under navbar */
+}
+
+/* Sidebar:
+   - Default width: 220px
+   - Hidden width: 0
+   - Extends naturally from below navbar down to footer, since it's in normal flow.
+*/
+.sidebarContainer {
+  background-color: #ff0000; /* Red sidebar */
+  color: #ffffff;
+  min-width: 220px;
+  max-width: 220px;
+  transition: all 0.3s ease;
+  overflow: hidden;  /* Hide content if shrunk to 0 */
+  border-right: 2px solid #1a1a1a;
+}
+
+.sidebarHidden {
+  min-width: 0;
+  max-width: 0;
+}
+
+/* Sidebar list */
 .sidebarList {
   list-style: none;
-  padding: 0;
+  padding: 20px;
   margin: 0;
 }
 
@@ -27,67 +91,40 @@
 }
 
 .sidebarList li a {
-  color: #E0E0E0;
+  color: #ffffff;
   text-decoration: none;
   font-size: 1.1rem;
   transition: color 0.3s ease;
 }
 
 .sidebarList li a:hover {
-  color: #ff0000;
+  color: #000000; /* Dark hover color for contrast */
 }
 
-/* Main content container */
+/* Main content:
+   - Flex 1 ensures it expands when sidebar shrinks
+   - We’ll use bootstrap’s Row/Col *inside* here for measurements & features
+*/
 .mainContent {
+  flex: 1;
   padding: 20px;
+  transition: all 0.3s ease;
 }
 
-/* Measurement box styling */
-.measurementBox {
-  background: #1a1a1a;
-  border: 1px solid #ff0000;
-  padding: 20px;
-  margin-bottom: 20px;
-  border-radius: 8px;
-  text-align: center;
-  box-shadow: 0 0 15px rgba(255, 0, 0, 0.5);
-}
-
-.measurementBox h3 {
-  color: #ff0000;
-  margin-bottom: 10px;
-  font-size: 1.5rem;
-}
-
-.measurementBox p {
-  color: #E0E0E0;
-  font-size: 1.2rem;
-  margin: 0;
-}
-
-/* Feature box styling for Diet and Exercise sections */
+/* ===== MEASUREMENT & FEATURE BOXES ===== */
+.measurementBox,
 .featureBox {
   background: #1a1a1a;
   border: 1px solid #ff0000;
-  padding: 20px;
-  margin-bottom: 20px;
   border-radius: 8px;
   box-shadow: 0 0 15px rgba(255, 0, 0, 0.5);
-  color: #E0E0E0;
+  padding: 20px;
+  margin-bottom: 20px;
+  color: #e0e0e0;
+  text-align: center;
 }
 
-
-/* Responsive adjustments if needed */
-@media (max-width: 768px) {
-  .sidebar {
-    border-right: none;
-    border-bottom: 2px solid #ff0000;
-  }
-  .sidebarList li {
-    margin-bottom: 10px;
-  }
-  .measurementBox,
-  .featureBox {
-    margin-bottom: 15px;
-  }
+.measurementBox h3,
+.featureBox h2 {
+  color: #ff0000;
 }
