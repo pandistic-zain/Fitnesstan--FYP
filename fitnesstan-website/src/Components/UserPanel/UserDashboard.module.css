@@ -1,152 +1,93 @@
 /* UserDashboard.module.css */
 
-  /* Container for the entire dashboard page */
-  .dashboardContainer {
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
-  }
-  
-  /* Navbar with Logo */
-  .navbar {
-    background-color: #ffffff;
-    padding: 10px 20px;
-    border-bottom: 1px solid #ddd;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  
-  .navbarLogo {
-    height: 50px;
-    width: auto;
-  }
-  
-  /* Dashboard Body: Sidebar + Main Content */
-  .dashboardBody {
-    display: flex;
-    flex: 1;
-  }
-  
-  /* Sidebar for User Actions */
+/* Overall dashboard container */
+.dashboardWrapper {
+  background: #1a1a1a;
+  color: #E0E0E0;
+  min-height: 100vh;
+  padding: 20px;
+  scroll-behavior: smooth;
+}
+
+/* Sidebar styling */
+.sidebar {
+  background: #1a1a1a;
+  padding: 20px;
+  border-right: 2px solid #ff0000;
+}
+
+.sidebarList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.sidebarList li {
+  margin-bottom: 15px;
+}
+
+.sidebarList li a {
+  color: #E0E0E0;
+  text-decoration: none;
+  font-size: 1.1rem;
+  transition: color 0.3s ease;
+}
+
+.sidebarList li a:hover {
+  color: #ff0000;
+}
+
+/* Main content container */
+.mainContent {
+  padding: 20px;
+}
+
+/* Measurement box styling */
+.measurementBox {
+  background: #1a1a1a;
+  border: 1px solid #ff0000;
+  padding: 20px;
+  margin-bottom: 20px;
+  border-radius: 8px;
+  text-align: center;
+  box-shadow: 0 0 15px rgba(255, 0, 0, 0.5);
+}
+
+.measurementBox h3 {
+  color: #ff0000;
+  margin-bottom: 10px;
+  font-size: 1.5rem;
+}
+
+.measurementBox p {
+  color: #E0E0E0;
+  font-size: 1.2rem;
+  margin: 0;
+}
+
+/* Feature box styling for Diet and Exercise sections */
+.featureBox {
+  background: #1a1a1a;
+  border: 1px solid #ff0000;
+  padding: 20px;
+  margin-bottom: 20px;
+  border-radius: 8px;
+  box-shadow: 0 0 15px rgba(255, 0, 0, 0.5);
+  color: #E0E0E0;
+}
+
+
+/* Responsive adjustments if needed */
+@media (max-width: 768px) {
   .sidebar {
-    width: 220px;
-    background-color: #f8f9fa;
-    padding: 20px;
-    border-right: 1px solid #ddd;
+    border-right: none;
+    border-bottom: 2px solid #ff0000;
   }
-  
-  .sidebarList {
-    list-style: none;
-    padding: 0;
-  }
-  
-  .sidebarListItem {
-    margin-bottom: 15px;
-  }
-  
-  .sidebarLink {
-    color: #333;
-    text-decoration: none;
-    font-size: 16px;
-  }
-  
-  .sidebarLink:hover {
-    color: #007bff;
-  }
-  
-  /* Main Content Area */
-  .dashboardContent {
-    flex: 1;
-    padding: 20px;
-  }
-  
-  /* Measurements Section (Three Square Boxes) */
-  .measurementsSection {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 20px;
-  }
-  
-  .measurementBox {
-    flex: 1;
-    margin: 0 10px;
-    padding: 20px;
-    background-color: #ffffff;
-    border: 1px solid #ddd;
-    text-align: center;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  }
-  
-  .measurementTitle {
+  .sidebarList li {
     margin-bottom: 10px;
-    font-size: 18px;
-    color: #333;
   }
-  
-  .measurementValue {
-    font-size: 16px;
-    font-weight: bold;
-    color: #555;
-  }
-  
-  /* Features Section (Diet and Exercise) */
-  .featuresSection {
-    display: flex;
-    justify-content: space-between;
-    gap: 20px;
-    flex-wrap: wrap;
-  }
-  
-  .dietSection,
-  .exerciseSection {
-    flex: 1;
-    min-width: 300px;
-    padding: 20px;
-    background-color: #ffffff;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  }
-  
-  .sectionTitle {
+  .measurementBox,
+  .featureBox {
     margin-bottom: 15px;
-    font-size: 20px;
-    color: #333;
   }
-  
-  /* Footer */
-  .footer {
-    background-color: #f8f9fa;
-    text-align: center;
-    padding: 10px 20px;
-    border-top: 1px solid #ddd;
-    font-size: 14px;
-    color: #666;
-  }
-  
-  /* Responsive Design */
-  @media (max-width: 768px) {
-    .dashboardBody {
-      flex-direction: column;
-    }
-    .sidebar {
-      width: 100%;
-      border-right: none;
-      border-bottom: 1px solid #ddd;
-    }
-    .dashboardContent {
-      padding: 10px;
-    }
-    .measurementsSection {
-      flex-direction: column;
-    }
-    .measurementBox {
-      margin: 10px 0;
-    }
-    .featuresSection {
-      flex-direction: column;
-    }
-  }
-  
+}
