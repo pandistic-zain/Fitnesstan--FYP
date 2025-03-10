@@ -6,6 +6,9 @@ import { Container, Row, Col } from "react-bootstrap";
 import Footer from "../../Components/Footer"; // Adjust path if needed
 import styles from "./UserDashboard.module.css";
 import logo from "../../Assets/FIRNESSTAN_BARA_LOGO.png";
+import BMIGauge from "./BMIGauge";
+import TDEEGauge from "./TDEEGauge";
+import REEGauge from "./REEGauge";
 
 const UserDashboard = () => {
   // State for measurements (BMI, REE, TDEE)
@@ -111,22 +114,20 @@ const UserDashboard = () => {
           <Row className="mt-4">
             <Col md={4}>
               <div className={styles.measurementBox}>
-                <h3>BMI</h3>
-                <p>{measurements.bmi}</p>
+                <BMIGauge bmiValue="24.2" />
               </div>
             </Col>
             <Col md={4}>
               <div className={styles.measurementBox}>
-                <h3>REE</h3>
-                <p>{measurements.ree}</p>
+              <TDEEGauge tdeeValue= "2855" />
               </div>
             </Col>
             <Col md={4}>
               <div className={styles.measurementBox}>
-                <h3>TDEE</h3>
-                <p>{measurements.tdee}</p>
+              <REEGauge reeValue="1600" />
               </div>
             </Col>
+            
           </Row>
 
           <Row className="mt-4">
