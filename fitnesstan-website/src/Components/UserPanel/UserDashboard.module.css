@@ -311,6 +311,11 @@ body {
   height: 100%;
 }
 
+.measurementBox h3,
+.featureBox h2 {
+  color: #ff0000;
+}
+
 .featureBox {
   background: #1a1a1a;
   border: 3px solid #ff0000;
@@ -320,9 +325,5 @@ body {
   margin-bottom: 20px;
   color: #e0e0e0;
   text-align: center;
-}
-
-.measurementBox h3,
-.featureBox h2 {
-  color: #ff0000;
+  min-height: 300px;  /* Ensure a minimum height */
 }

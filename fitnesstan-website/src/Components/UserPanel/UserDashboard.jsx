@@ -5,13 +5,16 @@ import { Row, Col } from "react-bootstrap";
 import { MdDashboard } from "react-icons/md";
 import { FaAppleAlt, FaDumbbell, FaKey } from "react-icons/fa";
 
-import Footer from "../../Components/Footer"; 
+import Footer from "../../Components/Footer";
 import styles from "./UserDashboard.module.css";
 import logo from "../../Assets/FITNESSTAN BARA LOGO_inverted.png";
 
 import BMIGauge from "./BMIGauge";
 import TDEEGauge from "./TDEEGauge";
 import REEGauge from "./REEGauge";
+
+import DietCarousel from "./DietCarousel";
+import ExerciseCarousel from "./ExerciseCarousel";
 
 const UserDashboard = () => {
   // State for measurements (BMI, REE, TDEE)
@@ -21,12 +24,8 @@ const UserDashboard = () => {
     tdee: "--",
   });
 
-  // State for diet plan details
-  const [diet, setDiet] = useState(null);
-
   // State to control sidebar visibility
   const [sidebarVisible, setSidebarVisible] = useState(false);
-
 
   useEffect(() => {
     // Example: close sidebar on scroll
@@ -56,15 +55,30 @@ const UserDashboard = () => {
       });
   }, []);
 
-  // Fetch diet plan details
+  // Assume you have state for dietItems and exerciseItems:
+  const [dietItems, setDietItems] = useState([]);
+  const [exerciseItems, setExerciseItems] = useState([]);
+
+  // Fetch these items from your API (example code):
   useEffect(() => {
     axios
-      .get("http://localhost:8080/user/diet")
+      .get("http://localhost:8080/user/dietItems")
       .then((response) => {
-        setDiet(response.data);
+        setDietItems(response.data); // Expecting an array of diet items
       })
       .catch((error) => {
-        console.error("Error fetching diet plan:", error);
+        console.error("Error fetching diet items:", error);
+      });
+  }, []);
+
+  useEffect(() => {
+    axios
+      .get("http://localhost:8080/user/exerciseItems")
+      .then((response) => {
+        setExerciseItems(response.data); // Expecting an array of exercise items
+      })
+      .catch((error) => {
+        console.error("Error fetching exercise items:", error);
       });
   }, []);
 
@@ -133,67 +147,65 @@ const UserDashboard = () => {
           <button className={styles.button}>SIGN OUT</button>
         </div>
         <div className={styles.mainContent}>
-        {/* ===== HERO SECTION ===== */}
-        <Row className="g-0">
-        <div className={styles.heroSection}>
-          <div className={styles.slideshowContainer}>
-            {/* Optionally place your slideshow logic here */}
-          </div>
-          {/* Dark overlay */}
-          <div className={styles.darkOverlay}></div>
-          {/* Greeting text */}
-          <div className={styles.greetingContainer}>
-            <h1>Welcome to Fitnesstan!</h1>
-            <p>Your personalized journey starts here.</p>
-          </div>
-        </div>
-        </Row>
-
-        {/* Main content area */}
-        <div className={styles.AfterHeroContent}>
-          <Row className="mt-4 align-items-stretch">
-            <Col md={4}>
-              <div className={styles.measurementBox}>
-                <BMIGauge bmiValue="54.2" />
+          {/* ===== HERO SECTION ===== */}
+          <Row className="g-0">
+            <div className={styles.heroSection}>
+              <div className={styles.slideshowContainer}>
+                {/* Optionally place your slideshow logic here */}
               </div>
-            </Col>
-            <Col md={4}>
-              <div className={styles.measurementBox}>
-                <TDEEGauge tdeeValue="2855" />
+              {/* Dark overlay */}
+              <div className={styles.darkOverlay}></div>
+              {/* Greeting text */}
+              <div className={styles.greetingContainer}>
+                <h1>Welcome to Fitnesstan!</h1>
+                <p>Your personalized journey starts here.</p>
               </div>
-            </Col>
-            <Col md={4}>
-              <div className={styles.measurementBox}>
-                <REEGauge reeValue="1600" />
-              </div>
-            </Col>
+            </div>
           </Row>
 
-          <Row className="mt-4">
-            <Col md={6}>
-              <div className={styles.featureBox}>
-                <h2>Diet Plan</h2>
-                {diet ? (
-                  <div>
-                    <p>
-                      <strong>Plan Start:</strong> {diet.startDate}
-                    </p>
-                    <p>
-                      <strong>Plan End:</strong> {diet.endDate}
-                    </p>
-                  </div>
-                ) : (
-                  <p>Loading diet plan...</p>
-                )}
-              </div>
-            </Col>
-            <Col md={6}>
-              <div className={styles.featureBox}>
-                <h2>Exercise Features</h2>
-                <p>Track your exercise routines and progress here.</p>
-              </div>
-            </Col>
-          </Row>
+          {/* Main content area */}
+          <div className={styles.AfterHeroContent}>
+            <Row className="mt-4 align-items-stretch">
+              <Col md={4}>
+                <div className={styles.measurementBox}>
+                  <BMIGauge bmiValue="54.2" />
+                </div>
+              </Col>
+              <Col md={4}>
+                <div className={styles.measurementBox}>
+                  <TDEEGauge tdeeValue="2855" />
+                </div>
+              </Col>
+              <Col md={4}>
+                <div className={styles.measurementBox}>
+                  <REEGauge reeValue="1600" />
+                </div>
+              </Col>
+            </Row>
+
+            {/* Feature Boxes Section as Carousels */}
+            <Row className="mt-4">
+              <Col md={6}>
+                <div className={styles.featureBox}>
+                  <h2>Diet Plan</h2>
+                  {dietItems.length > 0 ? (
+                    <DietCarousel dietItems={dietItems} />
+                  ) : (
+                    <p>Loading diet items...</p>
+                  )}
+                </div>
+              </Col>
+              <Col md={6}>
+                <div className={styles.featureBox}>
+                  <h2>Exercise Features</h2>
+                  {exerciseItems.length > 0 ? (
+                    <ExerciseCarousel exerciseItems={exerciseItems} />
+                  ) : (
+                    <p>Loading exercise items...</p>
+                  )}
+                </div>
+              </Col>
+            </Row>
           </div>
         </div>
       </div>
