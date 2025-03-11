@@ -1,6 +1,8 @@
+// src/components/EmailVerification.jsx
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { verifyEmail, resendOtp } from "../../API/RegisterAPI.jsx";
+import Loader from "../Loader.jsx"; // Ensure this is the correct path to your Loader component
 import styles from "./EmailVerification.module.css";
 
 const EmailVerification = () => {
@@ -9,12 +11,13 @@ const EmailVerification = () => {
   const [errorMessage, setErrorMessage] = useState("");
   const [isCooldown, setIsCooldown] = useState(true);
   const [cooldownTime, setCooldownTime] = useState(60);
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const email = queryParams.get("email");
 
-  // Function to clear messages after 5 seconds
+  // Clear messages after 5 seconds
   const clearMessagesAfterTimeout = () => {
     setTimeout(() => {
       setMessage("");
@@ -22,21 +25,22 @@ const EmailVerification = () => {
     }, 5000);
   };
 
-  // Verify OTP function
+  // Verify OTP function with loader
   const handleVerify = async (e) => {
     e.preventDefault();
     setMessage("");
     setErrorMessage("");
+    setLoading(true); // Start loader
 
     try {
       const response = await verifyEmail(email, otp);
       if (response.status === 200) {
         setMessage("Email verified!");
-        setErrorMessage(""); // Clear error if any
+        setErrorMessage("");
         setTimeout(() => navigate("/userdashboard"), 10000);
       } else {
         setErrorMessage(response.data.message || "Invalid OTP. Try again.");
-        setMessage(""); // Clear success message if any
+        setMessage("");
       }
       clearMessagesAfterTimeout();
     } catch (error) {
@@ -52,6 +56,8 @@ const EmailVerification = () => {
       );
       setMessage("");
       clearMessagesAfterTimeout();
+    } finally {
+      setLoading(false); // Stop loader when request completes
     }
   };
 
@@ -66,12 +72,12 @@ const EmailVerification = () => {
       setMessage("Resending OTP...");
       await resendOtp(email);
       setMessage("OTP has been resent. Please check your email.");
-      setErrorMessage(""); // Clear error if any
+      setErrorMessage("");
     } catch (error) {
       console.error("Resend OTP error: ", error.response?.data || error);
       setErrorMessage("Could not resend OTP. Try again later.");
-      setMessage(""); // Clear success message if any
-      setIsCooldown(false); // Re-enable if resend fails
+      setMessage("");
+      setIsCooldown(false);
       setCooldownTime(0);
     }
     clearMessagesAfterTimeout();
@@ -93,6 +99,9 @@ const EmailVerification = () => {
   return (
     <div className={styles.verificationContainer}>
       <div className={styles.card}>
+        {/* Optionally, show Loader as an overlay on the card */}
+        {loading && <Loader />}
+
         <div className={styles.header}></div>
         <div className={styles.info}>
           <p className={styles.title}>Verify Your Email</p>
