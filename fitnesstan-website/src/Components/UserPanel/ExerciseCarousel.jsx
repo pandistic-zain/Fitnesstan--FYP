@@ -4,12 +4,7 @@ import Carousel from "react-bootstrap/Carousel";
 
 const ExerciseCarousel = ({ exerciseItems }) => {
   return (
-    <Carousel
-      nextLabel="Down"
-      prevLabel="Up"
-      indicators={false}
-      interval={3000}
-    >
+    <Carousel nextLabel="Down" prevLabel="Up" indicators={false} interval={3000}>
       {exerciseItems.map((item, index) => (
         <Carousel.Item key={index}>
           <div style={{ padding: "20px", textAlign: "center" }}>

@@ -4,12 +4,7 @@ import Carousel from "react-bootstrap/Carousel";
 
 const DietCarousel = ({ dietItems }) => {
   return (
-    <Carousel
-      nextLabel="Down"
-      prevLabel="Up"
-      indicators={false}
-      interval={3000} // 3 seconds per slide
-    >
+    <Carousel nextLabel="Down" prevLabel="Up" indicators={false} interval={3000}>
       {dietItems.map((item, index) => (
         <Carousel.Item key={index}>
           <div style={{ padding: "20px", textAlign: "center" }}>

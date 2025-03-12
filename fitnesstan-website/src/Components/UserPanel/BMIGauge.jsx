@@ -4,18 +4,16 @@ import GaugeChart from "react-gauge-chart";
 
 const BMIGauge = ({ bmiValue = 22.5 }) => {
   const numericBMI = Number(bmiValue) || 0;
-
   const minBMI = 13;
   const maxBMI = 40;
   const range = maxBMI - minBMI; // 27
-
   const fraction = Math.min(Math.max((numericBMI - minBMI) / range, 0), 1);
 
   const arcsLength = [
-    (18.5 - minBMI) / range, 
-    (25 - 18.5) / range,     
-    (30 - 25) / range,       
-    (40 - 30) / range        
+    (18.5 - minBMI) / range, // Underweight: 13 to 18.5
+    (25 - 18.5) / range,     // Normal: 18.5 to 25
+    (30 - 25) / range,       // Overweight: 25 to 30
+    (40 - 30) / range        // Obese: 30 to 40
   ];
 
   return (
@@ -32,66 +30,32 @@ const BMIGauge = ({ bmiValue = 22.5 }) => {
         hideText={true}
         textColor="#fff"
       />
-
       <p style={{ marginTop: "0.5rem", color: "#fff" }}>
         BMI = {numericBMI.toFixed(1)}
       </p>
-
-      {/* Responsive Legend */}
       <div
         style={{
           display: "flex",
-          flexWrap: "wrap",       // Allow legend items to wrap on smaller screens
-          gap: "1rem",            // Space between items
+          flexWrap: "wrap",
+          gap: "1rem",
           justifyContent: "center",
           marginTop: "0.5rem",
         }}
       >
-        {/* Underweight */}
         <div style={{ display: "flex", alignItems: "center", gap: "0.3rem" }}>
-          <div
-            style={{
-              width: "16px",
-              height: "16px",
-              backgroundColor: "#2196f3",
-            }}
-          />
+          <div style={{ width: "16px", height: "16px", backgroundColor: "#2196f3" }} />
           <span style={{ fontSize: "0.9rem" }}>Underweight</span>
         </div>
-
-        {/* Normal */}
         <div style={{ display: "flex", alignItems: "center", gap: "0.3rem" }}>
-          <div
-            style={{
-              width: "16px",
-              height: "16px",
-              backgroundColor: "#4caf50",
-            }}
-          />
+          <div style={{ width: "16px", height: "16px", backgroundColor: "#4caf50" }} />
           <span style={{ fontSize: "0.9rem" }}>Normal</span>
         </div>
-
-        {/* Overweight */}
         <div style={{ display: "flex", alignItems: "center", gap: "0.3rem" }}>
-          <div
-            style={{
-              width: "16px",
-              height: "16px",
-              backgroundColor: "#ffeb3b",
-            }}
-          />
+          <div style={{ width: "16px", height: "16px", backgroundColor: "#ffeb3b" }} />
           <span style={{ fontSize: "0.9rem" }}>Overweight</span>
         </div>
-
-        {/* Obese */}
         <div style={{ display: "flex", alignItems: "center", gap: "0.3rem" }}>
-          <div
-            style={{
-              width: "16px",
-              height: "16px",
-              backgroundColor: "#f44336",
-            }}
-          />
+          <div style={{ width: "16px", height: "16px", backgroundColor: "#f44336" }} />
           <span style={{ fontSize: "0.9rem" }}>Obese</span>
         </div>
       </div>

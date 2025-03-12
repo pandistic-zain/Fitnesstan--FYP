@@ -12,81 +12,50 @@ import logo from "../../Assets/FITNESSTAN BARA LOGO_inverted.png";
 import BMIGauge from "./BMIGauge";
 import TDEEGauge from "./TDEEGauge";
 import REEGauge from "./REEGauge";
-
 import DietCarousel from "./DietCarousel";
 import ExerciseCarousel from "./ExerciseCarousel";
 
 const UserDashboard = () => {
-  // State for measurements (BMI, REE, TDEE)
-  const [measurements, setMeasurements] = useState({
-    bmi: "--",
-    ree: "--",
-    tdee: "--",
-  });
-
-  // State to control sidebar visibility
+  const [measurements, setMeasurements] = useState({ bmi: "--", ree: "--", tdee: "--" });
   const [sidebarVisible, setSidebarVisible] = useState(false);
-
-  useEffect(() => {
-    // Example: close sidebar on scroll
-    const handleScroll = () => {
-      // If user scrolls, hide the sidebar
-      setSidebarVisible(false);
-    };
-    window.addEventListener("scroll", handleScroll);
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
-  }, []);
-
-  // Fetch user data
-  useEffect(() => {
-    axios
-      .get("http://localhost:8080/user/user@example.com")
-      .then((response) => {
-        setMeasurements({
-          bmi: response.data.bmi,
-          ree: response.data.ree,
-          tdee: response.data.tdee,
-        });
-      })
-      .catch((error) => {
-        console.error("Error fetching measurements:", error);
-      });
-  }, []);
-
-  // Assume you have state for dietItems and exerciseItems:
   const [dietItems, setDietItems] = useState([]);
   const [exerciseItems, setExerciseItems] = useState([]);
 
-  // Fetch these items from your API (example code):
+  // On mount, read userData from localStorage
   useEffect(() => {
-    axios
-      .get("http://localhost:8080/user/dietItems")
-      .then((response) => {
-        setDietItems(response.data); // Expecting an array of diet items
-      })
-      .catch((error) => {
-        console.error("Error fetching diet items:", error);
+    const storedUserData = localStorage.getItem("userData");
+    if (storedUserData) {
+      const parsedData = JSON.parse(storedUserData);
+      setMeasurements({
+        bmi: parsedData.bmi || "--",
+        ree: parsedData.ree || "--",
+        tdee: parsedData.tdee || "--",
       });
+    }
   }, []);
 
+  // Fetch dietItems and exerciseItems from backend
   useEffect(() => {
-    axios
-      .get("http://localhost:8080/user/exerciseItems")
-      .then((response) => {
-        setExerciseItems(response.data); // Expecting an array of exercise items
-      })
-      .catch((error) => {
-        console.error("Error fetching exercise items:", error);
-      });
+    axios.get("http://localhost:8080/user/dietItems")
+      .then((response) => setDietItems(response.data))
+      .catch((error) => console.error("Error fetching diet items:", error));
+
+    axios.get("http://localhost:8080/user/exerciseItems")
+      .then((response) => setExerciseItems(response.data))
+      .catch((error) => console.error("Error fetching exercise items:", error));
+  }, []);
+
+  // Hide sidebar on scroll
+  useEffect(() => {
+    const handleScroll = () => setSidebarVisible(false);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   return (
     <div className={styles.dashboardWrapper}>
-      {/* ===== NAVBAR ===== */}
+      {/* NAVBAR */}
       <nav className={`navbar navbar-expand-lg ${styles.navbarCustom}`}>
-        {/* Custom Toggle */}
         <div className={styles.customToggleContainer}>
           <input
             id="checkbox2"
@@ -101,16 +70,14 @@ const UserDashboard = () => {
             <div className={`${styles.bars} ${styles.bar6}`}></div>
           </label>
         </div>
-
-        {/* Centered Logo */}
         <div className={styles.navbarLogoWrapper}>
           <img src={logo} alt="Fitnesstan Logo" style={{ height: "50px" }} />
         </div>
       </nav>
 
-      {/* ===== SIDEBAR + MAIN CONTENT ===== */}
+      {/* LAYOUT: SIDEBAR + MAIN CONTENT */}
       <div className={styles.layoutContainer}>
-        {/* Sidebar */}
+        {/* SIDEBAR */}
         <div
           className={
             sidebarVisible
@@ -146,44 +113,43 @@ const UserDashboard = () => {
           </ul>
           <button className={styles.button}>SIGN OUT</button>
         </div>
-        <div className={styles.mainContent}>
-          {/* ===== HERO SECTION ===== */}
-          <Row className="g-0">
-            <div className={styles.heroSection}>
-              <div className={styles.slideshowContainer}>
-                {/* Optionally place your slideshow logic here */}
-              </div>
-              {/* Dark overlay */}
-              <div className={styles.darkOverlay}></div>
-              {/* Greeting text */}
-              <div className={styles.greetingContainer}>
-                <h1>Welcome to Fitnesstan!</h1>
-                <p>Your personalized journey starts here.</p>
-              </div>
-            </div>
-          </Row>
 
-          {/* Main content area */}
+        {/* MAIN CONTENT */}
+        <div className={styles.mainContent}>
+          {/* HERO SECTION */}
+          <div className={styles.heroSection}>
+            <div className={styles.slideshowContainer}>
+              {/* Optionally place your slideshow logic here */}
+            </div>
+            <div className={styles.darkOverlay}></div>
+            <div className={styles.greetingContainer}>
+              <h1>Welcome to Fitnesstan!</h1>
+              <p>Your personalized journey starts here.</p>
+            </div>
+          </div>
+
+          {/* AFTER HERO CONTENT */}
           <div className={styles.AfterHeroContent}>
+            {/* MEASUREMENT BOXES */}
             <Row className="mt-4 align-items-stretch">
               <Col md={4}>
                 <div className={styles.measurementBox}>
-                  <BMIGauge bmiValue="54.2" />
+                  <BMIGauge bmiValue={measurements.bmi} />
                 </div>
               </Col>
               <Col md={4}>
                 <div className={styles.measurementBox}>
-                  <TDEEGauge tdeeValue="2855" />
+                  <TDEEGauge tdeeValue={measurements.tdee} />
                 </div>
               </Col>
               <Col md={4}>
                 <div className={styles.measurementBox}>
-                  <REEGauge reeValue="1600" />
+                  <REEGauge reeValue={measurements.ree} />
                 </div>
               </Col>
             </Row>
 
-            {/* Feature Boxes Section as Carousels */}
+            {/* FEATURE BOXES AS CAROUSELS */}
             <Row className="mt-4">
               <Col md={6}>
                 <div className={styles.featureBox}>
@@ -210,7 +176,7 @@ const UserDashboard = () => {
         </div>
       </div>
 
-      {/* ===== FOOTER ===== */}
+      {/* FOOTER */}
       <Footer />
     </div>
   );
