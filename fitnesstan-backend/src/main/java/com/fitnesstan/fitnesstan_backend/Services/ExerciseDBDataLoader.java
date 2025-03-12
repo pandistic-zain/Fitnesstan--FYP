@@ -12,11 +12,10 @@ import org.springframework.http.*;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.HashSet;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.*;
 
 @Component
 public class ExerciseDBDataLoader implements ApplicationRunner {
@@ -31,18 +30,22 @@ public class ExerciseDBDataLoader implements ApplicationRunner {
     @Value("${exercisedb.api.host}")
     private String exercisedbApiHost;
 
+    // Directory to save downloaded GIFs locally.
+    private static final String GIF_DIR = "gif_images";
+
     @Override
     public void run(ApplicationArguments args) throws Exception {
         // If the collection is empty, fetch exercises in batches
         if (exerciseRepository.count() == 0) {
             fetchAllExercisesInBatches();
         }
-        System.out.println("All Exercises are fetched Correctly...!");
+        System.out.println("All Exercises are fetched correctly...!");
     }
 
     /**
      * Repeatedly fetch 10 exercises at a time (using offset), assign each to one of 7 groups,
-     * and add new exercises to the database. Also, print a breakdown for each batch.
+     * download the GIF and save locally, then add new exercises to the database.
+     * Also, prints a breakdown for each batch.
      */
     public void fetchAllExercisesInBatches() {
         System.out.println("Starting batch fetch from ExerciseDB...");
@@ -79,24 +82,27 @@ public class ExerciseDBDataLoader implements ApplicationRunner {
                 
                 // Count the group assignment for this batch
                 batchGroupCount.put(group, batchGroupCount.getOrDefault(group, 0) + 1);
-
+                
                 // Check for duplicates by exercise name
                 if (!exerciseRepository.existsByName(dto.getName())) {
                     // Build a description using target and equipment info
                     String description = "Target: " + dto.getTarget() + ", Equipment: " + dto.getEquipment();
-
-                    // Build and save the Exercise entity using the group as muscleGroup
+                    
+                    // Download the GIF and get the local file path
+                    String localGifUrl = downloadAndSaveGif(dto.getGifUrl(), dto.getName());
+                    
+                    // Build and save the Exercise entity using the determined group as muscleGroup.
                     Exercise exercise = Exercise.builder()
                             .name(dto.getName())
-                            .muscleGroup(group)   // Save the determined group (one of the 7 groups)
-                            .gifUrl(dto.getGifUrl())            // GIF URL provided by ExerciseDB
+                            .muscleGroup(group)
+                            .gifUrl(localGifUrl)
                             .description(description)
                             .equipment(dto.getEquipment())
                             .build();
                     exerciseRepository.save(exercise);
                     newlyAddedThisBatch++;
                 }
-
+                
                 // -------------------------
                 // Console-based progress indicator for this batch
                 // -------------------------
@@ -181,5 +187,50 @@ public class ExerciseDBDataLoader implements ApplicationRunner {
         );
 
         return response.getBody() != null ? response.getBody() : List.of();
+    }
+
+    /**
+     * Downloads the GIF from the provided URL and saves it to a local directory.
+     * Returns the local file path as a String.
+     */
+    private String downloadAndSaveGif(String gifUrl, String exerciseName) {
+        if (gifUrl == null || gifUrl.isEmpty()) {
+            return "";
+        }
+        try {
+            RestTemplate restTemplate = new RestTemplate();
+            // Download the GIF as a byte array.
+            ResponseEntity<byte[]> response = restTemplate.exchange(
+                    gifUrl,
+                    HttpMethod.GET,
+                    null,
+                    byte[].class
+            );
+            byte[] gifBytes = response.getBody();
+            if (gifBytes == null || gifBytes.length == 0) {
+                return "";
+            }
+            
+            // Ensure the directory exists.
+            File dir = new File(GIF_DIR);
+            if (!dir.exists()) {
+                dir.mkdirs();
+            }
+            // Sanitize the exercise name for file naming.
+            String sanitizedName = exerciseName.replaceAll("[^a-zA-Z0-9]", "_");
+            String fileName = sanitizedName + "_" + System.currentTimeMillis() + ".gif";
+            File file = new File(dir, fileName);
+            
+            // Write the bytes to the file.
+            try (FileOutputStream fos = new FileOutputStream(file)) {
+                fos.write(gifBytes);
+            }
+            
+            // Return the local file path.
+            return file.getAbsolutePath();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return "";
+        }
     }
 }
