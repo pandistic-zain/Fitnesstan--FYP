@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { verifyEmail, getFullUserData, resendOtp } from "../../API/RegisterAPI.jsx";
-import Loader from "../Loader.jsx"; // Ensure this is the correct path to your Loader component
+import Loader from "../Loader.jsx"; // Ensure this path is correct
 import styles from "./EmailVerification.module.css";
 
 const EmailVerification = () => {
@@ -37,12 +37,19 @@ const EmailVerification = () => {
       if (response.status === 200) {
         setMessage("Email verified!");
         setErrorMessage("");
-  
-        // Call the API to get full user data
+
+        // Fetch full user data (this call uses Basic Auth from your interceptor)
         const fullResponse = await getFullUserData(email);
-        if (fullResponse.status === 200) {
-          // Store the full user object in localStorage
+        console.log("[DEBUG] getFullUserData response:", fullResponse);
+        if (fullResponse.status === 200 && fullResponse.data) {
+          // Assuming fullResponse.data contains a 'user' field
           localStorage.setItem("userData", JSON.stringify(fullResponse.data.user));
+          console.log("[DEBUG] Stored full user data in localStorage:", fullResponse.data.user);
+        } else {
+          console.error("Failed to fetch full user data:", fullResponse.data);
+          setErrorMessage("Failed to fetch full user data.");
+          clearMessagesAfterTimeout();
+          return;
         }
         // Navigate to dashboard after a short delay (1 second here)
         setTimeout(() => navigate("/userdashboard"), 1000);
@@ -65,16 +72,9 @@ const EmailVerification = () => {
       setMessage("");
       clearMessagesAfterTimeout();
     } finally {
-      setLoading(false);
+      setLoading(false); // Stop loader when request completes
     }
-  };console.log("EmailVerification component loaded");
-console.log("Email:", email);
-console.log("OTP:", otp);
-console.log("Message:", message);
-console.log("Error Message:", errorMessage);
-console.log("Is Cooldown:", isCooldown);
-console.log("Cooldown Time:", cooldownTime);
-console.log("Loading:", loading);
+  };
 
   // Resend OTP function with cooldown
   const handleResendOtp = async () => {
@@ -104,23 +104,31 @@ console.log("Loading:", loading);
       const timer = setInterval(() => {
         setCooldownTime((prevTime) => prevTime - 1);
       }, 1000);
-
       return () => clearInterval(timer);
     } else if (cooldownTime === 0) {
       setIsCooldown(false);
     }
   }, [isCooldown, cooldownTime]);
 
+  console.log("EmailVerification component loaded");
+  console.log("Email:", email);
+  console.log("OTP:", otp);
+  console.log("Message:", message);
+  console.log("Error Message:", errorMessage);
+  console.log("Is Cooldown:", isCooldown);
+  console.log("Cooldown Time:", cooldownTime);
+  console.log("Loading:", loading);
+
   return (
     <div className={styles.verificationContainer}>
       <div className={styles.card}>
-        {/* Optionally, show Loader as an overlay on the card */}
         {loading && <Loader />}
-
         <div className={styles.header}></div>
         <div className={styles.info}>
           <p className={styles.title}>Verify Your Email</p>
-          <h3>Thanks for choosing Fitnesstan! Enter the OTP sent to your email.</h3>
+          <h3>
+            Thanks for choosing Fitnesstan! Enter the OTP sent to your email.
+          </h3>
           <input
             type="text"
             className={styles.otpInput}
@@ -138,11 +146,7 @@ console.log("Loading:", loading);
           >
             {isCooldown ? `Resend OTP in ${cooldownTime}s` : "Resend OTP"}
           </p>
-          <button
-            type="button"
-            className={styles.action}
-            onClick={handleVerify}
-          >
+          <button type="button" className={styles.action} onClick={handleVerify}>
             Verify OTP
           </button>
         </div>

@@ -72,6 +72,7 @@ const AdditionalInfoForm = () => {
       additionalInfo: formData,
     };
 
+    
     try {
       await registerUser(payload);
       navigate(

@@ -99,8 +99,8 @@ const Register = () => {
       setErrorMessage("Passwords do not match.");
       return;
     }
-      localStorage.setItem("username", loginData.email);
-      localStorage.setItem("password", loginData.password);
+    localStorage.setItem("username", signUpData.email);
+    localStorage.setItem("password", signUpData.password);    
     // Navigate to Additional Info Page with user data
     navigate("/AdditionalInfoForm", { state: { signUpData } });
   };

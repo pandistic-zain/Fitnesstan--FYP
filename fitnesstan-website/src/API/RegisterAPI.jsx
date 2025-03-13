@@ -5,23 +5,26 @@ import axios from "axios";
 axios.defaults.withCredentials = false;
 axios.defaults.headers.post["Content-Type"] = "application/json";
 
-// If you're using Basic Auth, add an interceptor to attach credentials on every request
+// Base URLs for different endpoints
+const API_URL = "http://localhost:8080/register"; // For register, login, verify, resend OTP
+const USER_API_URL = "http://localhost:8080/user";  // For fetching user data
+
+// If you're using Basic Auth, add an interceptor to attach credentials only for /user requests
 axios.interceptors.request.use(
   (config) => {
-    const username = localStorage.getItem("username");
-    const password = localStorage.getItem("password");
-    if (username && password) {
-      // Basic auth header format: "Basic base64(username:password)"
-      config.headers.Authorization = `Basic ${btoa(`${username}:${password}`)}`;
+    // If the request URL starts with or includes your user endpoint:
+    if (config.url.startsWith(USER_API_URL)) {
+      const username = localStorage.getItem("username");
+      const password = localStorage.getItem("password");
+      if (username && password) {
+        // Basic auth header format: "Basic base64(username:password)"
+        config.headers.Authorization = `Basic ${btoa(`${username}:${password}`)}`;
+      }
     }
     return config;
   },
   (error) => Promise.reject(error)
 );
-
-// Base URLs for different endpoints
-const API_URL = "http://localhost:8080/register"; // For register, login, verify, resend OTP
-const USER_API_URL = "http://localhost:8080/user";  // For fetching user data
 
 // Register a new user (required info)
 export const registerUser = async (userData) => {
@@ -48,7 +51,7 @@ export const resendOtp = async (email) => {
 };
 
 // Get full user data (user, diet, exercise info)
-// This endpoint is protected; Basic Auth credentials are attached automatically.
+// This endpoint is protected; Basic Auth credentials are attached automatically in the interceptor.
 export const getFullUserData = async () => {
   return await axios.get(`${USER_API_URL}/full`);
 };
