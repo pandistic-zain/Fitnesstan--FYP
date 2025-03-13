@@ -1,7 +1,7 @@
 // src/components/EmailVerification.jsx
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { verifyEmail, resendOtp } from "../../API/RegisterAPI.jsx";
+import { verifyEmail, getFullUserData, resendOtp } from "../../API/RegisterAPI.jsx";
 import Loader from "../Loader.jsx"; // Ensure this is the correct path to your Loader component
 import styles from "./EmailVerification.module.css";
 
@@ -37,7 +37,15 @@ const EmailVerification = () => {
       if (response.status === 200) {
         setMessage("Email verified!");
         setErrorMessage("");
-        setTimeout(() => navigate("/userdashboard"), 10000);
+  
+        // Call the API to get full user data
+        const fullResponse = await getFullUserData(email);
+        if (fullResponse.status === 200) {
+          // Store the full user object in localStorage
+          localStorage.setItem("userData", JSON.stringify(fullResponse.data.user));
+        }
+        // Navigate to dashboard after a short delay (1 second here)
+        setTimeout(() => navigate("/userdashboard"), 1000);
       } else {
         setErrorMessage(response.data.message || "Invalid OTP. Try again.");
         setMessage("");
@@ -57,7 +65,7 @@ const EmailVerification = () => {
       setMessage("");
       clearMessagesAfterTimeout();
     } finally {
-      setLoading(false); // Stop loader when request completes
+      setLoading(false);
     }
   };
 

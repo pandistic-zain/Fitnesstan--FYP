@@ -8,6 +8,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import com.fitnesstan.fitnesstan_backend.DAO.UserRepository;
 import com.fitnesstan.fitnesstan_backend.Entity.Users;
+import com.fitnesstan.fitnesstan_backend.Entity.Diet;
+import com.fitnesstan.fitnesstan_backend.Entity.WorkoutPlan;
+import com.fitnesstan.fitnesstan_backend.DTO.FullUserInfoDTO;
 import com.fitnesstan.fitnesstan_backend.Services.UserServices;
 
 @RestController
@@ -20,7 +23,7 @@ public class UserController {
     @Autowired
     private UserRepository userRepository;
 
-    // Endpoint to fetch data for a specific user by email
+    // Endpoint to fetch basic user information by email
     @GetMapping("/{email}")
     public ResponseEntity<Users> getUserByEmail(@PathVariable String email) {
         Users user = userRepository.findByEmail(email);
@@ -31,11 +34,25 @@ public class UserController {
         }
     }
 
-    // Endpoint to update user details
+    // New endpoint to fetch full user information (user + diet + workout plan)
+    @GetMapping("/full/{email}")
+    public ResponseEntity<?> getFullUserInfo(@PathVariable String email) {
+        Users user = userRepository.findByEmail(email);
+        if (user == null) {
+            return ResponseEntity.notFound().build();
+        }
+        // Retrieve diet and workout plan information.
+        Diet diet = user.getCurrentDiet();          // Ensure this is correctly mapped.
+        WorkoutPlan workoutPlan = user.getCurrentWorkoutPlan(); // Ensure this is correctly mapped.
+        FullUserInfoDTO fullInfo = new FullUserInfoDTO(user, diet, workoutPlan);
+        return ResponseEntity.ok(fullInfo);
+    }
+
+    // Update user details
     @PutMapping
     public ResponseEntity<String> updateUser(@RequestBody Users updatedUser) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String username = auth.getName(); // Get logged-in username
+        String username = auth.getName();
         Users existingUser = userServices.findByUsername(username);
 
         if (existingUser == null) {
@@ -43,53 +60,40 @@ public class UserController {
         }
 
         try {
-            // Update allowed fields
             if (updatedUser.getUsername() != null && !updatedUser.getUsername().isEmpty()) {
                 existingUser.setUsername(updatedUser.getUsername());
             }
-
             if (updatedUser.getPassword() != null && !updatedUser.getPassword().isEmpty()) {
-                existingUser.setPassword(userServices.encodePassword(updatedUser.getPassword())); // Use your encoding
-                                                                                                  // method
+                existingUser.setPassword(userServices.encodePassword(updatedUser.getPassword()));
             }
-
             if (updatedUser.getHeightFt() != null) {
                 existingUser.setHeightFt(updatedUser.getHeightFt());
             }
-
             if (updatedUser.getWeightKg() != null) {
                 existingUser.setWeightKg(updatedUser.getWeightKg());
             }
-
             if (updatedUser.getGender() != null && !updatedUser.getGender().isEmpty()) {
                 existingUser.setGender(updatedUser.getGender());
             }
-
             if (updatedUser.getDob() != null) {
                 existingUser.setDob(updatedUser.getDob());
             }
-
             if (updatedUser.getOccupation() != null && !updatedUser.getOccupation().isEmpty()) {
                 existingUser.setOccupation(updatedUser.getOccupation());
             }
-
             if (updatedUser.getReligion() != null && !updatedUser.getReligion().isEmpty()) {
                 existingUser.setReligion(updatedUser.getReligion());
             }
-
             if (updatedUser.getExerciseLevel() != null && !updatedUser.getExerciseLevel().isEmpty()) {
                 existingUser.setExerciseLevel(updatedUser.getExerciseLevel());
             }
-
             if (updatedUser.getSleepHours() != null) {
                 existingUser.setSleepHours(updatedUser.getSleepHours());
             }
-
             if (updatedUser.getMedicalHistory() != null) {
                 existingUser.setMedicalHistory(updatedUser.getMedicalHistory());
             }
 
-            // Save updated user
             userServices.saveUserToDatabase(existingUser);
             return new ResponseEntity<>("User updated successfully", HttpStatus.OK);
         } catch (Exception e) {
@@ -97,7 +101,7 @@ public class UserController {
         }
     }
 
-    // Endpoint to delete the user
+    // Delete the current user
     @DeleteMapping
     public ResponseEntity<String> deleteUser() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -108,12 +112,10 @@ public class UserController {
             if (user == null) {
                 return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
             }
-
-            userRepository.deleteById(user.getId()); // Use appropriate method based on your repository implementation
+            userRepository.deleteById(user.getId());
             return new ResponseEntity<>("User deleted successfully", HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>("Failed to delete user: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
 }
