@@ -67,7 +67,14 @@ const EmailVerification = () => {
     } finally {
       setLoading(false);
     }
-  };
+  };console.log("EmailVerification component loaded");
+console.log("Email:", email);
+console.log("OTP:", otp);
+console.log("Message:", message);
+console.log("Error Message:", errorMessage);
+console.log("Is Cooldown:", isCooldown);
+console.log("Cooldown Time:", cooldownTime);
+console.log("Loading:", loading);
 
   // Resend OTP function with cooldown
   const handleResendOtp = async () => {
