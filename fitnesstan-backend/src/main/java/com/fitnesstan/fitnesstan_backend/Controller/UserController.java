@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import com.fitnesstan.fitnesstan_backend.DAO.UserRepository;
 import com.fitnesstan.fitnesstan_backend.Entity.Users;
@@ -23,7 +22,7 @@ public class UserController {
     @Autowired
     private UserRepository userRepository;
 
-    // Endpoint to fetch basic user information by email
+    // Endpoint to fetch basic user information by email (still available if needed)
     @GetMapping("/{email}")
     public ResponseEntity<Users> getUserByEmail(@PathVariable String email) {
         Users user = userRepository.findByEmail(email);
@@ -34,25 +33,29 @@ public class UserController {
         }
     }
 
-    // New endpoint to fetch full user information (user + diet + workout plan)
-    @GetMapping("/full/{email}")
-    public ResponseEntity<?> getFullUserInfo(@PathVariable String email) {
+    // New endpoint to fetch full user details using the authenticated user's email
+    // The user must be authenticated; the email is extracted from the token (Authentication)
+    @GetMapping("/full")
+    public ResponseEntity<?> getFullUserInfo(Authentication authentication) {
+        // Get the email from the authenticated principal
+        String email = authentication.getName();
         Users user = userRepository.findByEmail(email);
         if (user == null) {
-            return ResponseEntity.notFound().build();
+            return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
         }
-        // Retrieve diet and workout plan information.
-        Diet diet = user.getCurrentDiet();          // Ensure this is correctly mapped.
-        WorkoutPlan workoutPlan = user.getCurrentWorkoutPlan(); // Ensure this is correctly mapped.
+        // Retrieve diet and workout plan information; adjust these getters as per your entity design
+        Diet diet = user.getCurrentDiet();
+        WorkoutPlan workoutPlan = user.getCurrentWorkoutPlan();
         FullUserInfoDTO fullInfo = new FullUserInfoDTO(user, diet, workoutPlan);
         return ResponseEntity.ok(fullInfo);
     }
 
-    // Update user details
+    // Update user details endpoint
     @PutMapping
     public ResponseEntity<String> updateUser(@RequestBody Users updatedUser) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String username = auth.getName();
+        // Retrieve authenticated username from security context
+        String username = org.springframework.security.core.context.SecurityContextHolder
+                          .getContext().getAuthentication().getName();
         Users existingUser = userServices.findByUsername(username);
 
         if (existingUser == null) {
@@ -101,12 +104,11 @@ public class UserController {
         }
     }
 
-    // Delete the current user
+    // Delete the current user endpoint
     @DeleteMapping
     public ResponseEntity<String> deleteUser() {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String username = auth.getName();
-
+        String username = org.springframework.security.core.context.SecurityContextHolder
+                          .getContext().getAuthentication().getName();
         try {
             Users user = userServices.findByUsername(username);
             if (user == null) {

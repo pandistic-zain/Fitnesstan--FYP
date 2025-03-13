@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { registerUser, loginUser } from "../../API/RegisterAPI.jsx";
+import { loginUser, getFullUserData } from "../../API/RegisterAPI.jsx";
+
 import Loader from "../Loader.jsx"; // Import the Loader component
 import "./Register.css";
 
@@ -40,39 +41,44 @@ const Register = () => {
   const handleLoginSubmit = async (e) => {
     e.preventDefault();
     setLoading(true); // Start the loader
-
+  
     try {
       console.log("[DEBUG] Sending login request with data:", loginData);
-
-      // Call your login API
       const response = await loginUser(loginData);
       const data = response.data;
-
+      localStorage.setItem("username", loginData.email);
+      localStorage.setItem("password", loginData.password);
+            
       console.log("Response status:", response.status);
       console.log("Response data:", data);
-
+  
       if (response.status === 200) {
-        // 1) Store the entire user object in localStorage
         if (data?.user) {
-          localStorage.setItem("userData", JSON.stringify(data.user));
+          // Instead of immediately storing data.user,
+          // call getFullUserData to get the complete user info.
+          const fullResponse = await getFullUserData(loginData.email);
+          if (fullResponse.status === 200 && fullResponse.data) {
+            // Assuming the API returns a DTO with a 'user' field:
+            localStorage.setItem("userData", JSON.stringify(fullResponse.data.user));
+          } else {
+            console.error("Failed to fetch full user data:", fullResponse.data);
+            return setErrorMessage("Failed to fetch full user data.");
+          }
         } else {
           console.error("No 'user' field found in response:", data);
           return setErrorMessage("No user data returned.");
         }
-
-        // 2) Check user roles
+  
+        // Navigate based on user roles
         if (data.user.roles?.includes("ADMIN")) {
-          // If user is an admin, navigate to AdminDashboard
           navigate("/AdminDashboard");
         } else if (data.user.roles) {
-          // If roles exist but do not include "ADMIN", navigate to userdashboard
           navigate("/userdashboard");
         } else {
           console.error("No user roles found in response:", data);
           setErrorMessage("No user roles found in response.");
         }
       } else {
-        // Handle non-200 status
         console.error("Non-200 response:", data);
         setErrorMessage(data.message || "Login failed. Please try again.");
       }
@@ -85,6 +91,7 @@ const Register = () => {
       setLoading(false); // Stop the loader
     }
   };
+  
 
   const handleSignUpSubmit = async (e) => {
     e.preventDefault();
