@@ -148,20 +148,12 @@ const UserDashboard = () => {
           <div className={styles.AfterMeasurementContent}>
             <Row className="mt-4">
               <Col md={6}>
-                  <h2>Diet Plan</h2>
-                  {dietItems.length > 0 ? (
-                    <DietCarousel dietItems={dietItems} />
-                  ) : (
-                    <p>Loading diet items...</p>
-                  )}
+                <h2>Diet Plan</h2>
+                <DietCarousel />
               </Col>
               <Col md={6}>
-                  <h2>Exercise Features</h2>
-                  {exerciseItems.length > 0 ? (
-                    <ExerciseCarousel exerciseItems={exerciseItems} />
-                  ) : (
-                    <p>Loading exercise items...</p>
-                  )}
+                <h2>Exercise Features</h2>
+                <ExerciseCarousel />
               </Col>
             </Row>
           </div>
