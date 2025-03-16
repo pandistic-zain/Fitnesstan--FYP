@@ -1,0 +1,43 @@
+.exerciseCarousel {
+    width: 80%;
+    max-width: 900px;
+    margin: 0 auto;
+    background-color: #1a1a1a; /* Dark background to match your theme */
+    border: 3px solid #ff0000;
+    border-radius: 8px;
+    padding: 20px;
+    color: #e0e0e0;
+    text-align: center;
+  }
+  
+  .carouselItemContent {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 20px 0;
+  }
+  
+  /* Exercise name/title styling */
+  .exerciseName {
+    font-size: 1.8rem;
+    margin-bottom: 10px;
+    color: #ff0000; /* Bright red for emphasis */
+  }
+  
+  /* Basic spacing for text details */
+  .muscleGroup,
+  .description,
+  .equipment {
+    margin-bottom: 8px;
+  }
+  
+  /* GIF or image styling */
+  .exerciseGif {
+    max-width: 300px;
+    max-height: 300px;
+    margin: 15px 0;
+    border: 2px solid #ff0000;
+    border-radius: 6px;
+    object-fit: cover;
+  }
+  

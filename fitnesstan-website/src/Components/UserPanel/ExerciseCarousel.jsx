@@ -1,19 +1,64 @@
 // src/components/ExerciseCarousel.jsx
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Carousel from "react-bootstrap/Carousel";
+import axios from "axios";
+import styles from "./ExerciseCarousel.module.css";
 
-const ExerciseCarousel = ({ exerciseItems }) => {
+const ExerciseCarousel = () => {
+  const [exerciseItems, setExerciseItems] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    // Fetch exercise items from your backend
+    axios
+      .get("http://localhost:8080/user/exerciseItems")
+      .then((response) => {
+        setExerciseItems(response.data);
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.error("Error fetching exercise items:", error);
+        setLoading(false);
+      });
+  }, []);
+
+  if (loading) {
+    return <p>Loading exercise items...</p>;
+  }
+
   return (
-    <Carousel nextLabel="Down" prevLabel="Up" indicators={false} interval={3000}>
-      {exerciseItems.map((item, index) => (
-        <Carousel.Item key={index}>
-          <div style={{ padding: "20px", textAlign: "center" }}>
-            <h3>{item.title}</h3>
-            <p>{item.description}</p>
-          </div>
-        </Carousel.Item>
-      ))}
-    </Carousel>
+    <div className={styles.exerciseCarousel}>
+      <Carousel
+        nextLabel="Next"
+        prevLabel="Previous"
+        indicators={false}
+        interval={null} // No auto-slide
+      >
+        {exerciseItems.map((item, index) => (
+          <Carousel.Item key={index}>
+            <div className={styles.carouselItemContent}>
+              <h3 className={styles.exerciseName}>{item.name}</h3>
+              <p className={styles.muscleGroup}>
+                <strong>Muscle Group:</strong> {item.muscleGroup}
+              </p>
+              {item.gifUrl && (
+                <img
+                  src={item.gifUrl}
+                  alt={item.name}
+                  className={styles.exerciseGif}
+                />
+              )}
+              <p className={styles.description}>
+                <strong>Description:</strong> {item.description}
+              </p>
+              <p className={styles.equipment}>
+                <strong>Equipment:</strong> {item.equipment}
+              </p>
+            </div>
+          </Carousel.Item>
+        ))}
+      </Carousel>
+    </div>
   );
 };
 
