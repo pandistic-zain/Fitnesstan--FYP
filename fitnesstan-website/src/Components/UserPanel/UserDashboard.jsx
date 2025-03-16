@@ -22,8 +22,6 @@ const UserDashboard = () => {
     tdee: "--",
   });
   const [sidebarVisible, setSidebarVisible] = useState(false);
-  const [dietItems, setDietItems] = useState([]);
-  const [exerciseItems, setExerciseItems] = useState([]);
 
   // On mount, read userData from localStorage
   useEffect(() => {
@@ -36,19 +34,6 @@ const UserDashboard = () => {
         tdee: parsedData.tdee || "--",
       });
     }
-  }, []);
-
-  // Fetch dietItems and exerciseItems from backend
-  useEffect(() => {
-    axios
-      .get("http://localhost:8080/user/dietItems")
-      .then((response) => setDietItems(response.data))
-      .catch((error) => console.error("Error fetching diet items:", error));
-
-    axios
-      .get("http://localhost:8080/user/exerciseItems")
-      .then((response) => setExerciseItems(response.data))
-      .catch((error) => console.error("Error fetching exercise items:", error));
   }, []);
 
   // Hide sidebar on scroll
