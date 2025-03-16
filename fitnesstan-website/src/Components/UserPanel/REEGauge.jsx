@@ -12,7 +12,7 @@ const REEGauge = ({ reeValue = 1500 }) => {
       <GaugeChart
         id="ree-gauge"
         nrOfLevels={3}
-        arcsLength={[0.33, 0.33, 0.34]}
+        arcsLength={[0.25, 0.50, 0.25]}
         colors={["#ffeb3b", "#4caf50", "#f44336"]}
         percent={fraction}
         arcWidth={0.3}

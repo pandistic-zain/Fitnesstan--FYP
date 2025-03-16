@@ -1,0 +1,46 @@
+.dietCarousel {
+    width: 80%;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+  
+  /* Each carousel slide's container */
+  .carouselDayContent {
+    background-color: #1a1a1a;
+    border: 3px solid #ff0000;
+    border-radius: 8px;
+    padding: 20px;
+    color: #e0e0e0;
+    text-align: center;
+  }
+  
+  /* Spacing around each meal block */
+  .mealSection {
+    margin-top: 20px;
+  }
+  
+  /* Table styling for meal items */
+  .mealTable {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 0 auto; /* Center the table horizontally */
+  }
+  
+  .mealTable th,
+  .mealTable td {
+    border: 1px solid #ff0000;
+    padding: 8px;
+    text-align: center;
+  }
+  
+  /* Table header styling */
+  .mealTable thead {
+    background-color: #ff0000;
+    color: #1a1a1a;
+  }
+  
+  /* Stripe effect for even rows in the table body */
+  .mealTable tbody tr:nth-child(even) {
+    background-color: #2a2a2a;
+  }
+  

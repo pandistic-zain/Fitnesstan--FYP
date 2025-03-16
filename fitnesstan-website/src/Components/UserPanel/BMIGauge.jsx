@@ -4,16 +4,16 @@ import GaugeChart from "react-gauge-chart";
 
 const BMIGauge = ({ bmiValue = 22.5 }) => {
   const numericBMI = Number(bmiValue) || 0;
-  const minBMI = 13;
-  const maxBMI = 40;
+  const minBMI = 12;
+  const maxBMI = 42;
   const range = maxBMI - minBMI; // 27
   const fraction = Math.min(Math.max((numericBMI - minBMI) / range, 0), 1);
 
   const arcsLength = [
-    (18.5 - minBMI) / range, // Underweight: 13 to 18.5
-    (25 - 18.5) / range,     // Normal: 18.5 to 25
-    (30 - 25) / range,       // Overweight: 25 to 30
-    (40 - 30) / range        // Obese: 30 to 40
+    (18.5 - minBMI) / range,  // Underweight: (18.5 - 12) / 30 ≈ 0.2167
+    (24.9 - 18.5) / range,    // Normal: (24.9 - 18.5) / 30 ≈ 0.2133
+    (29.9 - 24.9) / range,    // Overweight: (29.9 - 24.9) / 30 ≈ 0.1667
+    (maxBMI - 29.9) / range   // Obese: (42 - 29.9) / 30 ≈ 0.4033
   ];
 
   return (

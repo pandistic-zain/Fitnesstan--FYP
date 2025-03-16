@@ -4,7 +4,7 @@ import GaugeChart from "react-gauge-chart";
 
 const TDEEGauge = ({ tdeeValue = 2000 }) => {
   const numericTDEE = Number(tdeeValue) || 0;
-  const maxTDEE = 4000;
+  const maxTDEE = 4500;
   const fraction = Math.min(numericTDEE / maxTDEE, 1);
 
   return (
@@ -12,7 +12,7 @@ const TDEEGauge = ({ tdeeValue = 2000 }) => {
       <GaugeChart
         id="tdee-gauge"
         nrOfLevels={3}
-        arcsLength={[0.33, 0.33, 0.34]}
+        arcsLength={[0.25, 0.50, 0.25]}
         colors={["#ffeb3b", "#4caf50", "#f44336"]}
         percent={fraction}
         arcWidth={0.3}

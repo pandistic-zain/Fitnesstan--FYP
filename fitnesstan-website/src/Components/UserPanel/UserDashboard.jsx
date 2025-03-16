@@ -16,7 +16,11 @@ import DietCarousel from "./DietCarousel";
 import ExerciseCarousel from "./ExerciseCarousel";
 
 const UserDashboard = () => {
-  const [measurements, setMeasurements] = useState({ bmi: "--", ree: "--", tdee: "--" });
+  const [measurements, setMeasurements] = useState({
+    bmi: "--",
+    ree: "--",
+    tdee: "--",
+  });
   const [sidebarVisible, setSidebarVisible] = useState(false);
   const [dietItems, setDietItems] = useState([]);
   const [exerciseItems, setExerciseItems] = useState([]);
@@ -36,11 +40,13 @@ const UserDashboard = () => {
 
   // Fetch dietItems and exerciseItems from backend
   useEffect(() => {
-    axios.get("http://localhost:8080/user/dietItems")
+    axios
+      .get("http://localhost:8080/user/dietItems")
       .then((response) => setDietItems(response.data))
       .catch((error) => console.error("Error fetching diet items:", error));
 
-    axios.get("http://localhost:8080/user/exerciseItems")
+    axios
+      .get("http://localhost:8080/user/exerciseItems")
       .then((response) => setExerciseItems(response.data))
       .catch((error) => console.error("Error fetching exercise items:", error));
   }, []);
@@ -130,6 +136,9 @@ const UserDashboard = () => {
 
           {/* AFTER HERO CONTENT */}
           <div className={styles.AfterHeroContent}>
+            <h2 className={styles.sectionHeading}>
+              Your Intelligent Health Metrics
+            </h2>
             {/* MEASUREMENT BOXES */}
             <Row className="mt-4 align-items-stretch">
               <Col md={4}>
@@ -148,28 +157,26 @@ const UserDashboard = () => {
                 </div>
               </Col>
             </Row>
+          </div>
 
-            {/* FEATURE BOXES AS CAROUSELS */}
+          {/* FEATURE BOXES AS CAROUSELS */}
+          <div className={styles.AfterMeasurementContent}>
             <Row className="mt-4">
               <Col md={6}>
-                <div className={styles.featureBox}>
                   <h2>Diet Plan</h2>
                   {dietItems.length > 0 ? (
                     <DietCarousel dietItems={dietItems} />
                   ) : (
                     <p>Loading diet items...</p>
                   )}
-                </div>
               </Col>
               <Col md={6}>
-                <div className={styles.featureBox}>
                   <h2>Exercise Features</h2>
                   {exerciseItems.length > 0 ? (
                     <ExerciseCarousel exerciseItems={exerciseItems} />
                   ) : (
                     <p>Loading exercise items...</p>
                   )}
-                </div>
               </Col>
             </Row>
           </div>
