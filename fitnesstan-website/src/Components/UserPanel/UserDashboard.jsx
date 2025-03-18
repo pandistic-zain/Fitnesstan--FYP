@@ -1,19 +1,18 @@
 // src/components/UserDashboard.js
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import { Row, Col } from "react-bootstrap";
 import { MdDashboard } from "react-icons/md";
 import { FaAppleAlt, FaDumbbell, FaKey } from "react-icons/fa";
 
 import Footer from "../../Components/Footer";
-import styles from "./UserDashboard.module.css";
-import logo from "../../Assets/FITNESSTAN BARA LOGO_inverted.png";
-
 import BMIGauge from "./BMIGauge";
 import TDEEGauge from "./TDEEGauge";
 import REEGauge from "./REEGauge";
 import DietCarousel from "./DietCarousel";
 import ExerciseCarousel from "./ExerciseCarousel";
+
+import styles from "./UserDashboard.module.css";
+import logo from "../../Assets/FITNESSTAN BARA LOGO_inverted.png";
 
 const UserDashboard = () => {
   const [measurements, setMeasurements] = useState({
@@ -23,16 +22,20 @@ const UserDashboard = () => {
   });
   const [sidebarVisible, setSidebarVisible] = useState(false);
 
-  // On mount, read userData from localStorage
+  // On mount, read userData from localStorage.
   useEffect(() => {
     const storedUserData = localStorage.getItem("userData");
     if (storedUserData) {
-      const parsedData = JSON.parse(storedUserData);
-      setMeasurements({
-        bmi: parsedData.bmi || "--",
-        ree: parsedData.ree || "--",
-        tdee: parsedData.tdee || "--",
-      });
+      try {
+        const parsedData = JSON.parse(storedUserData);
+        setMeasurements({
+          bmi: parsedData.bmi || "--",
+          ree: parsedData.ree || "--",
+          tdee: parsedData.tdee || "--",
+        });
+      } catch (error) {
+        console.error("Error parsing userData from localStorage:", error);
+      }
     }
   }, []);
 
@@ -110,7 +113,7 @@ const UserDashboard = () => {
           {/* HERO SECTION */}
           <div className={styles.heroSection}>
             <div className={styles.slideshowContainer}>
-              {/* Optionally place your slideshow logic here */}
+              {/* Place your slideshow logic here if needed */}
             </div>
             <div className={styles.darkOverlay}></div>
             <div className={styles.greetingContainer}>

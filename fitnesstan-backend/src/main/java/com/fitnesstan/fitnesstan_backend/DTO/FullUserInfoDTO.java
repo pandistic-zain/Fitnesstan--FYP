@@ -30,6 +30,9 @@ public class FullUserInfoDTO {
             shallowUser.setExerciseLevel(user.getExerciseLevel());
             shallowUser.setSleepHours(user.getSleepHours());
             shallowUser.setMedicalHistory(user.getMedicalHistory());
+            shallowUser.setBmi(user.getBmi());
+            shallowUser.setRee(user.getRee());
+            shallowUser.setTdee(user.getTdee());
             // Do NOT include currentDiet or currentWorkoutPlan to avoid cycles.
             this.user = shallowUser;
         } else {
