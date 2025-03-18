@@ -89,7 +89,7 @@ export const getFullUserData = async () => {
     // Return the full Axios response, not just response.data
     const response = await axios.get(`${USER_API_URL}/full`);
     console.debug("[DEBUG] Full user data (entire Axios response):", response);
-    return response; // <-- Return the entire response object
+    return response.data; // <-- Return the entire response object
   } catch (error) {
     console.error("[ERROR] Fetching full user data failed:", error);
     throw error;

@@ -42,69 +42,57 @@ const Register = () => {
   const handleLoginSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-
+  
     try {
       console.log("[DEBUG] Sending login request with data:", loginData);
-
-      // 1) Make the login request (returns full Axios response)
+  
+      // 1) Login request (returns the full Axios response)
       const response = await loginUser(loginData);
       console.log("[DEBUG] loginUser response:", response);
-
-      // 2) Check if login was successful (HTTP 200)
+  
+      // 2) Check if login was successful
       if (response.status === 200) {
-        // response.data is the server’s JSON payload
+        // This is the JSON from the server's /login
         const loginPayload = response.data;
         console.log("[DEBUG] loginPayload:", loginPayload);
-
-        // 3) Store Basic Auth credentials for subsequent requests
+  
+        // 3) Store Basic Auth credentials in localStorage
         localStorage.setItem("username", loginData.email);
         localStorage.setItem("password", loginData.password);
-
-        // 4) Fetch the full user data (returns full Axios response)
-        const fullUserRes = await getFullUserData();
-        console.log("[DEBUG] getFullUserData response:", fullUserRes);
-
-        // 5) Check if full user data fetch was successful
-        if (fullUserRes.status === 200 && fullUserRes.data) {
-          // fullUserRes.data should contain your DTO: { user, diet, workoutPlan }
-          console.log("[DEBUG] FullUserInfoDTO:", fullUserRes.data);
-
-          // Optionally store the user info in localStorage
-          localStorage.setItem(
-            "userData",
-            JSON.stringify(fullUserRes.data.user)
-          );
-
-          // 6) Decide where to navigate based on roles
-          const userRoles = fullUserRes.data.user?.roles || [];
+  
+        // 4) Fetch the full user data (which returns only the JSON)
+        const fullUserData = await getFullUserData();
+        console.log("[DEBUG] FullUserInfoDTO:", fullUserData);
+  
+        // 5) Since fullUserData is simply { user, diet, workoutPlan }, check if it's not null/undefined
+        if (fullUserData) {
+          // Optionally store user info
+          localStorage.setItem("userData", JSON.stringify(fullUserData.user));
+  
+          // 6) Decide navigation based on roles
+          const userRoles = fullUserData.user?.roles || [];
           if (userRoles.includes("ADMIN")) {
             navigate("/AdminDashboard");
           } else {
             navigate("/userdashboard");
           }
         } else {
-          console.error("Failed to fetch full user data:", fullUserRes.data);
+          console.error("Failed to fetch full user data:", fullUserData);
           setErrorMessage("Failed to fetch full user data.");
         }
       } else {
-        // If the login response was not 200, show an error
-        console.error(
-          "Login failed with status:",
-          response.status,
-          response.data
-        );
+        // Non-200 login
+        console.error("Login failed with status:", response.status, response.data);
         setErrorMessage(
           response.data?.message || "Login failed. Please try again."
         );
       }
     } catch (error) {
-      // Handle any thrown errors from either loginUser or getFullUserData
       console.error("[DEBUG] Login error:", error);
       setErrorMessage(
         error.response?.data?.message || "Invalid email or password."
       );
     } finally {
-      // Always stop the loader, whether success or error
       setLoading(false);
     }
   };
