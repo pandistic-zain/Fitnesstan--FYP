@@ -5,42 +5,34 @@ import { getFullUserData } from "../../API/RegisterAPI";
 import styles from "./ExerciseCarousel.module.css";
 
 const ExerciseCarousel = () => {
-  const [exerciseItems, setExerciseItems] = useState([]);
+  const [dayPlans, setDayPlans] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     console.debug("[DEBUG] Fetching full user data from /user/full...");
+
     getFullUserData()
       .then((response) => {
-        // Log the raw response for inspection.
-        console.debug(
-          "[DEBUG] Raw full user data:",
-          JSON.stringify(response.data, null, 2)
-        );
+        // If your getFullUserData() returns the *full Axios response*, 
+        // then you'd do: const dto = response.data
+        // If it returns the direct data object, just use 'response'
+        const dto = response.data; 
 
-        // Access the workoutPlan property (as set by the DTO)
-        const workoutPlan = response.data?.workoutPlan;
-        if (workoutPlan && workoutPlan.dayPlans) {
+        console.debug("[DEBUG] Raw full user data:", JSON.stringify(dto, null, 2));
+
+        // Safely access the workoutPlan property from your DTO
+        const workoutPlan = dto?.workoutPlan;
+        if (workoutPlan && Array.isArray(workoutPlan.dayPlans)) {
           console.debug(
             "[DEBUG] Workout plan found with",
             workoutPlan.dayPlans.length,
             "day plans"
           );
-
-          // Flatten all exercises from each day into a single array.
-          const allExercises = workoutPlan.dayPlans.reduce((acc, day) => {
-            const exerciseCount = day.exercises ? day.exercises.length : 0;
-            console.debug(
-              `[DEBUG] Processing Day ${day.dayNumber} with ${exerciseCount} exercises`
-            );
-            return acc.concat(day.exercises || []);
-          }, []);
-
-          console.debug("[DEBUG] Total exercises fetched:", allExercises.length);
-          setExerciseItems(allExercises);
+          setDayPlans(workoutPlan.dayPlans);
         } else {
           console.warn("[WARN] No workout plan or dayPlans found in user data.");
         }
+
         setLoading(false);
       })
       .catch((error) => {
@@ -53,37 +45,50 @@ const ExerciseCarousel = () => {
     return <p>Loading exercise items...</p>;
   }
 
+  // If no dayPlans, show a message
+  if (dayPlans.length === 0) {
+    return <p>No exercises found in your workout plan.</p>;
+  }
+
   return (
     <div className={styles.exerciseCarousel}>
-      {exerciseItems.length === 0 ? (
-        <p>No exercises found in your workout plan.</p>
-      ) : (
-        <Carousel nextLabel="Next" prevLabel="Previous" indicators={false} interval={null}>
-          {exerciseItems.map((item, index) => (
-            <Carousel.Item key={index}>
-              <div className={styles.carouselItemContent}>
-                <h3 className={styles.exerciseName}>{item.name}</h3>
-                <p className={styles.muscleGroup}>
-                  <strong>Muscle Group:</strong> {item.muscleGroup}
-                </p>
-                {item.gifUrl && (
-                  <img
-                    src={item.gifUrl}
-                    alt={item.name}
-                    className={styles.exerciseGif}
-                  />
-                )}
-                <p className={styles.description}>
-                  <strong>Description:</strong> {item.description}
-                </p>
-                <p className={styles.equipment}>
-                  <strong>Equipment:</strong> {item.equipment}
-                </p>
-              </div>
-            </Carousel.Item>
-          ))}
-        </Carousel>
-      )}
+      <Carousel nextLabel="Next" prevLabel="Previous" indicators={false} interval={null}>
+        {/* Map each "dayPlan" to its own Carousel slide */}
+        {dayPlans.map((day, dayIndex) => (
+          <Carousel.Item key={dayIndex}>
+            <div className={styles.carouselItemContent}>
+              <h2>Day {day.dayNumber}</h2>
+
+              {/* For each day, map over the "exercises" array */}
+              {day.exercises && day.exercises.length > 0 ? (
+                day.exercises.map((exercise, exIndex) => (
+                  <div key={exIndex} className={styles.exerciseBlock}>
+                    <h3 className={styles.exerciseName}>{exercise.name}</h3>
+                    <p className={styles.muscleGroup}>
+                      <strong>Muscle Group:</strong> {exercise.muscleGroup}
+                    </p>
+                    {exercise.gifUrl && (
+                      <img
+                        src={exercise.gifUrl}
+                        alt={exercise.name}
+                        className={styles.exerciseGif}
+                      />
+                    )}
+                    <p className={styles.description}>
+                      <strong>Description:</strong> {exercise.description}
+                    </p>
+                    <p className={styles.equipment}>
+                      <strong>Equipment:</strong> {exercise.equipment}
+                    </p>
+                  </div>
+                ))
+              ) : (
+                <p>No exercises for this day.</p>
+              )}
+            </div>
+          </Carousel.Item>
+        ))}
+      </Carousel>
     </div>
   );
 };
