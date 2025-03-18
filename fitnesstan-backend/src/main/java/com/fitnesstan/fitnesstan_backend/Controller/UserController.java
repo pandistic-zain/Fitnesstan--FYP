@@ -37,18 +37,31 @@ public class UserController {
     // The user must be authenticated; the email is extracted from the token (Authentication)
     @GetMapping("/full")
     public ResponseEntity<?> getFullUserInfo(Authentication authentication) {
-        // Get the email from the authenticated principal
+        // Get the email from the authenticated principal.
         String email = authentication.getName();
+        System.out.println("[DEBUG] Authenticated user's email: " + email);
+        
         Users user = userRepository.findByEmail(email);
         if (user == null) {
+            System.out.println("[DEBUG] No user found for email: " + email);
             return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
         }
-        // Retrieve diet and workout plan information; adjust these getters as per your entity design
+        
+        // Retrieve diet and workout plan information.
         Diet diet = user.getCurrentDiet();
         WorkoutPlan workoutPlan = user.getCurrentWorkoutPlan();
+        
+        System.out.println("[DEBUG] Retrieved User: " + user);
+        System.out.println("[DEBUG] Retrieved Diet: " + diet);
+        System.out.println("[DEBUG] Retrieved WorkoutPlan: " + workoutPlan);
+        
+        // Create full info DTO.
         FullUserInfoDTO fullInfo = new FullUserInfoDTO(user, diet, workoutPlan);
+        System.out.println("[DEBUG] FullUserInfoDTO: " + fullInfo);
+        
         return ResponseEntity.ok(fullInfo);
     }
+    
 
     // Update user details endpoint
     @PutMapping

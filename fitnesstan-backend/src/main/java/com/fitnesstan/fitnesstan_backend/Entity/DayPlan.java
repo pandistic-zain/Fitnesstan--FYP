@@ -6,6 +6,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.ToString;
 import org.springframework.data.mongodb.core.mapping.DBRef;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.util.List;
 
 @Data
@@ -18,5 +21,6 @@ public class DayPlan {
     
     // A list of exercises associated with this day
     @DBRef
+    @JsonIgnore
     private List<Exercise> exercises;
 }

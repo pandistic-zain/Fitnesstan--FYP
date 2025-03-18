@@ -38,60 +38,76 @@ const Register = () => {
     const { name, value } = e.target;
     setSignUpData({ ...signUpData, [name]: value });
   };
+
   const handleLoginSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true); // Start the loader
-  
+    setLoading(true);
+
     try {
       console.log("[DEBUG] Sending login request with data:", loginData);
-      const response = await loginUser(loginData);
-      const data = response.data;
-      localStorage.setItem("username", loginData.email);
-      localStorage.setItem("password", loginData.password);
 
-      console.log("Response status:", response.status);
-      console.log("Response data:", data);
-  
+      // 1) Make the login request (returns full Axios response)
+      const response = await loginUser(loginData);
+      console.log("[DEBUG] loginUser response:", response);
+
+      // 2) Check if login was successful (HTTP 200)
       if (response.status === 200) {
-        if (data?.user) {
-          // Instead of immediately storing data.user,
-          // call getFullUserData to get the complete user info.
-          const fullResponse = await getFullUserData(loginData.email);
-          if (fullResponse.status === 200 && fullResponse.data) {
-            // Assuming the API returns a DTO with a 'user' field:
-            localStorage.setItem("userData", JSON.stringify(fullResponse.data.user));
+        // response.data is the server’s JSON payload
+        const loginPayload = response.data;
+        console.log("[DEBUG] loginPayload:", loginPayload);
+
+        // 3) Store Basic Auth credentials for subsequent requests
+        localStorage.setItem("username", loginData.email);
+        localStorage.setItem("password", loginData.password);
+
+        // 4) Fetch the full user data (returns full Axios response)
+        const fullUserRes = await getFullUserData();
+        console.log("[DEBUG] getFullUserData response:", fullUserRes);
+
+        // 5) Check if full user data fetch was successful
+        if (fullUserRes.status === 200 && fullUserRes.data) {
+          // fullUserRes.data should contain your DTO: { user, diet, workoutPlan }
+          console.log("[DEBUG] FullUserInfoDTO:", fullUserRes.data);
+
+          // Optionally store the user info in localStorage
+          localStorage.setItem(
+            "userData",
+            JSON.stringify(fullUserRes.data.user)
+          );
+
+          // 6) Decide where to navigate based on roles
+          const userRoles = fullUserRes.data.user?.roles || [];
+          if (userRoles.includes("ADMIN")) {
+            navigate("/AdminDashboard");
           } else {
-            console.error("Failed to fetch full user data:", fullResponse.data);
-            return setErrorMessage("Failed to fetch full user data.");
+            navigate("/userdashboard");
           }
         } else {
-          console.error("No 'user' field found in response:", data);
-          return setErrorMessage("No user data returned.");
-        }
-  
-        // Navigate based on user roles
-        if (data.user.roles?.includes("ADMIN")) {
-          navigate("/AdminDashboard");
-        } else if (data.user.roles) {
-          navigate("/userdashboard");
-        } else {
-          console.error("No user roles found in response:", data);
-          setErrorMessage("No user roles found in response.");
+          console.error("Failed to fetch full user data:", fullUserRes.data);
+          setErrorMessage("Failed to fetch full user data.");
         }
       } else {
-        console.error("Non-200 response:", data);
-        setErrorMessage(data.message || "Login failed. Please try again.");
+        // If the login response was not 200, show an error
+        console.error(
+          "Login failed with status:",
+          response.status,
+          response.data
+        );
+        setErrorMessage(
+          response.data?.message || "Login failed. Please try again."
+        );
       }
     } catch (error) {
-      console.error("[DEBUG] Login error:", error.response?.data || error);
+      // Handle any thrown errors from either loginUser or getFullUserData
+      console.error("[DEBUG] Login error:", error);
       setErrorMessage(
         error.response?.data?.message || "Invalid email or password."
       );
     } finally {
-      setLoading(false); // Stop the loader
+      // Always stop the loader, whether success or error
+      setLoading(false);
     }
   };
-  
 
   const handleSignUpSubmit = async (e) => {
     e.preventDefault();
@@ -100,7 +116,7 @@ const Register = () => {
       return;
     }
     localStorage.setItem("username", signUpData.email);
-    localStorage.setItem("password", signUpData.password);    
+    localStorage.setItem("password", signUpData.password);
     // Navigate to Additional Info Page with user data
     navigate("/AdditionalInfoForm", { state: { signUpData } });
   };

@@ -61,7 +61,7 @@ public class Users {
 
     // Mapping to Diet entity via DBRef to link the current 14-day diet plan
     @DBRef
-    @JsonIgnore 
+    @JsonIgnore
     private Diet currentDiet;
 
     @DBRef
