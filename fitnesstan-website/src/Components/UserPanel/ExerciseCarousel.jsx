@@ -1,15 +1,14 @@
-// src/components/ExerciseCarousel.jsx
 import React, { useEffect, useState } from "react";
 import Carousel from "react-bootstrap/Carousel";
 import { getFullUserData, buildImageUrl } from "../../API/RegisterAPI";
 import styles from "./ExerciseCarousel.module.css";
 
+// Helper function: extract the file name from a full path.
 function extractFilename(fullPath = "") {
-  // Replace backslashes with forward slashes to unify
+  // Replace backslashes with forward slashes
   const sanitized = fullPath.replace(/\\/g, "/");
-  // Split by "/"
-  const parts = sanitized.split("/");
-  return parts[parts.length - 1]; // last chunk
+  // Split by "/" and return the last part
+  return sanitized.split("/").pop();
 }
 
 const ExerciseCarousel = () => {
@@ -20,9 +19,7 @@ const ExerciseCarousel = () => {
     console.debug("[DEBUG] Fetching full user data from /user/full...");
     getFullUserData()
       .then((dto) => {
-        // The DTO is { user, diet, workoutPlan }
         console.debug("[DEBUG] FullUserInfoDTO:", JSON.stringify(dto, null, 2));
-
         const workoutPlan = dto.workoutPlan;
         if (!workoutPlan || !workoutPlan.dayPlans) {
           console.warn("[WARN] No workoutPlan or dayPlans found in user data.");
@@ -30,21 +27,17 @@ const ExerciseCarousel = () => {
           return;
         }
 
-        // 1) Parse the start date from the workout plan
-        const startDate = new Date(workoutPlan.startDate); 
+        // Calculate current day number from workoutPlan.startDate to now.
+        const startDate = new Date(workoutPlan.startDate);
         const now = new Date();
-
-        // 2) Calculate how many days have passed since startDate
-        // Add +1 so that startDate is considered "Day 1"
-        const dayDiff = Math.floor((now - startDate) / (1000 * 60 * 60 * 24)) + 1;
-
-        // 3) Clamp dayDiff to the range [1, lengthOfPlan]
+        const dayDiff =
+          Math.floor((now - startDate) / (1000 * 60 * 60 * 24)) + 1;
         const maxDayNumber = workoutPlan.dayPlans.length;
         let currentDayNumber = dayDiff;
         if (currentDayNumber < 1) currentDayNumber = 1;
         if (currentDayNumber > maxDayNumber) currentDayNumber = maxDayNumber;
 
-        // 4) Find the dayPlan whose dayNumber matches currentDayNumber
+        // Find the dayPlan for the current day.
         const dayPlan = workoutPlan.dayPlans.find(
           (day) => day.dayNumber === currentDayNumber
         );
@@ -56,22 +49,17 @@ const ExerciseCarousel = () => {
           return;
         }
 
-        // 5) Transform each exercise’s gifUrl to a publicly served URL
+        // Update each exercise's gifUrl from its local full path to a public URL.
         const updatedExercises = (dayPlan.exercises || []).map((exercise) => {
           if (exercise.gifUrl) {
             const fileName = extractFilename(exercise.gifUrl);
-            const publicUrl = buildImageUrl(fileName); 
+            const publicUrl = buildImageUrl(fileName);
             return { ...exercise, gifUrl: publicUrl };
           }
           return exercise;
         });
 
-        // 6) Store the single day’s plan in state
-        setCurrentDayPlan({
-          ...dayPlan,
-          exercises: updatedExercises,
-        });
-
+        setCurrentDayPlan({ ...dayPlan, exercises: updatedExercises });
         setLoading(false);
       })
       .catch((error) => {
@@ -88,7 +76,6 @@ const ExerciseCarousel = () => {
     return <p>No current day plan found.</p>;
   }
 
-  // If no exercises for this day
   if (!currentDayPlan.exercises || currentDayPlan.exercises.length === 0) {
     return (
       <div className={styles.exerciseCarousel}>
@@ -98,7 +85,6 @@ const ExerciseCarousel = () => {
     );
   }
 
-  // Render the single day's exercises in a carousel
   return (
     <div className={styles.exerciseCarousel}>
       <h2>Day {currentDayPlan.dayNumber}</h2>
@@ -111,23 +97,18 @@ const ExerciseCarousel = () => {
         {currentDayPlan.exercises.map((exercise, exIndex) => (
           <Carousel.Item key={exIndex}>
             <div className={styles.carouselItemContent}>
-              <h3>{exercise.name}</h3>
-              <p>
-                <strong>Muscle Group:</strong> {exercise.muscleGroup}
-              </p>
+              <h1 className={styles.exerciseName}>{exercise.name}</h1>
+              <h3 className={styles.muscleGroup}>{exercise.muscleGroup}</h3>
               {exercise.gifUrl && (
-                <img
-                  src={exercise.gifUrl}
-                  alt={exercise.name}
-                  className={styles.exerciseGif}
-                />
+                <div className={styles.exerciseGifContainer}>
+                  <img
+                    src={exercise.gifUrl}
+                    alt={exercise.name}
+                    className={styles.exerciseGif}
+                  />
+                </div>
               )}
-              <p>
-                <strong>Description:</strong> {exercise.description}
-              </p>
-              <p>
-                <strong>Equipment:</strong> {exercise.equipment}
-              </p>
+              <p className={styles.description}>{exercise.description}</p>
             </div>
           </Carousel.Item>
         ))}

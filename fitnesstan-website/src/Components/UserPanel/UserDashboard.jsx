@@ -155,7 +155,7 @@ const UserDashboard = () => {
               <DietCarousel />
             </Row>
             <Row className="mt-4">
-              <h2>Exercise Features</h2>
+              <h2 >Exercise Features</h2>
               <ExerciseCarousel />
             </Row>
           </div>

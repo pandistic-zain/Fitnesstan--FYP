@@ -308,6 +308,14 @@ body {
   background-color: #1a1a1a; /* Red background for the entire section */
   padding: 20px; /* Adjust padding as needed */
 }
+.AfterMeasurementContent h2 {
+  text-align: center;
+  color: #fff;
+  margin: 30px 0;
+  font-size: 2rem;
+  font-weight: bold;
+}
+
 
 
 @keyframes glowToggle {
