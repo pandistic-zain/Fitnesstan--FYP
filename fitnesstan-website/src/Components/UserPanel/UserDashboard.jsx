@@ -19,6 +19,7 @@ const UserDashboard = () => {
     bmi: "--",
     ree: "--",
     tdee: "--",
+    dob: null, // include dob here
   });
   const [sidebarVisible, setSidebarVisible] = useState(false);
 
@@ -32,6 +33,7 @@ const UserDashboard = () => {
           bmi: parsedData.bmi || "--",
           ree: parsedData.ree || "--",
           tdee: parsedData.tdee || "--",
+          dob: parsedData.dob || null,
         });
       } catch (error) {
         console.error("Error parsing userData from localStorage:", error);
@@ -122,43 +124,39 @@ const UserDashboard = () => {
             </div>
           </div>
 
-          {/* AFTER HERO CONTENT */}
+          {/* AFTER HERO CONTENT: Health Metrics */}
           <div className={styles.AfterHeroContent}>
             <h2 className={styles.sectionHeading}>
               Your Intelligent Health Metrics
             </h2>
-            {/* MEASUREMENT BOXES */}
             <Row className="mt-4 align-items-stretch">
               <Col md={4}>
                 <div className={styles.measurementBox}>
-                  <BMIGauge bmiValue={measurements.bmi} />
+                  <BMIGauge bmiValue={measurements.bmi} dob={measurements.dob}/>
                 </div>
               </Col>
               <Col md={4}>
                 <div className={styles.measurementBox}>
-                  <TDEEGauge tdeeValue={measurements.tdee} />
+                  <TDEEGauge tdeeValue={measurements.tdee} dob={measurements.dob}/>
                 </div>
               </Col>
               <Col md={4}>
                 <div className={styles.measurementBox}>
-                  <REEGauge reeValue={measurements.ree} />
+                  <REEGauge reeValue={measurements.ree} dob={measurements.dob} />
                 </div>
               </Col>
             </Row>
           </div>
 
-          {/* FEATURE BOXES AS CAROUSELS */}
+          {/* AFTER MEASUREMENT CONTENT: Carousels */}
           <div className={styles.AfterMeasurementContent}>
             <Row className="mt-4">
-                <h2>Diet Plan</h2>
-                <DietCarousel />
-              
-              </Row>
-              <Row className="mt-4">
-             
-                <h2>Exercise Features</h2>
-                <ExerciseCarousel />
-              
+              <h2>Diet Plan</h2>
+              <DietCarousel />
+            </Row>
+            <Row className="mt-4">
+              <h2>Exercise Features</h2>
+              <ExerciseCarousel />
             </Row>
           </div>
         </div>

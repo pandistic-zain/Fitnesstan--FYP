@@ -2,19 +2,52 @@
 import React from "react";
 import GaugeChart from "react-gauge-chart";
 
-const BMIGauge = ({ bmiValue = 22.5 }) => {
+// Helper function to calculate age from a date string (e.g., "2004-01-18")
+const calculateAge = (dob) => {
+  const birthDate = new Date(dob);
+  const diffMs = Date.now() - birthDate.getTime();
+  const ageDate = new Date(diffMs);
+  return Math.abs(ageDate.getUTCFullYear() - 1970);
+};
+
+const BMIGauge = ({ bmiValue = 22.5, dob }) => {
   const numericBMI = Number(bmiValue) || 0;
   const minBMI = 12;
   const maxBMI = 42;
-  const range = maxBMI - minBMI; // 27
-  const fraction = Math.min(Math.max((numericBMI - minBMI) / range, 0), 1);
+  const range = maxBMI - minBMI;
 
+  // Set BMI thresholds based on age if dob is provided
+  let underweightThreshold, normalThreshold, overweightThreshold;
+  if (dob) {
+    const age = calculateAge(dob);
+    if (age < 18) {
+      // For users younger than 18, use modified thresholds
+      underweightThreshold = 16;
+      normalThreshold = 21;
+      overweightThreshold = 26;
+    } else {
+      // For adults, use standard thresholds
+      underweightThreshold = 18.5;
+      normalThreshold = 24.9;
+      overweightThreshold = 29.9;
+    }
+  } else {
+    // If no dob provided, default to adult thresholds
+    underweightThreshold = 18.5;
+    normalThreshold = 24.9;
+    overweightThreshold = 29.9;
+  }
+
+  // Compute arcs lengths for the gauge chart based on thresholds
   const arcsLength = [
-    (18.5 - minBMI) / range,  // Underweight: (18.5 - 12) / 30 ≈ 0.2167
-    (24.9 - 18.5) / range,    // Normal: (24.9 - 18.5) / 30 ≈ 0.2133
-    (29.9 - 24.9) / range,    // Overweight: (29.9 - 24.9) / 30 ≈ 0.1667
-    (maxBMI - 29.9) / range   // Obese: (42 - 29.9) / 30 ≈ 0.4033
+    (underweightThreshold - minBMI) / range,         // Underweight arc
+    (normalThreshold - underweightThreshold) / range,  // Normal arc
+    (overweightThreshold - normalThreshold) / range,   // Overweight arc
+    (maxBMI - overweightThreshold) / range,            // Obese arc
   ];
+
+  // Compute the fraction for the gauge
+  const fraction = Math.min(Math.max((numericBMI - minBMI) / range, 0), 1);
 
   return (
     <div style={{ width: "300px", margin: "0 auto", textAlign: "center" }}>
