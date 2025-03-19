@@ -57,7 +57,7 @@ export const verifyEmail = async (email, otp) => {
       params: { email, otp },
     });
     console.debug("[DEBUG] Email verification response:", response.data);
-    return response.data;
+    return response; // Return the full response object
   } catch (error) {
     console.error("[ERROR] Email verification failed:", error);
     throw error;

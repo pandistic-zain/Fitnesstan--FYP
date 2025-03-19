@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { verifyEmail, getFullUserData, resendOtp } from "../../API/RegisterAPI.jsx";
-import Loader from "../Loader.jsx"; // Ensure this path is correct
+import Loader from "../Loader.jsx";
 import styles from "./EmailVerification.module.css";
 
 const EmailVerification = () => {
@@ -12,12 +12,13 @@ const EmailVerification = () => {
   const [isCooldown, setIsCooldown] = useState(true);
   const [cooldownTime, setCooldownTime] = useState(60);
   const [loading, setLoading] = useState(false);
+
   const navigate = useNavigate();
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const email = queryParams.get("email");
 
-  // Clear messages after 5 seconds
+  // Utility: Clear messages after 5 seconds
   const clearMessagesAfterTimeout = () => {
     setTimeout(() => {
       setMessage("");
@@ -30,49 +31,50 @@ const EmailVerification = () => {
     e.preventDefault();
     setMessage("");
     setErrorMessage("");
-    setLoading(true); // Start loader
+    setLoading(true);
 
     try {
-      const response = await verifyEmail(email, otp);
-      if (response.status === 200) {
-        setMessage("Email verified!");
-        setErrorMessage("");
-
-        // Fetch full user data (this call uses Basic Auth from your interceptor)
-        const fullResponse = await getFullUserData(email);
-        console.log("[DEBUG] getFullUserData response:", fullResponse);
-        if (fullResponse.status === 200 && fullResponse.data) {
-          // Assuming fullResponse.data contains a 'user' field
-          localStorage.setItem("userData", JSON.stringify(fullResponse.data.user));
-          console.log("[DEBUG] Stored full user data in localStorage:", fullResponse.data.user);
-        } else {
-          console.error("Failed to fetch full user data:", fullResponse.data);
-          setErrorMessage("Failed to fetch full user data.");
-          clearMessagesAfterTimeout();
-          return;
-        }
-        // Navigate to dashboard after a short delay (1 second here)
-        setTimeout(() => navigate("/userdashboard"), 1000);
-      } else {
-        setErrorMessage(response.data.message || "Invalid OTP. Try again.");
-        setMessage("");
+      // 1) Call the verifyEmail API
+      const verifyResponse = await verifyEmail(email, otp);
+      console.error("[DEBUG] verifyEmail response:", verifyResponse);
+      
+      // Check if the verifyResponse data contains a valid 'email' field
+      if (!verifyResponse.data || !verifyResponse.data.email) {
+        setErrorMessage(
+          (verifyResponse.data && verifyResponse.data.message) ||
+          "Invalid OTP. Please try again."
+        );
+        setLoading(false);
+        return;
       }
-      clearMessagesAfterTimeout();
+
+      // If verification is successful, show a message
+      setMessage("Email verified!");
+
+      // 2) Fetch the full user data (expects an object: { user, diet, workoutPlan })
+      const fullUserData = await getFullUserData();
+      console.log("[DEBUG] FullUserInfoDTO:", fullUserData);
+      if (fullUserData && fullUserData.user) {
+        localStorage.setItem("userData", JSON.stringify(fullUserData.user));
+      } else {
+        console.error("Failed to fetch full user data:", fullUserData);
+        setErrorMessage("Failed to fetch full user data.");
+        clearMessagesAfterTimeout();
+        setLoading(false);
+        return;
+      }
+
+      // 3) Navigate to the dashboard after a short delay (1 second)
+      setTimeout(() => navigate("/userdashboard"), 1000);
     } catch (error) {
-      console.error("Verification error: ", error.response?.data || error);
+      console.error("Verification error:", error.response?.data || error);
       setErrorMessage(
-        error.response?.status === 400
-          ? "Invalid OTP. Please try again."
-          : error.response?.status === 404
-          ? "Email not found. Check your entry."
-          : error.response?.status === 500
-          ? "Server error. Please try later."
-          : "An error occurred. Try again."
+        error.response?.data?.message ||
+        "Verification failed. Please try again."
       );
-      setMessage("");
-      clearMessagesAfterTimeout();
     } finally {
-      setLoading(false); // Stop loader when request completes
+      setLoading(false);
+      clearMessagesAfterTimeout();
     }
   };
 
@@ -87,22 +89,20 @@ const EmailVerification = () => {
       setMessage("Resending OTP...");
       await resendOtp(email);
       setMessage("OTP has been resent. Please check your email.");
-      setErrorMessage("");
     } catch (error) {
-      console.error("Resend OTP error: ", error.response?.data || error);
+      console.error("Resend OTP error:", error.response?.data || error);
       setErrorMessage("Could not resend OTP. Try again later.");
-      setMessage("");
       setIsCooldown(false);
       setCooldownTime(0);
     }
     clearMessagesAfterTimeout();
   };
 
-  // Cooldown timer effect
+  // Cooldown timer effect for Resend OTP
   useEffect(() => {
     if (isCooldown && cooldownTime > 0) {
       const timer = setInterval(() => {
-        setCooldownTime((prevTime) => prevTime - 1);
+        setCooldownTime(prevTime => prevTime - 1);
       }, 1000);
       return () => clearInterval(timer);
     } else if (cooldownTime === 0) {
@@ -110,6 +110,7 @@ const EmailVerification = () => {
     }
   }, [isCooldown, cooldownTime]);
 
+  // Debug logging
   console.log("EmailVerification component loaded");
   console.log("Email:", email);
   console.log("OTP:", otp);
@@ -126,9 +127,7 @@ const EmailVerification = () => {
         <div className={styles.header}></div>
         <div className={styles.info}>
           <p className={styles.title}>Verify Your Email</p>
-          <h3>
-            Thanks for choosing Fitnesstan! Enter the OTP sent to your email.
-          </h3>
+          <h3>Thanks for choosing Fitnesstan! Enter the OTP sent to your email.</h3>
           <input
             type="text"
             className={styles.otpInput}
