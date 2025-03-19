@@ -313,30 +313,33 @@ public class UserServices {
             System.out.println("[DEBUG] Email verification failed: Invalid verification token.");
             throw new Exception("Invalid verification token.");
         }
-
+    
         // Remove the user from OTP store.
         otpStore.remove(email);
-
+    
         // Update user status and clear the verification token.
         user.setStatus("PASS");
         user.setVerificationToken(null);
         user.setUpdatedAt(LocalDateTime.now());
-
+    
         // Save user to generate a valid ID.
         Users savedUser = userRepository.save(user);
-
+    
         // Generate workout plan and diet plan using the saved user's ID.
         WorkoutPlan workoutPlan = workoutPlanServices.generateWorkoutPlan(savedUser.getId().toString());
         Map<String, Object> flaskResponse = sendUserDataToFlask(savedUser);
         Diet diet = addDietPlanFromFlaskResponse(savedUser.getId().toString(), flaskResponse);
-
+    
         // Update user with both references.
         savedUser.setCurrentWorkoutPlan(workoutPlan);
         savedUser.setCurrentDiet(diet);
-
+    
         // Save the updated user with both references.
         userRepository.save(savedUser);
+    
+        // If no exceptions thrown, user is successfully verified.
     }
+    
 
     @SuppressWarnings("unchecked")
     private Map<String, Object> sendUserDataToFlask(Users user) {

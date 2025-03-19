@@ -24,7 +24,6 @@ axios.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-
 // Register a new user (required info)
 export const registerUser = async (userData) => {
   try {
@@ -45,11 +44,10 @@ export const loginUser = async (userData) => {
     const response = await axios.post(`${API_URL}/login`, userData);
     return response;
   } catch (error) {
-    // You can add additional logging or error handling here if needed
+    // Additional logging or error handling can be added here if needed
     throw error;
   }
 };
-
 
 // Verify a user's email using OTP
 export const verifyEmail = async (email, otp) => {
@@ -81,18 +79,24 @@ export const resendOtp = async (email) => {
 
 // Get full user data (user, diet, workout plan)
 // This endpoint is protected; Basic Auth credentials are attached automatically.
-// Get full user data (user, diet, workout plan)
-// Return the entire response object
+// Return the entire response object (i.e. the DTO: { user, diet, workoutPlan })
 export const getFullUserData = async () => {
   try {
     console.debug("[DEBUG] Fetching full user data from:", `${USER_API_URL}/full`);
-    // Return the full Axios response, not just response.data
     const response = await axios.get(`${USER_API_URL}/full`);
     console.debug("[DEBUG] Full user data (entire Axios response):", response);
-    return response.data; // <-- Return the entire response object
+    return response.data; // Return the DTO object { user, diet, workoutPlan }
   } catch (error) {
     console.error("[ERROR] Fetching full user data failed:", error);
     throw error;
   }
 };
 
+// Helper to build an image URL from a full local file path.
+// For example, if the backend sends "Z:/Fitnesstan- FYP/fitnesstan-backend/gif_images/barbell_curl.gif",
+// this function will return "http://localhost:8080/images/barbell_curl.gif".
+export const buildImageUrl = (fullLocalPath) => {
+  if (!fullLocalPath) return "";
+  const filename = fullLocalPath.split(/[\\/]/).pop();
+  return `http://localhost:8080/images/${filename}`;
+};
