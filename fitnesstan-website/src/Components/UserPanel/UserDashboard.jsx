@@ -119,8 +119,13 @@ const UserDashboard = () => {
             </div>
             <div className={styles.darkOverlay}></div>
             <div className={styles.greetingContainer}>
-              <h1>Welcome to Fitnesstan!</h1>
-              <p>Your personalized journey starts here.</p>
+              <h1>Welcome to Fitnesstan</h1>
+              <p>
+                Embark on your journey to peak performance with our tailored
+                fitness and nutrition solutions 🏋️‍♀️🥗. Our expert-designed
+                workout programs and personalized meal strategies empower you to
+                achieve your health goals with precision and support 💪🏃‍♂️.
+              </p>
             </div>
           </div>
 
@@ -132,17 +137,26 @@ const UserDashboard = () => {
             <Row className="mt-4 align-items-stretch">
               <Col md={4}>
                 <div className={styles.measurementBox}>
-                  <BMIGauge bmiValue={measurements.bmi} dob={measurements.dob}/>
+                  <BMIGauge
+                    bmiValue={measurements.bmi}
+                    dob={measurements.dob}
+                  />
                 </div>
               </Col>
               <Col md={4}>
                 <div className={styles.measurementBox}>
-                  <TDEEGauge tdeeValue={measurements.tdee} dob={measurements.dob}/>
+                  <TDEEGauge
+                    tdeeValue={measurements.tdee}
+                    dob={measurements.dob}
+                  />
                 </div>
               </Col>
               <Col md={4}>
                 <div className={styles.measurementBox}>
-                  <REEGauge reeValue={measurements.ree} dob={measurements.dob} />
+                  <REEGauge
+                    reeValue={measurements.ree}
+                    dob={measurements.dob}
+                  />
                 </div>
               </Col>
             </Row>
@@ -155,7 +169,7 @@ const UserDashboard = () => {
               <DietCarousel />
             </Row>
             <Row className="mt-4">
-              <h2 >Exercise Features</h2>
+              <h2>Exercise Features</h2>
               <ExerciseCarousel />
             </Row>
           </div>

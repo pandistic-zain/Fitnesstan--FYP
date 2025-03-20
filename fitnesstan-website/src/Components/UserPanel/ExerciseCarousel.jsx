@@ -1,13 +1,14 @@
+// src/components/ExerciseCarousel.jsx
 import React, { useEffect, useState } from "react";
 import Carousel from "react-bootstrap/Carousel";
 import { getFullUserData, buildImageUrl } from "../../API/RegisterAPI";
 import styles from "./ExerciseCarousel.module.css";
 
-// Helper function: extract the file name from a full path.
+// Helper function: Extract file name from a full path.
 function extractFilename(fullPath = "") {
   // Replace backslashes with forward slashes
   const sanitized = fullPath.replace(/\\/g, "/");
-  // Split by "/" and return the last part
+  // Return the last chunk after splitting by "/"
   return sanitized.split("/").pop();
 }
 
@@ -27,7 +28,7 @@ const ExerciseCarousel = () => {
           return;
         }
 
-        // Calculate current day number from workoutPlan.startDate to now.
+        // Calculate the current day number from the workout plan's startDate.
         const startDate = new Date(workoutPlan.startDate);
         const now = new Date();
         const dayDiff =
@@ -49,7 +50,7 @@ const ExerciseCarousel = () => {
           return;
         }
 
-        // Update each exercise's gifUrl from its local full path to a public URL.
+        // Update each exercise's gifUrl from a full local path to a public URL.
         const updatedExercises = (dayPlan.exercises || []).map((exercise) => {
           if (exercise.gifUrl) {
             const fileName = extractFilename(exercise.gifUrl);
@@ -59,6 +60,7 @@ const ExerciseCarousel = () => {
           return exercise;
         });
 
+        // Store the current day plan with updated exercises in state.
         setCurrentDayPlan({ ...dayPlan, exercises: updatedExercises });
         setLoading(false);
       })
@@ -89,7 +91,7 @@ const ExerciseCarousel = () => {
     <div className={styles.exerciseCarousel}>
       <h2>Day {currentDayPlan.dayNumber}</h2>
       <Carousel
-        interval={null}
+        interval={3000}  // Auto-slide every 3 seconds (3000 ms)
         nextLabel="Next Exercise"
         prevLabel="Previous Exercise"
         indicators={false}
