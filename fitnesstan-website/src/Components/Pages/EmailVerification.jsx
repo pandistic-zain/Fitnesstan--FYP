@@ -26,7 +26,7 @@ const EmailVerification = () => {
     }, 5000);
   };
 
-  // Verify OTP function with loader
+  // Verify OTP function
   const handleVerify = async (e) => {
     e.preventDefault();
     setMessage("");
@@ -36,41 +36,41 @@ const EmailVerification = () => {
     try {
       // 1) Call the verifyEmail API
       const verifyResponse = await verifyEmail(email, otp);
-      console.error("[DEBUG] verifyEmail response:", verifyResponse);
-      
-      // Check if the verifyResponse data contains a valid 'email' field
-      if (!verifyResponse.data || !verifyResponse.data.email) {
+      console.log("[DEBUG] verifyEmail response:", verifyResponse);
+
+      // If successful, verifyResponse.status === 200 and verifyResponse.data contains a valid user
+      if (
+        verifyResponse.status === 200 &&
+        verifyResponse.data &&
+        verifyResponse.data.email
+      ) {
+        setMessage("Email verified!");
+
+        // 2) Fetch full user data (expects an object { user, diet, workoutPlan })
+        const fullUserData = await getFullUserData();
+        console.log("[DEBUG] FullUserInfoDTO:", fullUserData);
+        if (fullUserData && fullUserData.user) {
+          localStorage.setItem("userData", JSON.stringify(fullUserData.user));
+          // 3) Navigate to the dashboard after a short delay
+          setTimeout(() => navigate("/userdashboard"), 1000);
+        } else {
+          setErrorMessage("Failed to fetch full user data.");
+          clearMessagesAfterTimeout();
+          setLoading(false);
+          return;
+        }
+      } else {
         setErrorMessage(
           (verifyResponse.data && verifyResponse.data.message) ||
-          "Invalid OTP. Please try again."
+            "Invalid OTP. Please try again."
         );
-        setLoading(false);
-        return;
       }
-
-      // If verification is successful, show a message
-      setMessage("Email verified!");
-
-      // 2) Fetch the full user data (expects an object: { user, diet, workoutPlan })
-      const fullUserData = await getFullUserData();
-      console.log("[DEBUG] FullUserInfoDTO:", fullUserData);
-      if (fullUserData && fullUserData.user) {
-        localStorage.setItem("userData", JSON.stringify(fullUserData.user));
-      } else {
-        console.error("Failed to fetch full user data:", fullUserData);
-        setErrorMessage("Failed to fetch full user data.");
-        clearMessagesAfterTimeout();
-        setLoading(false);
-        return;
-      }
-
-      // 3) Navigate to the dashboard after a short delay (1 second)
-      setTimeout(() => navigate("/userdashboard"), 1000);
     } catch (error) {
       console.error("Verification error:", error.response?.data || error);
       setErrorMessage(
         error.response?.data?.message ||
-        "Verification failed. Please try again."
+          error.response?.data ||
+          "Verification failed. Please try again."
       );
     } finally {
       setLoading(false);
@@ -102,7 +102,7 @@ const EmailVerification = () => {
   useEffect(() => {
     if (isCooldown && cooldownTime > 0) {
       const timer = setInterval(() => {
-        setCooldownTime(prevTime => prevTime - 1);
+        setCooldownTime((prevTime) => prevTime - 1);
       }, 1000);
       return () => clearInterval(timer);
     } else if (cooldownTime === 0) {
@@ -110,7 +110,7 @@ const EmailVerification = () => {
     }
   }, [isCooldown, cooldownTime]);
 
-  // Debug logging
+  // Debug logs
   console.log("EmailVerification component loaded");
   console.log("Email:", email);
   console.log("OTP:", otp);
@@ -136,7 +136,9 @@ const EmailVerification = () => {
             placeholder="Enter OTP"
           />
           {message && <div className={styles.message}>{message}</div>}
-          {errorMessage && <div className={styles.errorMessage}>{errorMessage}</div>}
+          {errorMessage && (
+            <div className={styles.errorMessage}>{errorMessage}</div>
+          )}
         </div>
         <div className={styles.footer}>
           <p

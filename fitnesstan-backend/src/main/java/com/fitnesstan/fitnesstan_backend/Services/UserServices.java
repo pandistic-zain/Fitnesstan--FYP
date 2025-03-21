@@ -109,6 +109,7 @@ public class UserServices {
         sendVerificationEmail(user.getEmail(), user.getVerificationToken());
     }
 
+    @Transactional
     private void validateAndSetAdditionalInfo(Users user, Users additionalInfo) throws Exception {
         // Validate user input
         if (additionalInfo.getHeightFt() == null || additionalInfo.getHeightFt() <= 0) {
@@ -123,21 +124,21 @@ public class UserServices {
         if (additionalInfo.getGender() == null || additionalInfo.getGender().isEmpty()) {
             throw new Exception("Gender is mandatory.");
         }
-
+    
         // Convert height from feet to meters
         double heightInMeters = additionalInfo.getHeightFt() * 0.3048;
-
+    
         // Calculate BMI
         double bmi = additionalInfo.getWeightKg() / (heightInMeters * heightInMeters);
-
-        // Get age
+    
+        // Get age (assumes calculateAge returns age as an int)
         int age = calculateAge(additionalInfo.getDob());
-
+    
         // Determine optimal BMI range based on age & gender
         double lowerBMI, upperBMI;
         if (additionalInfo.getGender().equalsIgnoreCase("male")) {
             if (age >= 18 && age <= 34) {
-                lowerBMI = 23.0;
+                lowerBMI = 18.7;
                 upperBMI = 25.9;
             } else if (age >= 35 && age <= 44) {
                 lowerBMI = 23.0;
@@ -147,12 +148,12 @@ public class UserServices {
                 upperBMI = 27.9;
             } else {
                 lowerBMI = 18.5;
-                upperBMI = 24.9; // Default
+                upperBMI = 24.9; // Default values
             }
-        } else { // Female
+        } else { // For female
             if (age >= 18 && age <= 34) {
                 lowerBMI = 15.5;
-                upperBMI = 24.9;
+                upperBMI = 21.9;
             } else if (age >= 35 && age <= 44) {
                 lowerBMI = 19.0;
                 upperBMI = 23.9;
@@ -161,11 +162,11 @@ public class UserServices {
                 upperBMI = 25.9;
             } else {
                 lowerBMI = 15.5;
-                upperBMI = 22.9; // Default
+                upperBMI = 22.9; // Default values
             }
         }
-
-        // Calculate REE (Mifflin-St Jeor Equation)
+    
+        // Calculate REE using the Mifflin-St Jeor Equation
         double ree;
         if (additionalInfo.getGender().equalsIgnoreCase("male")) {
             ree = 10 * additionalInfo.getWeightKg() + 6.25 * (heightInMeters * 100)
@@ -174,24 +175,27 @@ public class UserServices {
             ree = 10 * additionalInfo.getWeightKg() + 6.25 * (heightInMeters * 100)
                     - 5 * age - 161;
         }
-
-        // **Adjust REE based on age-specific BMI ranges**
+    
+        // Adjust REE based on where BMI lies relative to the normal range.
+        double midBMI = (lowerBMI + upperBMI) / 2;
         if (bmi < lowerBMI) {
-            ree += 500; // Calorie surplus
-        } else if (bmi >= upperBMI && bmi < 30) {
-            ree -= 300; // Mild deficit
-        } else if (bmi >= 30 && bmi < 40) {
-            ree -= 600; // Moderate deficit
-        } else if (bmi >= 40) {
-            ree -= 1000; // Severe deficit
+            // BMI is below the normal range → add surplus 500 cal.
+            ree += 500;
+        } else if (bmi >= lowerBMI && bmi < midBMI) {
+            // BMI is in the lower half of the normal range → add surplus 300 cal.
+            ree += 300;
+        } else if (bmi >= midBMI && bmi <= upperBMI) {
+            // BMI is in the upper half of the normal range → subtract deficit 200 cal.
+            ree -= 200;
+        } else if (bmi > upperBMI) {
+            // BMI is above normal range (overweight/obese) → subtract deficit 500 cal.
+            ree -= 500;
         }
-
-        // **Calculate TDEE based on Exercise Level**
+    
+        // Calculate TDEE based on the user's exercise level
         double tdee;
         switch (additionalInfo.getExerciseLevel().toLowerCase()) {
             case "no exercise":
-                tdee = ree;
-                break;
             case "1 days a week":
                 tdee = ree * 1.1;
                 break;
@@ -216,7 +220,7 @@ public class UserServices {
             default:
                 throw new Exception("Invalid Exercise Level.");
         }
-
+    
         // Set additional information to the user object
         user.setHeightFt(additionalInfo.getHeightFt());
         user.setDob(additionalInfo.getDob());
@@ -227,13 +231,13 @@ public class UserServices {
         user.setExerciseLevel(additionalInfo.getExerciseLevel());
         user.setSleepHours(additionalInfo.getSleepHours());
         user.setMedicalHistory(additionalInfo.getMedicalHistory());
-
+    
         // Set calculated values
         user.setBmi(bmi);
         user.setRee(ree);
         user.setTdee(tdee);
     }
-
+    
     // Helper method to calculate age from date of birth
     private int calculateAge(LocalDate dob) {
         return Period.between(dob, LocalDate.now()).getYears();
