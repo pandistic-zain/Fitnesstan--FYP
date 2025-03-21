@@ -2,51 +2,73 @@
 import React from "react";
 import GaugeChart from "react-gauge-chart";
 
-// Helper function to calculate age from a date string (e.g., "2004-01-18")
+// Helper function to calculate age from a date string (or Date object)
 const calculateAge = (dob) => {
   const birthDate = new Date(dob);
-  const diffMs = Date.now() - birthDate.getTime();
-  const ageDate = new Date(diffMs);
-  return Math.abs(ageDate.getUTCFullYear() - 1970);
+  const now = new Date();
+  let age = now.getFullYear() - birthDate.getFullYear();
+  const m = now.getMonth() - birthDate.getMonth();
+  if (m < 0 || (m === 0 && now.getDate() < birthDate.getDate())) {
+    age--;
+  }
+  return age;
 };
 
-const BMIGauge = ({ bmiValue = 22.5, dob }) => {
+const BMIGauge = ({ bmiValue = 22.5, dob, gender = "male" }) => {
   const numericBMI = Number(bmiValue) || 0;
-  const minBMI = 12;
+  const minBMI = 13;
   const maxBMI = 42;
   const range = maxBMI - minBMI;
 
-  // Set BMI thresholds based on age if dob is provided
-  let underweightThreshold, normalThreshold, overweightThreshold;
+  // Set thresholds based on age and gender (using backend logic)
+  let lowerBMI, upperBMI;
   if (dob) {
     const age = calculateAge(dob);
-    if (age < 18) {
-      // For users younger than 18, use modified thresholds
-      underweightThreshold = 16;
-      normalThreshold = 21;
-      overweightThreshold = 26;
-    } else {
-      // For adults, use standard thresholds
-      underweightThreshold = 18.5;
-      normalThreshold = 24.9;
-      overweightThreshold = 29.9;
+    if (gender.toLowerCase() === "male") {
+      if (age >= 18 && age <= 34) {
+        lowerBMI = 18.7;
+        upperBMI = 25.9;
+      } else if (age >= 35 && age <= 44) {
+        lowerBMI = 23.0;
+        upperBMI = 26.9;
+      } else if (age >= 45 && age <= 54) {
+        lowerBMI = 24.0;
+        upperBMI = 27.9;
+      } else {
+        lowerBMI = 18.5;
+        upperBMI = 24.9;
+      }
+    } else { // female
+      if (age >= 18 && age <= 34) {
+        lowerBMI = 15.5;
+        upperBMI = 21.9;
+      } else if (age >= 35 && age <= 44) {
+        lowerBMI = 19.0;
+        upperBMI = 23.9;
+      } else if (age >= 45 && age <= 54) {
+        lowerBMI = 20.0;
+        upperBMI = 25.9;
+      } else {
+        lowerBMI = 15.5;
+        upperBMI = 22.9;
+      }
     }
   } else {
-    // If no dob provided, default to adult thresholds
-    underweightThreshold = 18.5;
-    normalThreshold = 24.9;
-    overweightThreshold = 29.9;
+    // Default adult thresholds if no dob provided
+    lowerBMI = 18.5;
+    upperBMI = 24.9;
   }
+  // For the gauge we assume that overweight starts at 29.9 (as a fixed value)
+  const overweightThreshold = 29.9;
 
-  // Compute arcs lengths for the gauge chart based on thresholds
-  const arcsLength = [
-    (underweightThreshold - minBMI) / range,         // Underweight arc
-    (normalThreshold - underweightThreshold) / range,  // Normal arc
-    (overweightThreshold - normalThreshold) / range,   // Overweight arc
-    (maxBMI - overweightThreshold) / range,            // Obese arc
-  ];
+  // Compute arcs lengths for the gauge:
+  const arcUnderweight = (lowerBMI - minBMI) / range;            // Underweight portion
+  const arcNormal = (upperBMI - lowerBMI) / range;                 // Normal portion
+  const arcOverweight = (overweightThreshold - upperBMI) / range;  // Overweight portion
+  const arcObese = (maxBMI - overweightThreshold) / range;         // Obese portion
+  const arcsLength = [arcUnderweight, arcNormal, arcOverweight, arcObese];
 
-  // Compute the fraction for the gauge
+  // Compute the fraction for the needle position
   const fraction = Math.min(Math.max((numericBMI - minBMI) / range, 0), 1);
 
   return (
