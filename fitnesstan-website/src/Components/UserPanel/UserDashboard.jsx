@@ -10,6 +10,7 @@ import TDEEGauge from "./TDEEGauge";
 import REEGauge from "./REEGauge";
 import DietCarousel from "./DietCarousel";
 import ExerciseCarousel from "./ExerciseCarousel";
+import { useNavigate } from 'react-router-dom'
 
 import styles from "./UserDashboard.module.css";
 import logo from "../../Assets/FITNESSTAN BARA LOGO_inverted.png";
@@ -22,7 +23,7 @@ const UserDashboard = () => {
     dob: null, // include dob here
   });
   const [sidebarVisible, setSidebarVisible] = useState(false);
-
+  const navigate = useNavigate();
   // On mount, read userData from localStorage.
   useEffect(() => {
     const storedUserData = localStorage.getItem("userData");
@@ -47,7 +48,13 @@ const UserDashboard = () => {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
-
+  const signOut = () => {
+    localStorage.removeItem("userData");
+    localStorage.removeItem("username");
+    localStorage.removeItem("password");
+    // Navigate to home page and replace the current history entry.
+    navigate("/", { replace: true });
+  };
   return (
     <div className={styles.dashboardWrapper}>
       {/* NAVBAR */}
@@ -107,7 +114,9 @@ const UserDashboard = () => {
               </a>
             </li>
           </ul>
-          <button className={styles.button}>SIGN OUT</button>
+          <button className={styles.button} onClick={signOut}>
+            SIGN OUT
+          </button>
         </div>
 
         {/* MAIN CONTENT */}
