@@ -1,44 +1,101 @@
-.dietCarousel {
-  width: 80%;
-  max-width: 900px;
-  margin: 0 auto;
-}
-
-.carouselDayContent {
-  background-color: #1a1a1a;
-  border: 3px solid #ff0000;
-  border-radius: 8px;
-  padding: 20px;
-  color: #e0e0e0;
-  text-align: center;
-}
-
-/* Spacing around each meal block */
-.mealSection {
-  margin-top: 20px;
-}
-
-/* Table styling for meal items */
-.mealTable {
-  width: 100%;
-  border-collapse: collapse;
-  margin: 0 auto; /* Center the table horizontally */
-}
-
-.mealTable th,
-.mealTable td {
-  border: 1px solid #ff0000;
-  padding: 8px;
-  text-align: center;
-}
-
-/* Table header styling */
-.mealTable thead {
-  background-color: #ff0000;
-  color: #1a1a1a;
-}
-
-/* Stripe effect for even rows in the table body */
-.mealTable tbody tr:nth-child(even) {
-  background-color: #2a2a2a;
-}
+/* ---------------------------------------------
+   MAIN CAROUSEL CONTAINER FOR DIET
+   --------------------------------------------- */
+   .dietCarousel {
+    margin-top: 30px !important;
+    /* Container is 70% of screen width so that the overlay can be visible on sides */
+    width: 70% !important;
+    margin: 40px auto;
+    position: relative;
+    padding: 20px;
+    text-align: center;
+    border-radius: 20px;
+    background-color: #ff0000; /* Solid red background */
+    overflow: visible; /* Allow overlay to extend outside */
+    z-index: 0; /* Ensure container is above the overlay pseudo-element */
+  }
+  
+  /* Dark overlay extending beyond the red container */
+  .dietCarousel::before {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    top: -40px;
+    bottom: -40px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 120%;
+    /* Semi-transparent dark background with blur effect */
+    background-color: rgba(25, 25, 25, 0.4);
+    backdrop-filter: blur(8px);
+    border-radius: 30px;
+  }
+  
+  /* ---------------------------------------------
+     CAROUSEL SLIDE CONTENT
+     --------------------------------------------- */
+  .carouselDayContent {
+    background-color: #ff0000; /* Dark background for the slide content */
+    border-radius: 10px;
+    padding: 20px;
+    color: #e0e0e0;
+    text-align: center;
+    margin: 0 auto;
+  }
+  
+  /* Day heading, e.g., "Day 3" */
+  .dayHeading {
+    font-size: 1.6rem;
+    margin-bottom: 10px;
+    color: #ffffff;
+  }
+  
+  /* Heading for each meal section (e.g., "Meal 1", "Meal 2") */
+  .mealHeading {
+    font-size: 2.2rem;
+    margin-bottom: 12px;
+    color: #ffffff;
+  }
+  
+  /* ---------------------------------------------
+     TABLE STYLING FOR MEAL ITEMS
+     --------------------------------------------- */
+  .mealTable {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px auto;
+  }
+  
+  .mealTable th,
+  .mealTable td {
+    border: 3px solid #1a1a1a;
+    padding: 8px;
+    text-align: center;
+    font-size: 1.1rem;
+  }
+  
+  .mealTable thead {
+    background-color: #1a1a1a;
+    color: #ffffff;
+  }
+  
+  .mealTable tbody tr:nth-child(even) {
+    background-color: #2a2a2a;
+  }
+  
+  /* ---------------------------------------------
+     OPTIONAL: Additional styling for spacing and responsiveness
+     --------------------------------------------- */
+  @media screen and (max-width: 768px) {
+    .dietCarousel {
+      width: 90%;
+    }
+    .mealHeading {
+      font-size: 1.8rem;
+    }
+    .dayHeading {
+      font-size: 1.4rem;
+    }
+  }
+  
+  
