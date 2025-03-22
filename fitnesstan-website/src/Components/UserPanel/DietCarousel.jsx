@@ -1,82 +1,190 @@
-// src/components/DietCarousel.jsx
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Carousel from "react-bootstrap/Carousel";
-import styles from "./DietCarousel.module.css"; // Assuming you're using CSS modules
+import { getFullUserData } from "../../API/RegisterAPI"; // Adjust import path as needed
+import styles from "./DietCarousel.module.css"; // Import the CSS module (or .css file)
 
-const DietCarousel = ({ dietDays = [] }) => {  // default value to empty array
+/**
+ * DietCarousel
+ * -----------
+ * 1) Fetches the full user data, which includes:
+ *    - diet.mealPlan (keys: "1", "2", etc.)
+ *    - workoutPlan.startDate (to figure out current day)
+ * 2) Finds the current day from startDate → dayDiff
+ * 3) Clamps dayDiff to the range of available days in mealPlan
+ * 4) Displays two slides: one for Meal 1, one for Meal 2
+ */
+function DietCarousel() {
+  const [currentDayData, setCurrentDayData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [dayNumber, setDayNumber] = useState(null);
+
+  useEffect(() => {
+    // First fetch user data to determine the dayNumber
+    getFullUserData()
+      .then((dto) => {
+        if (!dto || !dto.diet || !dto.diet.mealPlan) {
+          console.warn("[WARN] No diet or mealPlan found in user data.");
+          setLoading(false);
+          return;
+        }
+
+        // Attempt to figure out the current day from workoutPlan startDate
+        const planStart = dto.workoutPlan?.startDate || null;
+        if (!planStart) {
+          console.warn("[WARN] No startDate found; defaulting to day 1.");
+          setDayNumber(1);
+        } else {
+          // Calculate how many days have passed
+          const startDate = new Date(planStart);
+          const now = new Date();
+          const dayDiff = Math.floor((now - startDate) / (1000 * 60 * 60 * 24)) + 1;
+
+          // The mealPlan keys are typically day numbers like "1", "2", ...
+          const dayKeys = Object.keys(dto.diet.mealPlan).map((k) => parseInt(k, 10));
+          const maxDay = Math.max(...dayKeys);
+
+          // Clamp dayDiff to [1, maxDay]
+          const actualDay = Math.max(1, Math.min(dayDiff, maxDay));
+          setDayNumber(actualDay);
+        }
+
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error("[ERROR] Fetching user data failed:", err);
+        setLoading(false);
+      });
+  }, []);
+
+  // Once we know which dayNumber to display, fetch again to get that day’s data
+  useEffect(() => {
+    if (!dayNumber) return; // If dayNumber not set yet, skip
+
+    setLoading(true);
+    getFullUserData()
+      .then((dto) => {
+        if (!dto || !dto.diet || !dto.diet.mealPlan) {
+          setLoading(false);
+          return;
+        }
+        const dayStr = String(dayNumber); // mealPlan keys are strings
+        const dayData = dto.diet.mealPlan[dayStr];
+        setCurrentDayData(dayData || null);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error("[ERROR] Re-fetching user data failed:", err);
+        setLoading(false);
+      });
+  }, [dayNumber]);
+
+  if (loading) {
+    return <p>Loading diet plan...</p>;
+  }
+
+  if (!dayNumber) {
+    return <p>No day found for diet plan.</p>;
+  }
+
+  if (!currentDayData) {
+    return (
+      <div className={styles.dietCarousel}>
+        <h2>Day {dayNumber}</h2>
+        <p>No meal data found for this day.</p>
+      </div>
+    );
+  }
+
+  // Extract meal arrays from the current day data
+  const meal1 = currentDayData.meal1 || [];
+  const meal2 = currentDayData.meal2 || [];
+
   return (
     <div className={styles.dietCarousel}>
-      <Carousel nextLabel="Next" prevLabel="Previous" indicators={false} interval={null}>
-        {dietDays.map((dayInfo, index) => (
-          <Carousel.Item key={index}>
-            <div className={styles.carouselDayContent}>
-              <h2>{dayInfo.day}</h2>
-              {/* Meal 1 */}
-              <div className={styles.mealSection}>
-                <h4>Meal 1</h4>
-                {dayInfo.meal1 && dayInfo.meal1.length > 0 ? (
-                  <table className={styles.mealTable}>
-                    <thead>
-                      <tr>
-                        <th>Name</th>
-                        <th>Carbs (g)</th>
-                        <th>Fats (g)</th>
-                        <th>Calories</th>
-                        <th>Weight (g)</th>
+      <Carousel
+        nextLabel="Next"
+        prevLabel="Previous"
+        indicators={false}
+        interval={null}
+      >
+        {/* Slide 1: Meal 1 */}
+        <Carousel.Item>
+          <div className={styles.carouselDayContent}>
+            <h2>Day {dayNumber}</h2>
+            <div className={styles.mealSection}>
+              <h4>Meal 1</h4>
+              {meal1.length > 0 ? (
+                <table className={styles.mealTable}>
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Protein (g)</th>
+                      <th>Carbs (g)</th>
+                      <th>Fats (g)</th>
+                      <th>Calories</th>
+                      <th>Weight (g)</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {meal1.map((item, i) => (
+                      <tr key={i}>
+                        <td>{item.name}</td>
+                        <td>{item.protein}</td>
+                        <td>{item.carbs}</td>
+                        <td>{item.fats}</td>
+                        <td>{item.calories}</td>
+                        <td>{item.weight}</td>
                       </tr>
-                    </thead>
-                    <tbody>
-                      {dayInfo.meal1.map((item, i) => (
-                        <tr key={i}>
-                          <td>{item.name}</td>
-                          <td>{item.carbs}</td>
-                          <td>{item.fats}</td>
-                          <td>{item.calories}</td>
-                          <td>{item.weight}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                ) : (
-                  <p>No items in Meal 1.</p>
-                )}
-              </div>
-              {/* Meal 2 */}
-              <div className={styles.mealSection}>
-                <h4>Meal 2</h4>
-                {dayInfo.meal2 && dayInfo.meal2.length > 0 ? (
-                  <table className={styles.mealTable}>
-                    <thead>
-                      <tr>
-                        <th>Name</th>
-                        <th>Carbs (g)</th>
-                        <th>Fats (g)</th>
-                        <th>Calories</th>
-                        <th>Weight (g)</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {dayInfo.meal2.map((item, i) => (
-                        <tr key={i}>
-                          <td>{item.name}</td>
-                          <td>{item.carbs}</td>
-                          <td>{item.fats}</td>
-                          <td>{item.calories}</td>
-                          <td>{item.weight}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                ) : (
-                  <p>No items in Meal 2.</p>
-                )}
-              </div>
+                    ))}
+                  </tbody>
+                </table>
+              ) : (
+                <p>No items in Meal 1.</p>
+              )}
             </div>
-          </Carousel.Item>
-        ))}
+          </div>
+        </Carousel.Item>
+
+        {/* Slide 2: Meal 2 */}
+        <Carousel.Item>
+          <div className={styles.carouselDayContent}>
+            <h2>Day {dayNumber}</h2>
+            <div className={styles.mealSection}>
+              <h4>Meal 2</h4>
+              {meal2.length > 0 ? (
+                <table className={styles.mealTable}>
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Protein (g)</th>
+                      <th>Carbs (g)</th>
+                      <th>Fats (g)</th>
+                      <th>Calories</th>
+                      <th>Weight (g)</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {meal2.map((item, i) => (
+                      <tr key={i}>
+                        <td>{item.name}</td>
+                        <td>{item.protein}</td>
+                        <td>{item.carbs}</td>
+                        <td>{item.fats}</td>
+                        <td>{item.calories}</td>
+                        <td>{item.weight}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              ) : (
+                <p>No items in Meal 2.</p>
+              )}
+            </div>
+          </div>
+        </Carousel.Item>
       </Carousel>
     </div>
   );
-};
+}
 
 export default DietCarousel;
