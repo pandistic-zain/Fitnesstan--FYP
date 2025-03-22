@@ -1,25 +1,16 @@
+// src/components/DietCarousel.jsx
 import React, { useEffect, useState } from "react";
 import Carousel from "react-bootstrap/Carousel";
 import { getFullUserData } from "../../API/RegisterAPI"; // Adjust import path as needed
-import styles from "./DietCarousel.module.css"; // Import the CSS module (or .css file)
+import styles from "./DietCarousel.module.css"; // Import CSS module or regular CSS
 
-/**
- * DietCarousel
- * -----------
- * 1) Fetches the full user data, which includes:
- *    - diet.mealPlan (keys: "1", "2", etc.)
- *    - workoutPlan.startDate (to figure out current day)
- * 2) Finds the current day from startDate → dayDiff
- * 3) Clamps dayDiff to the range of available days in mealPlan
- * 4) Displays two slides: one for Meal 1, one for Meal 2
- */
 function DietCarousel() {
   const [currentDayData, setCurrentDayData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [dayNumber, setDayNumber] = useState(null);
 
   useEffect(() => {
-    // First fetch user data to determine the dayNumber
+    // First fetch user data to determine the current day number.
     getFullUserData()
       .then((dto) => {
         if (!dto || !dto.diet || !dto.diet.mealPlan) {
@@ -28,26 +19,23 @@ function DietCarousel() {
           return;
         }
 
-        // Attempt to figure out the current day from workoutPlan startDate
+        // Determine the current day number from workoutPlan.startDate.
         const planStart = dto.workoutPlan?.startDate || null;
         if (!planStart) {
           console.warn("[WARN] No startDate found; defaulting to day 1.");
           setDayNumber(1);
         } else {
-          // Calculate how many days have passed
           const startDate = new Date(planStart);
           const now = new Date();
-          const dayDiff = Math.floor((now - startDate) / (1000 * 60 * 60 * 24)) + 1;
-
-          // The mealPlan keys are typically day numbers like "1", "2", ...
-          const dayKeys = Object.keys(dto.diet.mealPlan).map((k) => parseInt(k, 10));
+          const dayDiff =
+            Math.floor((now - startDate) / (1000 * 60 * 60 * 24)) + 1;
+          const dayKeys = Object.keys(dto.diet.mealPlan).map((k) =>
+            parseInt(k, 10)
+          );
           const maxDay = Math.max(...dayKeys);
-
-          // Clamp dayDiff to [1, maxDay]
           const actualDay = Math.max(1, Math.min(dayDiff, maxDay));
           setDayNumber(actualDay);
         }
-
         setLoading(false);
       })
       .catch((err) => {
@@ -56,10 +44,9 @@ function DietCarousel() {
       });
   }, []);
 
-  // Once we know which dayNumber to display, fetch again to get that day’s data
+  // Once we have the day number, fetch the meal data for that day.
   useEffect(() => {
-    if (!dayNumber) return; // If dayNumber not set yet, skip
-
+    if (!dayNumber) return;
     setLoading(true);
     getFullUserData()
       .then((dto) => {
@@ -95,19 +82,14 @@ function DietCarousel() {
     );
   }
 
-  // Extract meal arrays from the current day data
+  // Extract meal arrays for Meal 1 and Meal 2
   const meal1 = currentDayData.meal1 || [];
   const meal2 = currentDayData.meal2 || [];
 
   return (
     <div className={styles.dietCarousel}>
-      <Carousel
-        nextLabel="Next"
-        prevLabel="Previous"
-        indicators={false}
-        interval={null}
-      >
-        {/* Slide 1: Meal 1 */}
+      <Carousel nextLabel="Next" prevLabel="Previous" indicators={false} interval={2000} wrap={true}>
+        {/* Slide for Meal 1 */}
         <Carousel.Item>
           <div className={styles.carouselDayContent}>
             <h2>Day {dayNumber}</h2>
@@ -145,7 +127,7 @@ function DietCarousel() {
           </div>
         </Carousel.Item>
 
-        {/* Slide 2: Meal 2 */}
+        {/* Slide for Meal 2 */}
         <Carousel.Item>
           <div className={styles.carouselDayContent}>
             <h2>Day {dayNumber}</h2>

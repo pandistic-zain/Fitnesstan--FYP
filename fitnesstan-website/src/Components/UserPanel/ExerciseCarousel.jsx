@@ -31,8 +31,7 @@ const ExerciseCarousel = () => {
         // Calculate the current day number from the workout plan's startDate.
         const startDate = new Date(workoutPlan.startDate);
         const now = new Date();
-        const dayDiff =
-          Math.floor((now - startDate) / (1000 * 60 * 60 * 24)) + 1;
+        const dayDiff = Math.floor((now - startDate) / (1000 * 60 * 60 * 24)) + 1;
         const maxDayNumber = workoutPlan.dayPlans.length;
         let currentDayNumber = dayDiff;
         if (currentDayNumber < 1) currentDayNumber = 1;
@@ -78,11 +77,12 @@ const ExerciseCarousel = () => {
     return <p>No current day plan found.</p>;
   }
 
+  // If no exercises for this day, show "REST DAY"
   if (!currentDayPlan.exercises || currentDayPlan.exercises.length === 0) {
     return (
       <div className={styles.exerciseCarousel}>
         <h2>Day {currentDayPlan.dayNumber}</h2>
-        <p>No exercises for this day.</p>
+        <p>REST DAY</p>
       </div>
     );
   }
@@ -91,10 +91,11 @@ const ExerciseCarousel = () => {
     <div className={styles.exerciseCarousel}>
       <h2>Day {currentDayPlan.dayNumber}</h2>
       <Carousel
-        interval={3000}  // Auto-slide every 3 seconds (3000 ms)
+        interval={3000} // Auto-slide every 3 seconds
         nextLabel="Next Exercise"
         prevLabel="Previous Exercise"
         indicators={false}
+        wrap={true}    
       >
         {currentDayPlan.exercises.map((exercise, exIndex) => (
           <Carousel.Item key={exIndex}>
