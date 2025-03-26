@@ -138,7 +138,6 @@ const UserDashboard = () => {
             </div>
           </div>
 
-
           {/* AFTER HERO CONTENT: Health Metrics */}
           <div className={styles.AfterHeroContent}>
             <h2 className={styles.sectionHeading}>
