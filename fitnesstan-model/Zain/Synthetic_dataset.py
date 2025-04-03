@@ -1,77 +1,66 @@
-
 import pandas as pd
-import numpy as np
 import random
 
-# Set random seed for reproducibility
-random.seed(42)
-np.random.seed(42)
+# Define all 14 clusters with their labels.
+clusters = {
+    1: "High in Carbs - Fibers, High Fiber_to_Carbs Ratio",
+    2: "High in Calories, High in Fats, High in Fiber",
+    3: "High in Vitamins, Vegetarian, Halal",
+    4: "High in Carbs - Fibers - Sugar, High in Vitamins",
+    5: "Rich in Fats, High in Protein, Non-Veg, Halal",
+    6: "High in Carbs, High in Sugar, Vegetarian, Halal",
+    7: "High Protien, High Fiber-to-Carbs Ratio, NON-Vegetarian",
+    8: "High in Carbs - Fiber - Sugar - Fats, Vegetarian",
+    9: "High in Vitamins - Minerals, High in Fiber, Vegetarian",
+    10: "Balanced Diet, Vegetarian, Halal",
+    11: "Low Carbs, Low Protein, Rich In Vitamins/Minerals",
+    12: "High Fiber, Moderate Carbs, High Fats, Vegetarian",
+    13: "High Cholesterol, Moderate Protein, High Vitamins",
+    14: "High Vitamin-b, High Minerals, Moderate Protein"
+}
 
-# Define number of synthetic samples (adjust as needed)
-n_samples = 100
+# Current primary clusters used in the synthetic dataset.
+used_primary = {1, 3, 7, 9, 10, 14}
+missing_primary = set(clusters.keys()) - used_primary  # Missing in Primary
 
-# Define possible values for the categorical features
-professions = ["student", "teacher", "software engineer", "athlete"]
-religions = ["muslim", "non muslim"]
-genders = ["male", "female", "other"]
-exercise_levels = list(range(1, 8))  # Represents number of exercise days per week (1 to 7)
-medical_histories = ["NON", "Diabetic", "heart disease"]
+# Current secondary clusters used in the synthetic dataset.
+used_secondary = {3, 7, 9, 11, 10, 14}  # (order doesn't matter)
+missing_secondary = set(clusters.keys()) - used_secondary  # Missing in Secondary
 
-# Define cluster labels (based on your clustering output)
-# Note: The order here follows the provided cluster indices.
-cluster_labels = [
-    "High in Carbs - Fibers, High Fiber_to_Carbs Ratio",      # from cluster 12
-    "High in Calories, High in Fats, High in Fiber",           # from cluster 3
-    "High in Vitamins, Vegitarian, Halal",                     # from cluster 0
-    "High in Carbs - Fibers - Suger, High in Vitamins",        # from cluster 13
-    "Rich in Fats, High in Protien, Non-Veg, Halal",            # from cluster 9
-    "High in Carbs, High in Suger, Vegitarian, Halal",          # from cluster 6
-    "High Protien, High Fiber-to-Carbs Ratio, NON-Vegetarian",  # from cluster 1
-    "High in Carbs - Fiber - Suger - Fats, Vegitari",           # from cluster 10
-    "High in Vitamins - Minerals, High in Fiber, Vegetarian",   # from cluster 11
-    "Balanced Diet, Vegetarian, Halal",                        # from cluster 4
-    "Low Carbs, Low Protien, Rich In Vitamins/Minerals",        # from cluster 8
-    "High Fiber, Moderate Carbs, High Fats, Vegetarian",         # from cluster 2
-    "High Cholesterol, Moderate Protien, High Vitamins",         # from cluster 7
-    "High Vitamin-b, High Minerals, Moderate Protein"           # from cluster 5
-]
+# Function to generate a synthetic entry.
+def generate_entry(primary=None, secondary=None):
+    entry = {
+        "Age": random.randint(20, 70),
+        "Weight": round(random.uniform(50, 100), 1),
+        "Height_ft": round(random.uniform(4.5, 6.5), 1),
+        "Profession": random.choice(["student", "teacher", "software engineer"]),
+        "Religion": random.choice(["muslim", "non muslim"]),
+        "Sleeping_Hours": round(random.uniform(5, 9), 1),
+        "Gender": random.choice(["male", "female", "other"]),
+        "Exercise_Level_days_per_week": random.randint(1, 7),
+        "Medical_History": random.choice(["NON", "Diabetic", "heart disease"])
+    }
+    if primary:
+        entry["Primary_Cluster"] = clusters[primary]
+    else:
+        entry["Primary_Cluster"] = random.choice(list(clusters.values()))
+    if secondary:
+        entry["Secondary_Cluster"] = clusters[secondary]
+    else:
+        entry["Secondary_Cluster"] = random.choice(list(clusters.values()))
+    return entry
 
-# Function to assign two distinct clusters randomly
-def assign_clusters():
-    primary, secondary = random.sample(cluster_labels, 2)
-    return primary, secondary
+# Generate entries for missing primary clusters.
+new_entries_primary = [generate_entry(primary=cl) for cl in missing_primary]
 
-# Generate the synthetic dataset
-data = []
-for _ in range(n_samples):
-    age = random.randint(18, 80)
-    weight = round(random.uniform(50, 100), 1)      # weight in kg (adjust range as needed)
-    height = round(random.uniform(4.5, 6.5), 1)       # height in ft (e.g., 5.6)
-    profession = random.choice(professions)
-    religion = random.choice(religions)
-    sleeping_hours = round(random.uniform(5, 9), 1)   # sleeping hours per night
-    gender = random.choice(genders)
-    exercise_level = random.choice(exercise_levels)
-    medical_history = random.choice(medical_histories)
-    primary_cluster, secondary_cluster = assign_clusters()
-    
-    data.append({
-        "Age": age,
-        "Weight": weight,
-        "Height_ft": height,
-        "Profession": profession,
-        "Religion": religion,
-        "Sleeping_Hours": sleeping_hours,
-        "Gender": gender,
-        "Exercise_Level_days_per_week": exercise_level,
-        "Medical_History": medical_history,
-        "Primary_Cluster": primary_cluster,
-        "Secondary_Cluster": secondary_cluster
-    })
+# Generate entries for missing secondary clusters.
+new_entries_secondary = [generate_entry(secondary=cl) for cl in missing_secondary]
 
-# Create a DataFrame
-df = pd.DataFrame(data)
+# Combine new entries.
+new_entries = new_entries_primary + new_entries_secondary
+new_df = pd.DataFrame(new_entries)
 
-# Save the dataset to a CSV file on your local PC
-df.to_csv("synthetic_dataset.csv", index=False)
-print("Synthetic dataset created and saved as 'synthetic_dataset.csv'")
+# Remove duplicates if the same combination (primary & secondary) appears.
+unique_new_df = new_df.drop_duplicates(subset=["Primary_Cluster", "Secondary_Cluster"])
+
+unique_new_df
