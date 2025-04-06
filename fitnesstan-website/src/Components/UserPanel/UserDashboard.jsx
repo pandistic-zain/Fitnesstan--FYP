@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import { Row, Col } from "react-bootstrap";
 import { MdDashboard } from "react-icons/md";
 import { FaAppleAlt, FaDumbbell, FaKey } from "react-icons/fa";
+import { Link, useNavigate } from "react-router-dom";
 
 import Footer from "../../Components/Footer";
 import BMIGauge from "./BMIGauge";
@@ -10,7 +11,6 @@ import TDEEGauge from "./TDEEGauge";
 import REEGauge from "./REEGauge";
 import DietCarousel from "./DietCarousel";
 import ExerciseCarousel from "./ExerciseCarousel";
-import { useNavigate } from 'react-router-dom'
 
 import styles from "./UserDashboard.module.css";
 import logo from "../../Assets/FITNESSTAN BARA LOGO_inverted.png";
@@ -24,6 +24,7 @@ const UserDashboard = () => {
   });
   const [sidebarVisible, setSidebarVisible] = useState(false);
   const navigate = useNavigate();
+
   // On mount, read userData from localStorage.
   useEffect(() => {
     const storedUserData = localStorage.getItem("userData");
@@ -48,13 +49,15 @@ const UserDashboard = () => {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  // Sign-out function: clears credentials and navigates to home while replacing history.
   const signOut = () => {
     localStorage.removeItem("userData");
     localStorage.removeItem("username");
     localStorage.removeItem("password");
-    // Navigate to home page and replace the current history entry.
     navigate("/", { replace: true });
   };
+
   return (
     <div className={styles.dashboardWrapper}>
       {/* NAVBAR */}
@@ -90,28 +93,28 @@ const UserDashboard = () => {
         >
           <ul className={styles.sidebarList}>
             <li className={styles.sidebarItem}>
-              <a href="/userdashboard">
+              <Link to="/userdashboard" className={styles.link}>
                 <MdDashboard className={styles.icon} />
                 Dashboard
-              </a>
+              </Link>
             </li>
             <li className={styles.sidebarItem}>
-              <a href="/diet">
+              <Link to="/diet" className={styles.link}>
                 <FaAppleAlt className={styles.icon} />
                 Diet Plan
-              </a>
+              </Link>
             </li>
             <li className={styles.sidebarItem}>
-              <a href="/exercise">
+              <Link to="/ExercisePage" className={styles.link}>
                 <FaDumbbell className={styles.icon} />
                 Exercise
-              </a>
+              </Link>
             </li>
             <li className={styles.sidebarItem}>
-              <a href="/settings">
+              <Link to="/settings" className={styles.link}>
                 <FaKey className={styles.icon} />
                 Change Password
-              </a>
+              </Link>
             </li>
           </ul>
           <button className={styles.button} onClick={signOut}>
@@ -124,7 +127,7 @@ const UserDashboard = () => {
           {/* HERO SECTION */}
           <div className={styles.heroSection}>
             <div className={styles.slideshowContainer}>
-              {/* Place your slideshow logic here if needed */}
+              {/* Slideshow logic if needed */}
             </div>
             <div className={styles.darkOverlay}></div>
             <div className={styles.greetingContainer}>
