@@ -99,7 +99,7 @@ const UserDashboard = () => {
               </Link>
             </li>
             <li className={styles.sidebarItem}>
-              <Link to="/diet" className={styles.link}>
+              <Link to="/DietPage" className={styles.link}>
                 <FaAppleAlt className={styles.icon} />
                 Diet Plan
               </Link>

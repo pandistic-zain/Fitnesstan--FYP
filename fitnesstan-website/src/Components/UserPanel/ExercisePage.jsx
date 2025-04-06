@@ -126,13 +126,13 @@ const ExercisePage = () => {
               </Link>
             </li>
             <li className={styles.sidebarItem}>
-              <Link to="/diet" className={styles.link}>
+              <Link to="/DietPage" className={styles.link}>
                 <FaAppleAlt className={styles.icon} />
                 Diet Plan
               </Link>
             </li>
             <li className={styles.sidebarItem}>
-              <Link to="/exercise" className={styles.link}>
+              <Link to="/ExercisePage" className={styles.link}>
                 <FaDumbbell className={styles.icon} />
                 Exercise
               </Link>
