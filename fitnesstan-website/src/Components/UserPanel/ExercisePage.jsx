@@ -10,6 +10,8 @@ import Footer from "../../Components/Footer";
 import styles from "./ExercisePage.module.css";
 import logo from "../../Assets/FITNESSTAN BARA LOGO_inverted.png";
 
+import Loader from "../Loader";
+
 // Helper: extract the file name from a full path.
 function extractFilename(fullPath = "") {
   const sanitized = fullPath.replace(/\\/g, "/");
@@ -75,7 +77,7 @@ const ExercisePage = () => {
   };
 
   if (loading) {
-    return <p>Loading exercises...</p>;
+    return <Loader/>
   }
 
   if (!dayPlans.length) {
