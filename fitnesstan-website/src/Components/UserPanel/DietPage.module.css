@@ -1,16 +1,36 @@
 /* DietPage.module.css */
 
+/* ================================================
+   GLOBAL RESET & BASE STYLES
+================================================== */
+html,
+body {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: sans-serif;
+}
 
-/* Main dashboard wrapper (same as UserDashboard) */
-.dashboardWrapper {
+*,
+*::before,
+*::after {
+  box-sizing: inherit;
+}
+
+/* ================================================
+   MAIN PAGE WRAPPER
+================================================== */
+.dietPageWrapper {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  background: #1a1a1a;
+  background: #1a1a1a; /* Overall dark background */
   color: #e0e0e0;
 }
 
-/* ===== NAVBAR ===== */
+/* ================================================
+   NAVBAR (Same as UserDashboard)
+================================================== */
 .navbarCustom {
   background-color: #ff0000 !important;
   border-bottom: 6px solid #ff0000;
@@ -22,19 +42,27 @@
   box-shadow: 0 0 10px #ff0000;
   animation: glowBorder 2s infinite alternate ease-in-out;
 }
+
 @keyframes glowBorder {
-  0% { box-shadow: 0 0 10px #ff0000; }
-  100% { box-shadow: 0 0 25px #ff0000; }
+  0% {
+    box-shadow: 0 0 10px #ff0000;
+  }
+  100% {
+    box-shadow: 0 0 25px #ff0000;
+  }
 }
+
 .checkbox2 {
   display: none;
 }
+
 .customToggleContainer {
   margin-right: auto;
   display: flex;
   align-items: center;
   padding-left: 1rem;
 }
+
 .toggle2 {
   position: relative;
   width: 60px;
@@ -47,47 +75,64 @@
   gap: 12px;
   transition-duration: 0.5s;
 }
+
 .bars {
   width: 100%;
   height: 6px;
   background-color: #ffffff;
   border-radius: 6px;
 }
-.bar5 { transition-duration: 0.8s; }
-.bar4, .bar6 { width: 80%; }
+
+.bar5 {
+  transition-duration: 0.8s;
+}
+
+.bar4,
+.bar6 {
+  width: 80%;
+}
+
 .checkbox2:checked + .toggle2 .bars {
   position: absolute;
   transition-duration: 0.5s;
 }
+
 .checkbox2:checked + .toggle2 .bar5 {
   transform: scaleX(0);
   transition-duration: 0.5s;
 }
+
 .checkbox2:checked + .toggle2 .bar4 {
   width: 100%;
   transform: rotate(45deg);
   transition-duration: 0.5s;
 }
+
 .checkbox2:checked + .toggle2 .bar6 {
   width: 100%;
   transform: rotate(-45deg);
   transition-duration: 0.5s;
 }
+
 .checkbox2:checked + .toggle2 {
   transition-duration: 0.5s;
   transform: rotate(180deg);
 }
+
 .navbarLogoWrapper {
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
 }
+
 .navbarLogoWrapper img {
   height: 60px !important;
   width: auto;
 }
 
-/* ===== LAYOUT CONTAINER ===== */
+/* ================================================
+   LAYOUT CONTAINER & SIDEBAR
+================================================== */
 .layoutContainer {
   display: flex;
   flex: 1;
@@ -96,7 +141,6 @@
   padding: 0;
 }
 
-/* ===== SIDEBAR ===== */
 .sidebarContainer {
   background-color: #ff0000;
   color: #ffffff;
@@ -106,15 +150,18 @@
   border-right: 6px solid #ff0000;
   padding: 0;
 }
+
 .sidebarHidden {
   width: 0;
   border-right: 0;
 }
+
 .sidebarList {
   list-style: none;
   padding: 0;
   margin: 15px;
 }
+
 .sidebarItem {
   display: flex;
   align-items: center;
@@ -122,9 +169,11 @@
   border-bottom: 2px solid #ffffff;
   font-size: 1.1rem;
 }
+
 .sidebarItem:last-child {
   border-bottom: none;
 }
+
 .sidebarItem a {
   display: flex;
   align-items: center;
@@ -133,60 +182,60 @@
   width: 100%;
   margin: 5px 0;
 }
+
 .sidebarItem a:hover {
   color: #000000;
 }
+
 .icon {
   font-size: 1.5rem;
   margin-right: 8px;
 }
 
-/* SIGN OUT BUTTON */
 .button {
-  --primary: #1a1a1a;
-  --secondary: #333333;
-  --tertiary: #4d4d4d;
   cursor: pointer;
   width: 150px;
   height: 48px;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 1rem;
   font-size: 1.125em;
   font-weight: 800;
   letter-spacing: 2px;
   color: #fff;
-  background: var(--primary);
-  border: 2px solid var(--secondary);
+  background: #1a1a1a;
+  border: 2px solid #333333;
   border-radius: 0.75rem;
-  box-shadow: 0 8px 0 var(--secondary);
+  box-shadow: 0 8px 0 #4d4d4d;
   transform: skew(-10deg);
   transition: all 0.1s ease;
-  filter: drop-shadow(0 15px 20px var(--tertiary));
+  filter: drop-shadow(0 15px 20px #4d4d4d);
   margin: 2rem auto 0 auto;
   display: block;
 }
+
 .button:active {
   letter-spacing: 0;
   transform: skew(-10deg) translateY(8px);
-  box-shadow: 0 0 0 var(--tertiary);
+  box-shadow: 0 0 0 #4d4d4d;
 }
 
-/* ===== MAIN CONTENT ===== */
+/* ================================================
+   MAIN CONTENT & HERO SECTION
+================================================== */
 .mainContent {
   flex: 1;
   overflow-x: hidden;
   margin: 0;
 }
 
-/* HERO SECTION */
 .heroSection {
   position: relative;
   width: 100%;
   height: 300px;
   background-color: #1a1a1a;
 }
+
 .darkOverlay {
   position: absolute;
   top: 0;
@@ -196,6 +245,7 @@
   background-color: rgba(0, 0, 0, 0.8);
   z-index: 1;
 }
+
 .greetingContainer {
   position: absolute;
   top: 50%;
@@ -205,35 +255,88 @@
   text-align: center;
   z-index: 2;
 }
+
 .greetingContainer h1 {
   font-size: 2.5rem;
   margin-bottom: 1rem;
 }
+
 .greetingContainer p {
   font-size: 1.2rem;
   max-width: 600px;
   margin: 0 auto;
 }
 
-/* AFTER HERO CONTENT */
+/* ================================================
+   AFTER HERO CONTENT (Metrics & Carousels)
+================================================== */
 .AfterHeroContent {
   padding: 30px;
   background-color: #1a1a1a;
 }
 
-/* ===== DIET PAGE SPECIFIC STYLES ===== */
+.sectionHeading {
+  text-align: center;
+  color: #ffffff;
+  font-size: 2rem;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+.sectionHeading::after {
+  content: " 😀";
+}
+
+/* ================================================
+   MEASUREMENT BOXES (Metrics)
+================================================== */
+.measurementBox {
+  background: #1a1a1a;
+  border: 3px solid #ff0000;
+  border-radius: 50px;
+  padding: 20px;
+  margin-bottom: 20px;
+  color: #e0e0e0;
+  text-align: center;
+  height: 100%;
+  box-shadow: inset 0 0 20px 10px rgba(255, 0, 0, 0.7);
+}
+
+/* ================================================
+   AFTER MEASUREMENT CONTENT: CAROUSELS
+================================================== */
+.AfterMeasurementContent {
+  padding: 30px;
+  background-color: #1a1a1a;
+}
+
+/* ================================================
+   DIET PAGE SPECIFIC STYLES
+================================================== */
+
+/* Page Title for Diet Page */
+.pageTitle {
+  text-align: center;
+  color: #ff0000;
+  font-size: 2.2rem;
+  font-weight: bold;
+  margin: 30px 0;
+  font-family: "Poppins", sans-serif;
+}
+/* Diet Carousel Container */
 .dietCarousel {
   width: 70%;
   max-width: 900px;
   margin: 40px auto;
   padding: 20px;
-  background-color: #ff0000; /* Red background for container */
+  background-color: #ff0000; /* red container for the diet carousel */
   border-radius: 20px;
   text-align: center;
   overflow: visible;
   position: relative;
   z-index: 0;
 }
+
 .dietCarousel::before {
   content: "";
   position: absolute;
@@ -243,12 +346,13 @@
   left: 50%;
   transform: translateX(-50%);
   width: 120%;
-  background-color: rgba(25, 25, 25, 0.4);
+  background-color: rgba(255, 0, 0, 0.4);
   backdrop-filter: blur(8px);
   border-radius: 30px;
 }
 
-/* Day Toggle */
+
+/* Day Toggle for Diet Page */
 .dayToggle {
   display: flex;
   justify-content: space-around;
@@ -256,69 +360,105 @@
   padding: 10px;
   border-radius: 10px;
   margin-bottom: 30px;
+  margin-left: 30px;
+  margin-right: 30px;
 }
+
 .toggleButton {
   flex: 1;
   background: transparent;
   border: none;
-  color: #fff;
+  color: #ffffff;
   font-size: 1.2rem;
   cursor: pointer;
   padding: 8px;
   transition: background-color 0.3s;
 }
+
 .toggleButton:hover {
   background-color: rgba(255, 255, 255, 0.2);
 }
+
 .active {
   background-color: rgba(255, 255, 255, 0.4);
   font-weight: bold;
 }
 
-/* Day Content */
+/* Container for the selected day's diet content */
 .dayContent {
   margin-top: 20px;
-  border: 3px solid #ff0000;
+  border: 3px solid #1a1a1a;
   border-radius: 10px;
   padding: 20px;
+  background-color: #1a1a1a;
+  text-align: center;
+  color: #ffffff;
 }
+
+/* Day Heading */
 .dayHeading {
   font-size: 1.8rem;
   margin-bottom: 20px;
   text-align: center;
-  color: #fff;
+  font-weight: bold;
+  color: #ff0000;
 }
 
-/* Carousel slide content for meals */
+/* Carousel slide content for the diet items */
 .carouselDayContent {
-  background-color: #1a1a1a;
+  background-color: #ff0000;
   border: 3px solid #ff0000;
   border-radius: 8px;
   padding: 20px;
-  color: #e0e0e0;
+  color: #ffffff;
   text-align: center;
+  margin: 0 10px;
 }
 
-/* Table styling for meal items */
+/* Meal Section for each meal (Meal 1 and Meal 2) */
 .mealSection {
   margin-top: 30px;
 }
+
+/* Table styling for meal items */
 .mealTable {
   width: 100%;
   border-collapse: collapse;
   margin: 0 auto;
-  color: #fff;
+  background-color: #ff0000;
+  color: #ffffff;
 }
-.mealTable th,
-.mealTable td {
-  border: 1px solid #ff0000;
-  padding: 8px;
-  text-align: center;
-}
+
 .mealTable thead {
   background-color: #ff0000;
   color: #1a1a1a;
 }
-.mealTable tbody tr:nth-child(even) {
-  background-color: #2a2a2a;
+
+.mealTable th,
+.mealTable td {
+  border: 1px solid #ff0000;
+  padding: 10px;
+  text-align: center;
+  font-size: 1.1rem;
 }
+
+.mealTable tbody tr {
+  background-color: #1a1a1a;
+}
+
+.mealTable tbody tr:hover {
+  background-color: #2a2a2a;
+  transition: background-color 0.2s ease;
+}
+
+/* ================================================
+   STATUS MESSAGES (for error/loading)
+================================================== */
+.statusMessage {
+  margin: 40px auto;
+  text-align: center;
+  font-size: 1.2rem;
+  color: #ffffff;
+  max-width: 600px;
+}
+
