@@ -1,5 +1,3 @@
-/* DietPage.module.css */
-
 /* ================================================
    GLOBAL RESET & BASE STYLES
 ================================================== */
@@ -8,7 +6,7 @@ body {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: sans-serif;
+  font-family: "Poppins", sans-serif;
 }
 
 *,
@@ -24,12 +22,12 @@ body {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  background: #1a1a1a; /* Overall dark background */
+  background: #1a1a1a;
   color: #e0e0e0;
 }
 
 /* ================================================
-   NAVBAR (Same as UserDashboard)
+   NAVBAR & SIDEBAR (Same as UserDashboard)
 ================================================== */
 .navbarCustom {
   background-color: #ff0000 !important;
@@ -44,12 +42,8 @@ body {
 }
 
 @keyframes glowBorder {
-  0% {
-    box-shadow: 0 0 10px #ff0000;
-  }
-  100% {
-    box-shadow: 0 0 25px #ff0000;
-  }
+  0% { box-shadow: 0 0 10px #ff0000; }
+  100% { box-shadow: 0 0 25px #ff0000; }
 }
 
 .checkbox2 {
@@ -86,9 +80,7 @@ body {
 .bar5 {
   transition-duration: 0.8s;
 }
-
-.bar4,
-.bar6 {
+.bar4, .bar6 {
   width: 80%;
 }
 
@@ -130,9 +122,6 @@ body {
   width: auto;
 }
 
-/* ================================================
-   LAYOUT CONTAINER & SIDEBAR
-================================================== */
 .layoutContainer {
   display: flex;
   flex: 1;
@@ -313,8 +302,6 @@ body {
 /* ================================================
    DIET PAGE SPECIFIC STYLES
 ================================================== */
-
-/* Page Title for Diet Page */
 .pageTitle {
   text-align: center;
   color: #ff0000;
@@ -323,13 +310,14 @@ body {
   margin: 30px 0;
   font-family: "Poppins", sans-serif;
 }
+
 /* Diet Carousel Container */
 .dietCarousel {
   width: 70%;
   max-width: 900px;
   margin: 40px auto;
   padding: 20px;
-  background-color: #ff0000; /* red container for the diet carousel */
+  background-color: #ff0000;
   border-radius: 20px;
   text-align: center;
   overflow: visible;
@@ -351,17 +339,14 @@ body {
   border-radius: 30px;
 }
 
-
-/* Day Toggle for Diet Page */
+/* Day Toggle */
 .dayToggle {
   display: flex;
   justify-content: space-around;
   background-color: #ff0000;
   padding: 10px;
   border-radius: 10px;
-  margin-bottom: 30px;
-  margin-left: 30px;
-  margin-right: 30px;
+  margin: 0 30px 30px;
 }
 
 .toggleButton {
@@ -384,7 +369,7 @@ body {
   font-weight: bold;
 }
 
-/* Container for the selected day's diet content */
+/* Container for selected day diet content */
 .dayContent {
   margin-top: 20px;
   border: 3px solid #1a1a1a;
@@ -404,7 +389,7 @@ body {
   color: #ff0000;
 }
 
-/* Carousel slide content for the diet items */
+/* Carousel slide content for diet items */
 .carouselDayContent {
   background-color: #ff0000;
   border: 3px solid #ff0000;
@@ -413,14 +398,19 @@ body {
   color: #ffffff;
   text-align: center;
   margin: 0 10px;
+  height: 350px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
-/* Meal Section for each meal (Meal 1 and Meal 2) */
+/* Meal Section */
 .mealSection {
   margin-top: 30px;
+  height: 300px;
 }
 
-/* Table styling for meal items */
+/* Meal Table */
 .mealTable {
   width: 100%;
   border-collapse: collapse;
@@ -428,12 +418,10 @@ body {
   background-color: #ff0000;
   color: #ffffff;
 }
-
 .mealTable thead {
   background-color: #ff0000;
   color: #1a1a1a;
 }
-
 .mealTable th,
 .mealTable td {
   border: 1px solid #ff0000;
@@ -441,14 +429,148 @@ body {
   text-align: center;
   font-size: 1.1rem;
 }
-
 .mealTable tbody tr {
   background-color: #1a1a1a;
 }
-
 .mealTable tbody tr:hover {
   background-color: #2a2a2a;
   transition: background-color 0.2s ease;
+}
+
+/* ================================================
+   INTERMEDIATE FASTING: MEAL LOCK & TIMER
+================================================== */
+.mealLocked {
+  position: relative;
+  height: 350px;
+  width: auto; /* Ensure fixed height */
+}
+/* The semi-transparent blur overlay */
+.blurOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  backdrop-filter: blur(5px);
+  background-color: rgba(255, 0, 0, 0.4);
+  border-radius: 8px;
+  z-index: 2; /* Lower than the text & button */
+}
+
+/* The message in the center of the blur */
+.timerMessage {
+  position: absolute;
+  top: 50%; 
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 3; /* Above the blurOverlay */
+  background-color: rgba(0, 0, 0, 0.6);
+  padding: 10px 20px;
+  border-radius: 10px;
+  font-size: 1.2rem;
+  color: #ffffff;
+  text-align: center;
+}
+
+/* The Force Unlock button, with a higher z-index to sit above the blur overlay */
+.forceUnlockButton {
+  position: absolute;
+  bottom: 1rem; 
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 4; /* Above the blur & message */
+  
+  background-color: #1a1a1a;
+  color: #ffffff;
+  border: 2px solid #ff0000;
+  border-radius: 6px;
+  padding: 8px 16px;
+  cursor: pointer;
+  text-transform: uppercase;
+  font-weight: bold;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.forceUnlockButton:hover {
+  background-color: #ff0000;
+  color: #1a1a1a;
+}
+
+/* Example styling for the mealCompletion Mark-Done button to match your style */
+.markDoneButton {
+  background-color: #1a1a1a;
+  color: #ffffff;
+  border: 2px solid #28a745;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  margin-top: 15px;
+}
+
+.markDoneButton:hover {
+  background-color: #28a745;
+  color: #1a1a1a;
+}
+
+/* ================================================
+   CHANGE BUTTON (for editing meals)
+================================================== */
+.changeButton {
+  background-color: #1a1a1a;
+  color: #ff0000;
+  border: 1px solid #ff0000;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s, color 0.3s;
+}
+.changeButton:hover {
+  background-color: #ff0000;
+  color: #1a1a1a;
+}
+
+/* ================================================
+   MEAL 1 COMPLETION BUTTON & BADGE
+================================================== */
+.markDoneButton {
+  margin-top: 15px;
+  background-color: #28a745;
+  color: #ffffff;
+  border: 1px solid #ff0000;
+  padding: 8px 16px;
+  border-radius: 24px;
+  cursor: pointer;
+  transition: background-color 0.3s, color 0.3s;
+}
+.markDoneButton:hover {
+  background-color: #ff0000;
+  color: #1a1a1a;
+  transform: scale(1.1);
+  border: 3px solid #1a1a1a;
+}
+.mealCompleted {
+  margin-top: 15px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: #28a745;
+  color: #ffffff;
+  padding: 6px 14px;
+  border-radius: 24px;
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  box-shadow: 0 0 10px #28a745;
+  animation: glowGreen 2s infinite alternate ease-in-out;
+}
+.mealCompleted .completedIcon {
+  font-size: 1.2rem;
+}
+@keyframes glowGreen {
+  0% { box-shadow: 0 0 10px #28a745; }
+  100% { box-shadow: 0 0 20px #28a745; }
 }
 
 /* ================================================
@@ -461,4 +583,3 @@ body {
   color: #ffffff;
   max-width: 600px;
 }
-
