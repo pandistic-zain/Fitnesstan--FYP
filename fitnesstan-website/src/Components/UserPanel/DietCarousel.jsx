@@ -2,40 +2,44 @@
 import React, { useEffect, useState } from "react";
 import Carousel from "react-bootstrap/Carousel";
 import { getFullUserData } from "../../API/RegisterAPI"; // Adjust import path as needed
-import styles from "./DietCarousel.module.css"; // Import CSS module or regular CSS
+import { useNavigate } from "react-router-dom";
+import styles from "./DietCarousel.module.css"; // Import your CSS module
+import Loader from "../Loader";
 
 function DietCarousel() {
+  // State for the current day's meal data and computed day number.
   const [currentDayData, setCurrentDayData] = useState(null);
-  const [loading, setLoading] = useState(true);
   const [dayNumber, setDayNumber] = useState(null);
+  const [loading, setLoading] = useState(true);
 
+  // For this dashboard version, Meal 2 is locked – user must click a button to view the full diet plan.
+  const navigate = useNavigate();
+
+  // First fetch: determine the current day number from workoutPlan.startDate.
   useEffect(() => {
-    // First fetch user data to determine the current day number.
     getFullUserData()
       .then((dto) => {
-        if (!dto || !dto.diet || !dto.diet.mealPlan) {
-          console.warn("[WARN] No diet or mealPlan found in user data.");
+        if (!dto || !dto.diet || !dto.diet.mealPlan || !dto.workoutPlan) {
+          console.warn(
+            "[WARN] No diet or mealPlan/workoutPlan found in user data."
+          );
           setLoading(false);
           return;
         }
-
-        // Determine the current day number from workoutPlan.startDate.
-        const planStart = dto.workoutPlan?.startDate || null;
-        if (!planStart) {
-          console.warn("[WARN] No startDate found; defaulting to day 1.");
-          setDayNumber(1);
-        } else {
+        const planStart = dto.workoutPlan.startDate;
+        let computedDay = 1;
+        if (planStart) {
           const startDate = new Date(planStart);
           const now = new Date();
-          const dayDiff =
-            Math.floor((now - startDate) / (1000 * 60 * 60 * 24)) + 1;
-          const dayKeys = Object.keys(dto.diet.mealPlan).map((k) =>
-            parseInt(k, 10)
-          );
-          const maxDay = Math.max(...dayKeys);
-          const actualDay = Math.max(1, Math.min(dayDiff, maxDay));
-          setDayNumber(actualDay);
+          computedDay = Math.floor((now - startDate) / (1000 * 60 * 60 * 24)) + 1;
         }
+        const dayKeys = Object.keys(dto.diet.mealPlan).map((k) =>
+          parseInt(k, 10)
+        );
+        const maxDay = Math.max(...dayKeys);
+        if (computedDay < 1) computedDay = 1;
+        if (computedDay > maxDay) computedDay = maxDay;
+        setDayNumber(computedDay);
         setLoading(false);
       })
       .catch((err) => {
@@ -44,7 +48,7 @@ function DietCarousel() {
       });
   }, []);
 
-  // Once we have the day number, fetch the meal data for that day.
+  // Second fetch: once dayNumber is known, fetch the meal data for that day.
   useEffect(() => {
     if (!dayNumber) return;
     setLoading(true);
@@ -65,30 +69,48 @@ function DietCarousel() {
       });
   }, [dayNumber]);
 
+  // Handler for forcing unlock of Meal 2.
+  // This navigates the user to the full diet plan page.
+  const handleForceUnlockMeal2 = () => {
+    navigate("/DietPage");
+  };
+
   if (loading) {
-    return <p>Loading diet plan...</p>;
+    return <p className={styles.statusMessage}>Loading diet plan... 😊</p>;
   }
 
   if (!dayNumber) {
-    return <p>No day found for diet plan.</p>;
+    return (
+      <p className={styles.statusMessage}>
+        No day found for diet plan. 😕
+      </p>
+    );
   }
 
   if (!currentDayData) {
     return (
       <div className={styles.dietCarousel}>
         <h2>Day {dayNumber}</h2>
-        <p>No meal data found for this day.</p>
+        <p className={styles.statusMessage}>
+          No meal data found for this day. 😕
+        </p>
       </div>
     );
   }
 
-  // Extract meal arrays for Meal 1 and Meal 2
+  // Extract meal arrays for Meal 1 and Meal 2.
   const meal1 = currentDayData.meal1 || [];
   const meal2 = currentDayData.meal2 || [];
 
   return (
     <div className={styles.dietCarousel}>
-      <Carousel nextLabel="Next" prevLabel="Previous" indicators={false} interval={2000} wrap={true}>
+      <Carousel
+        nextLabel="Next"
+        prevLabel="Previous"
+        indicators={false}
+        interval={2000}
+        wrap={true}
+      >
         {/* Slide for Meal 1 */}
         <Carousel.Item>
           <div className={styles.carouselDayContent}>
@@ -134,30 +156,42 @@ function DietCarousel() {
             <div className={styles.mealSection}>
               <h4>Meal 2</h4>
               {meal2.length > 0 ? (
-                <table className={styles.mealTable}>
-                  <thead>
-                    <tr>
-                      <th>Name</th>
-                      <th>Protein (g)</th>
-                      <th>Carbs (g)</th>
-                      <th>Fats (g)</th>
-                      <th>Calories</th>
-                      <th>Weight (g)</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {meal2.map((item, i) => (
-                      <tr key={i}>
-                        <td>{item.name}</td>
-                        <td>{item.protein}</td>
-                        <td>{item.carbs}</td>
-                        <td>{item.fats}</td>
-                        <td>{item.calories}</td>
-                        <td>{item.weight}</td>
+                // For the current day, lock Meal 2.
+                // (For past days, you might display it normally.)
+                <div className={styles.mealLocked}>
+                  {/* Blur overlay with red tint */}
+                  <div className={styles.blurOverlay}></div>
+                  <table className={styles.mealTable}>
+                    <thead>
+                      <tr>
+                        <th>Name</th>
+                        <th>Protein (g)</th>
+                        <th>Carbs (g)</th>
+                        <th>Fats (g)</th>
+                        <th>Calories</th>
+                        <th>Weight (g)</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody>
+                      {meal2.map((item, i) => (
+                        <tr key={i}>
+                          <td>{item.name}</td>
+                          <td>{item.protein}</td>
+                          <td>{item.carbs}</td>
+                          <td>{item.fats}</td>
+                          <td>{item.calories}</td>
+                          <td>{item.weight}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                  <button
+                    className={styles.forceUnlockButton}
+                    onClick={handleForceUnlockMeal2}
+                  >
+                    View Full Diet Plan
+                  </button>
+                </div>
               ) : (
                 <p>No items in Meal 2.</p>
               )}
