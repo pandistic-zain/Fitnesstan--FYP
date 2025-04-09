@@ -495,23 +495,7 @@ body {
 .forceUnlockButton:hover {
   background-color: #ff0000;
   color: #1a1a1a;
-}
-
-/* Example styling for the mealCompletion Mark-Done button to match your style */
-.markDoneButton {
-  background-color: #1a1a1a;
-  color: #ffffff;
-  border: 2px solid #28a745;
-  padding: 8px 16px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-weight: bold;
-  margin-top: 15px;
-}
-
-.markDoneButton:hover {
-  background-color: #28a745;
-  color: #1a1a1a;
+  border: 2px solid #1a1a1a;
 }
 
 /* ================================================
@@ -538,7 +522,7 @@ body {
   margin-top: 15px;
   background-color: #28a745;
   color: #ffffff;
-  border: 1px solid #ff0000;
+  border: 3px solid #ff0000;
   padding: 8px 16px;
   border-radius: 24px;
   cursor: pointer;
@@ -547,7 +531,6 @@ body {
 .markDoneButton:hover {
   background-color: #ff0000;
   color: #1a1a1a;
-  transform: scale(1.1);
   border: 3px solid #1a1a1a;
 }
 .mealCompleted {

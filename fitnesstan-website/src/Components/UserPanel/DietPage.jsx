@@ -21,6 +21,7 @@ const DietPage = () => {
   const [meal1Completed, setMeal1Completed] = useState(false);
   const [meal1CompletionTime, setMeal1CompletionTime] = useState(null);
   const [meal2RemainingTime, setMeal2RemainingTime] = useState(0);
+  const [forcedMeal2Unlocked, setForcedMeal2Unlocked] = useState(false);
 
   const navigate = useNavigate();
 
@@ -115,11 +116,18 @@ const DietPage = () => {
     setMeal1CompletionTime(Date.now());
   };
 
-  // Handler to force unlock Meal 2
+  // Handler for force unlocking Meal 2.
+  // This sets forcedMeal2Unlocked to true, making Meal 2 visible,
+  // and then reverts it after 10 seconds.
   const handleForceUnlockMeal2 = () => {
+    setForcedMeal2Unlocked(true);
     setMeal2RemainingTime(0);
+    // Force unlock for 10 seconds.
+    setTimeout(() => {
+      setForcedMeal2Unlocked(false);
+    }, 10000);
   };
-
+  
   // Helper: format time remaining in hh:mm:ss format.
   const formatTime = (ms) => {
     const totalSeconds = Math.floor(ms / 1000);
@@ -226,7 +234,7 @@ const DietPage = () => {
                 nextLabel="Next"
                 prevLabel="Previous"
                 indicators={false}
-                interval={3000} // Auto-scroll every 3 seconds
+                interval={null} // Auto-scroll every 3 seconds
               >
                 {/* Slide for Meal 1 */}
                 <Carousel.Item>
@@ -293,7 +301,7 @@ const DietPage = () => {
                     {selectedDay.meal2 && selectedDay.meal2.length > 0 ? (
                       selectedDay.dayNumber === currentDayNumber ? (
                         // If current day, apply intermittent fasting logic for Meal 2.
-                        (!meal1Completed || meal2RemainingTime > 0) ? (
+                        (!meal1Completed || (meal2RemainingTime > 0 && !forcedMeal2Unlocked)) ? (
                           <div className={styles.mealLocked}>
                             <div className={styles.blurOverlay}></div>
                             <table className={styles.mealTable}>
@@ -341,7 +349,7 @@ const DietPage = () => {
                             </button>
                           </div>
                         ) : (
-                          // Meal 2 unlocked (current day and timer elapsed)
+                          // Meal 2 unlocked (current day with timer elapsed or force-unlocked)
                           <table className={styles.mealTable}>
                             <thead>
                               <tr>
@@ -374,7 +382,7 @@ const DietPage = () => {
                           </table>
                         )
                       ) : (
-                        // For past days, simply show the meal 2 table unlocked.
+                        // For past days, simply show the Meal 2 table unlocked.
                         <table className={styles.mealTable}>
                           <thead>
                             <tr>
