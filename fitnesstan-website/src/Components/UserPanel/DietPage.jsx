@@ -25,19 +25,15 @@ const DietPage = () => {
 
   const navigate = useNavigate();
 
-  // Fetch full user data to extract diet plan and compute current day number.
+  // First fetch: determine current day number from workoutPlan.startDate.
   useEffect(() => {
     getFullUserData()
       .then((dto) => {
         if (!dto || !dto.diet || !dto.diet.mealPlan || !dto.workoutPlan) {
-          console.warn(
-            "[WARN] No diet or mealPlan/workoutPlan found in user data."
-          );
+          console.warn("[WARN] No diet or mealPlan/workoutPlan found in user data.");
           setLoading(false);
           return;
         }
-
-        // Determine current day number from workoutPlan.startDate
         const planStart = dto.workoutPlan.startDate;
         let computedDay = 1;
         if (planStart) {
@@ -45,35 +41,51 @@ const DietPage = () => {
           const now = new Date();
           computedDay = Math.floor((now - startDate) / (1000 * 60 * 60 * 24)) + 1;
         }
-        const dayKeys = Object.keys(dto.diet.mealPlan).map(Number);
+        const dayKeys = Object.keys(dto.diet.mealPlan).map((k) => parseInt(k, 10));
         const maxDay = Math.max(...dayKeys);
         if (computedDay < 1) computedDay = 1;
         if (computedDay > maxDay) computedDay = maxDay;
         setCurrentDayNumber(computedDay);
-
-        // Build an array of all day plans (keys as numbers)
-        const allDays = dayKeys
-          .sort((a, b) => a - b)
-          .map((dayNum) => ({
-            dayNumber: dayNum,
-            ...dto.diet.mealPlan[String(dayNum)]
-          }));
-        setDayPlans(allDays);
-
-        // Default to the plan for the computed current day
-        const currentDayPlan = allDays.find(
-          (day) => day.dayNumber === computedDay
-        );
-        setSelectedDay(currentDayPlan);
         setLoading(false);
       })
-      .catch((error) => {
-        console.error("[ERROR] Error fetching full user data:", error);
+      .catch((err) => {
+        console.error("[ERROR] Fetching user data failed:", err);
         setLoading(false);
       });
   }, []);
 
-  // Timer effect for Meal 2 unlocking (current day only)
+  // Second fetch: once currentDayNumber is known, fetch the meal data for that day.
+  useEffect(() => {
+    if (!currentDayNumber) return;
+    setLoading(true);
+    getFullUserData()
+      .then((dto) => {
+        if (!dto || !dto.diet || !dto.diet.mealPlan) {
+          setLoading(false);
+          return;
+        }
+        const dayKeys = Object.keys(dto.diet.mealPlan).map(Number);
+        const allDays = dayKeys
+          .sort((a, b) => a - b)
+          .map((dayNum) => ({
+            dayNumber: dayNum,
+            ...dto.diet.mealPlan[String(dayNum)],
+          }));
+        setDayPlans(allDays);
+        // By default, set selectedDay to the current day (if available)
+        const currentDayPlan = allDays.find(
+          (day) => day.dayNumber === currentDayNumber
+        );
+        setSelectedDay(currentDayPlan);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error("[ERROR] Re-fetching user data failed:", err);
+        setLoading(false);
+      });
+  }, [currentDayNumber]);
+
+  // Timer effect for Meal 2 unlocking (only for the current day)
   useEffect(() => {
     let timer = null;
     if (
@@ -81,7 +93,8 @@ const DietPage = () => {
       currentDayNumber &&
       selectedDay.dayNumber === currentDayNumber &&
       meal1Completed &&
-      meal1CompletionTime
+      meal1CompletionTime &&
+      !forcedMeal2Unlocked
     ) {
       timer = setInterval(() => {
         const elapsed = Date.now() - meal1CompletionTime;
@@ -94,7 +107,7 @@ const DietPage = () => {
     return () => {
       if (timer) clearInterval(timer);
     };
-  }, [selectedDay, currentDayNumber, meal1Completed, meal1CompletionTime]);
+  }, [selectedDay, currentDayNumber, meal1Completed, meal1CompletionTime, forcedMeal2Unlocked]);
 
   // Hide sidebar on scroll
   useEffect(() => {
@@ -110,25 +123,24 @@ const DietPage = () => {
     navigate("/", { replace: true });
   };
 
-  // Handler for Meal 1 completion
+  // Handler for marking Meal 1 as completed.
   const handleMeal1Done = () => {
     setMeal1Completed(true);
     setMeal1CompletionTime(Date.now());
   };
 
-  // Handler for force unlocking Meal 2.
-  // This sets forcedMeal2Unlocked to true, making Meal 2 visible,
-  // and then reverts it after 10 seconds.
+  // Handler to force unlock Meal 2.
+  // When clicked, this sets forcedMeal2Unlocked to true and resets the meal2 timer.
+  // After 10 seconds, forcedMeal2Unlocked is reset back to false.
   const handleForceUnlockMeal2 = () => {
     setForcedMeal2Unlocked(true);
     setMeal2RemainingTime(0);
-    // Force unlock for 10 seconds.
     setTimeout(() => {
       setForcedMeal2Unlocked(false);
     }, 10000);
   };
-  
-  // Helper: format time remaining in hh:mm:ss format.
+
+  // Helper: format milliseconds as hh:mm:ss.
   const formatTime = (ms) => {
     const totalSeconds = Math.floor(ms / 1000);
     const hours = Math.floor(totalSeconds / 3600);
@@ -142,7 +154,7 @@ const DietPage = () => {
   }
 
   if (!dayPlans.length) {
-    return <p>No diet plan data found.</p>;
+    return <p className={styles.statusMessage}>No diet plan data found.</p>;
   }
 
   return (
@@ -209,19 +221,25 @@ const DietPage = () => {
         <div className={styles.mainContent}>
           <h1 className={styles.pageTitle}>Diet Plan</h1>
 
-          {/* Day Toggle (full-width with left/right margins) */}
+          {/* Day Toggle: Only allow selection of past and current days */}
           <div className={styles.dayToggle}>
             {dayPlans.map((day) => (
               <button
                 key={day.dayNumber}
                 className={`${styles.toggleButton} ${
-                  selectedDay && selectedDay.dayNumber === day.dayNumber
-                    ? styles.active
-                    : ""
-                }`}
-                onClick={() => setSelectedDay(day)}
+                  selectedDay && selectedDay.dayNumber === day.dayNumber ? styles.active : ""
+                } ${day.dayNumber > currentDayNumber ? styles.lockedToggle : ""}`}
+                onClick={() => {
+                  if (day.dayNumber <= currentDayNumber) {
+                    setSelectedDay(day);
+                  } else {
+                    alert("This day is locked until it becomes current.");
+                  }
+                }}
+                disabled={day.dayNumber > currentDayNumber}
               >
                 Day {day.dayNumber}
+                {day.dayNumber > currentDayNumber && " 🔒"}
               </button>
             ))}
           </div>
@@ -230,77 +248,83 @@ const DietPage = () => {
           {selectedDay ? (
             <div className={styles.dayContent}>
               <h2 className={styles.dayHeading}>Day {selectedDay.dayNumber}</h2>
-              <Carousel
-                nextLabel="Next"
-                prevLabel="Previous"
-                indicators={false}
-                interval={null} // Auto-scroll every 3 seconds
-              >
-                {/* Slide for Meal 1 */}
-                <Carousel.Item>
-                  <div className={styles.carouselDayContent}>
-                    <h3 className={styles.mealHeading}>Meal 1</h3>
-                    {selectedDay.meal1 && selectedDay.meal1.length > 0 ? (
-                      <>
-                        <table className={styles.mealTable}>
-                          <thead>
-                            <tr>
-                              <th>Name</th>
-                              <th>Protein (g)</th>
-                              <th>Carbs (g)</th>
-                              <th>Fats (g)</th>
-                              <th>Calories</th>
-                              <th>Weight (g)</th>
-                              <th>Change</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {selectedDay.meal1.map((item, i) => (
-                              <tr key={i}>
-                                <td>{item.name}</td>
-                                <td>{item.protein}</td>
-                                <td>{item.carbs}</td>
-                                <td>{item.fats}</td>
-                                <td>{item.calories}</td>
-                                <td>{item.weight}</td>
-                                <td>
-                                  <button className={styles.changeButton}>
-                                    Change
-                                  </button>
-                                </td>
+              {/* Show locked view for future days */}
+              {selectedDay.dayNumber > currentDayNumber ? (
+                <p className={styles.statusMessage}>
+                  Future day's diet is locked until it becomes current.
+                </p>
+              ) : (
+                <Carousel
+                  nextLabel="Next"
+                  prevLabel="Previous"
+                  indicators={false}
+                  interval={3000}
+                >
+                  {/* Slide for Meal 1 */}
+                  <Carousel.Item>
+                    <div className={styles.carouselDayContent}>
+                      <h3 className={styles.mealHeading}>Meal 1</h3>
+                      {selectedDay.meal1 && selectedDay.meal1.length > 0 ? (
+                        <>
+                          <table className={styles.mealTable}>
+                            <thead>
+                              <tr>
+                                <th>Name</th>
+                                <th>Protein (g)</th>
+                                <th>Carbs (g)</th>
+                                <th>Fats (g)</th>
+                                <th>Calories</th>
+                                <th>Weight (g)</th>
+                                <th>Change</th>
                               </tr>
-                            ))}
-                          </tbody>
-                        </table>
-                        <div className={styles.mealCompletion}>
-                          {!meal1Completed ? (
-                            <button
-                              className={styles.markDoneButton}
-                              onClick={handleMeal1Done}
-                            >
-                              Mark Meal 1 as Done
-                            </button>
-                          ) : (
-                            <div className={styles.mealCompleted}>
-                              <span>Meal 1 Completed</span>
-                              <span className={styles.completedIcon}>✔</span>
-                            </div>
-                          )}
-                        </div>
-                      </>
-                    ) : (
-                      <p>No items in Meal 1.</p>
-                    )}
-                  </div>
-                </Carousel.Item>
+                            </thead>
+                            <tbody>
+                              {selectedDay.meal1.map((item, i) => (
+                                <tr key={i}>
+                                  <td>{item.name}</td>
+                                  <td>{item.protein}</td>
+                                  <td>{item.carbs}</td>
+                                  <td>{item.fats}</td>
+                                  <td>{item.calories}</td>
+                                  <td>{item.weight}</td>
+                                  <td>
+                                    <button className={styles.changeButton}>
+                                      Change
+                                    </button>
+                                  </td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                          <div className={styles.mealCompletion}>
+                            {!meal1Completed ? (
+                              <button
+                                className={styles.markDoneButton}
+                                onClick={handleMeal1Done}
+                              >
+                                Mark Meal 1 as Done
+                              </button>
+                            ) : (
+                              <div className={styles.mealCompleted}>
+                                <span>Meal 1 Completed</span>
+                                <span className={styles.completedIcon}>✔</span>
+                              </div>
+                            )}
+                          </div>
+                        </>
+                      ) : (
+                        <p>No items in Meal 1.</p>
+                      )}
+                    </div>
+                  </Carousel.Item>
 
-                {/* Slide for Meal 2 */}
-                <Carousel.Item>
-                  <div className={styles.carouselDayContent}>
-                    <h3 className={styles.mealHeading}>Meal 2</h3>
-                    {selectedDay.meal2 && selectedDay.meal2.length > 0 ? (
-                      selectedDay.dayNumber === currentDayNumber ? (
-                        // If current day, apply intermittent fasting logic for Meal 2.
+                  {/* Slide for Meal 2 */}
+                  <Carousel.Item>
+                    <div className={styles.carouselDayContent}>
+                      <h3 className={styles.mealHeading}>Meal 2</h3>
+                      {selectedDay.meal2 && selectedDay.meal2.length > 0 ? (
+                        // For current day, apply intermittent fasting logic for Meal 2.
+                        selectedDay.dayNumber === currentDayNumber &&
                         (!meal1Completed || (meal2RemainingTime > 0 && !forcedMeal2Unlocked)) ? (
                           <div className={styles.mealLocked}>
                             <div className={styles.blurOverlay}></div>
@@ -345,11 +369,11 @@ const DietPage = () => {
                               className={styles.forceUnlockButton}
                               onClick={handleForceUnlockMeal2}
                             >
-                              Force Unlock Meal 2
+                              View Full Diet Plan
                             </button>
                           </div>
                         ) : (
-                          // Meal 2 unlocked (current day with timer elapsed or force-unlocked)
+                          // If Meal 2 is unlocked (current day with timer elapsed/forced unlock)
                           <table className={styles.mealTable}>
                             <thead>
                               <tr>
@@ -382,47 +406,15 @@ const DietPage = () => {
                           </table>
                         )
                       ) : (
-                        // For past days, simply show the Meal 2 table unlocked.
-                        <table className={styles.mealTable}>
-                          <thead>
-                            <tr>
-                              <th>Name</th>
-                              <th>Protein (g)</th>
-                              <th>Carbs (g)</th>
-                              <th>Fats (g)</th>
-                              <th>Calories</th>
-                              <th>Weight (g)</th>
-                              <th>Change</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {selectedDay.meal2.map((item, i) => (
-                              <tr key={i}>
-                                <td>{item.name}</td>
-                                <td>{item.protein}</td>
-                                <td>{item.carbs}</td>
-                                <td>{item.fats}</td>
-                                <td>{item.calories}</td>
-                                <td>{item.weight}</td>
-                                <td>
-                                  <button className={styles.changeButton}>
-                                    Change
-                                  </button>
-                                </td>
-                              </tr>
-                            ))}
-                          </tbody>
-                        </table>
-                      )
-                    ) : (
-                      <p>No items in Meal 2.</p>
-                    )}
-                  </div>
-                </Carousel.Item>
-              </Carousel>
+                        <p>No items in Meal 2.</p>
+                      )}
+                    </div>
+                  </Carousel.Item>
+                </Carousel>
+              )}
             </div>
           ) : (
-            <p>Please select a day.</p>
+            <p className={styles.statusMessage}>Please select a day.</p>
           )}
         </div>
       </div>
