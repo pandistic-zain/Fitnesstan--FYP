@@ -532,23 +532,26 @@ public class UserServices {
         // plans.put("workoutPlan", user.getCurrentWorkoutPlan());
         return plans;
     }
-    // Inside com.fitnesstan.fitnesstan_backend.Services.UserServices
 
+    @Transactional
     public void changePassword(String email, String currentPassword, String newPassword) throws Exception {
-        // Find the user by email
-        Users user = userRepository.findByEmail(email);
+        // Retrieve the user by email (or username as stored in your system)
+        Users user = userRepository.findByUsername(email);
         if (user == null) {
             throw new Exception("User not found.");
         }
 
-        // Check if the provided current password matches the stored password
+        // Verify that the provided current password matches the stored (encoded)
+        // password.
+        // Note: passwordEncoder here is the BCryptPasswordEncoder instance.
         if (!passwordEncoder.matches(currentPassword, user.getPassword())) {
             throw new Exception("Current password is incorrect.");
         }
 
-        // Update password with an encoded version of the new password
+        // Encode the new password and update the user record.
         user.setPassword(passwordEncoder.encode(newPassword));
         user.setUpdatedAt(LocalDateTime.now());
         userRepository.save(user);
     }
+
 }

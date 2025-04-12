@@ -91,7 +91,19 @@ export const getFullUserData = async () => {
     throw error;
   }
 };
-
+// Change password for the authenticated user
+// Expects passwordData to be an object with { currentPassword: string, newPassword: string }
+export const changePassword = async (passwordData) => {
+  try {
+    console.debug("[DEBUG] Changing password with data:", passwordData);
+    const response = await axios.put(`${USER_API_URL}/change-password`, passwordData);
+    console.debug("[DEBUG] Change password response:", response.data);
+    return response;
+  } catch (error) {
+    console.error("[ERROR] Change password failed:", error);
+    throw error;
+  }
+};
 // Helper to build an image URL from a full local file path.
 // For example, if the backend sends "Z:/Fitnesstan- FYP/fitnesstan-backend/gif_images/barbell_curl.gif",
 // this function will return "http://localhost:8080/images/barbell_curl.gif".

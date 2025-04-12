@@ -9,6 +9,7 @@ import UserManagement from './Components/AdminPanel/UserManagement';
 import UserDashboard from './Components/UserPanel/UserDashboard';
 import ExercisePage from './Components/UserPanel/ExercisePage';
 import DietPage from './Components/UserPanel/DietPage';
+import ChangePassword from './Components/UserPanel/ChangePassword';
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
         <Route path="/userdashboard" element={<UserDashboard />} />
         <Route path="/ExercisePage" element={<ExercisePage />} />
         <Route path="/DietPage" element={<DietPage />} />
+        <Route path="/ChangePassword" element={<ChangePassword />} />
       </Routes>
     </Router>
   );

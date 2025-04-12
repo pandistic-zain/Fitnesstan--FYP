@@ -38,7 +38,7 @@ public class SpringSecurity {
                         .requestMatchers("/register/**").permitAll()
                         .requestMatchers("/images/**").permitAll() 
                         .requestMatchers("/verify-email/**").permitAll()
-                        .requestMatchers("/users/**", "/trainer/**").authenticated()
+                        .requestMatchers("/users/**").authenticated()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
 
                         .anyRequest().authenticated())
