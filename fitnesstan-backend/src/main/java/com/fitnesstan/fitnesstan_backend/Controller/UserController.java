@@ -9,6 +9,7 @@ import com.fitnesstan.fitnesstan_backend.DAO.UserRepository;
 import com.fitnesstan.fitnesstan_backend.Entity.Users;
 import com.fitnesstan.fitnesstan_backend.Entity.Diet;
 import com.fitnesstan.fitnesstan_backend.Entity.WorkoutPlan;
+import com.fitnesstan.fitnesstan_backend.DTO.ChangePasswordRequest;
 import com.fitnesstan.fitnesstan_backend.DTO.FullUserInfoDTO;
 import com.fitnesstan.fitnesstan_backend.Services.UserServices;
 
@@ -116,6 +117,19 @@ public class UserController {
             return new ResponseEntity<>("Failed to update user: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+    @PutMapping("/change-password")
+    public ResponseEntity<?> changePassword(@RequestBody ChangePasswordRequest request, Authentication authentication) {
+        // Get authenticated user's email from the security context
+        String email = authentication.getName();
+        try {
+            userServices.changePassword(email, request.getCurrentPassword(), request.getNewPassword());
+            return new ResponseEntity<>("Password changed successfully", HttpStatus.OK);
+        } catch (Exception e) {
+            // You can fine-tune the error responses based on exception types
+            return new ResponseEntity<>("Password change failed: " + e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+    
 
     // Delete the current user endpoint
     @DeleteMapping

@@ -124,16 +124,16 @@ public class UserServices {
         if (additionalInfo.getGender() == null || additionalInfo.getGender().isEmpty()) {
             throw new Exception("Gender is mandatory.");
         }
-    
+
         // Convert height from feet to meters
         double heightInMeters = additionalInfo.getHeightFt() * 0.3048;
-    
+
         // Calculate BMI
         double bmi = additionalInfo.getWeightKg() / (heightInMeters * heightInMeters);
-    
+
         // Get age (assumes calculateAge returns age as an int)
         int age = calculateAge(additionalInfo.getDob());
-    
+
         // Determine optimal BMI range based on age & gender
         double lowerBMI, upperBMI;
         if (additionalInfo.getGender().equalsIgnoreCase("male")) {
@@ -165,7 +165,7 @@ public class UserServices {
                 upperBMI = 22.9; // Default values
             }
         }
-    
+
         // Calculate REE using the Mifflin-St Jeor Equation
         double ree;
         if (additionalInfo.getGender().equalsIgnoreCase("male")) {
@@ -175,7 +175,7 @@ public class UserServices {
             ree = 10 * additionalInfo.getWeightKg() + 6.25 * (heightInMeters * 100)
                     - 5 * age - 161;
         }
-    
+
         // Adjust REE based on where BMI lies relative to the normal range.
         double midBMI = (lowerBMI + upperBMI) / 2;
         if (bmi < lowerBMI) {
@@ -191,7 +191,7 @@ public class UserServices {
             // BMI is above normal range (overweight/obese) → subtract deficit 500 cal.
             ree -= 500;
         }
-    
+
         // Calculate TDEE based on the user's exercise level
         double tdee;
         switch (additionalInfo.getExerciseLevel().toLowerCase()) {
@@ -220,7 +220,7 @@ public class UserServices {
             default:
                 throw new Exception("Invalid Exercise Level.");
         }
-    
+
         // Set additional information to the user object
         user.setHeightFt(additionalInfo.getHeightFt());
         user.setDob(additionalInfo.getDob());
@@ -231,13 +231,13 @@ public class UserServices {
         user.setExerciseLevel(additionalInfo.getExerciseLevel());
         user.setSleepHours(additionalInfo.getSleepHours());
         user.setMedicalHistory(additionalInfo.getMedicalHistory());
-    
+
         // Set calculated values
         user.setBmi(bmi);
         user.setRee(ree);
         user.setTdee(tdee);
     }
-    
+
     // Helper method to calculate age from date of birth
     private int calculateAge(LocalDate dob) {
         return Period.between(dob, LocalDate.now()).getYears();
@@ -317,33 +317,32 @@ public class UserServices {
             System.out.println("[DEBUG] Email verification failed: Invalid verification token.");
             throw new Exception("Invalid verification token.");
         }
-    
+
         // Remove the user from OTP store.
         otpStore.remove(email);
-    
+
         // Update user status and clear the verification token.
         user.setStatus("PASS");
         user.setVerificationToken(null);
         user.setUpdatedAt(LocalDateTime.now());
-    
+
         // Save user to generate a valid ID.
         Users savedUser = userRepository.save(user);
-    
+
         // Generate workout plan and diet plan using the saved user's ID.
         WorkoutPlan workoutPlan = workoutPlanServices.generateWorkoutPlan(savedUser.getId().toString());
         Map<String, Object> flaskResponse = sendUserDataToFlask(savedUser);
         Diet diet = addDietPlanFromFlaskResponse(savedUser.getId().toString(), flaskResponse);
-    
+
         // Update user with both references.
         savedUser.setCurrentWorkoutPlan(workoutPlan);
         savedUser.setCurrentDiet(diet);
-    
+
         // Save the updated user with both references.
         userRepository.save(savedUser);
-    
+
         // If no exceptions thrown, user is successfully verified.
     }
-    
 
     @SuppressWarnings("unchecked")
     private Map<String, Object> sendUserDataToFlask(Users user) {
@@ -532,5 +531,24 @@ public class UserServices {
         // For this example, we simply return a placeholder or null.
         // plans.put("workoutPlan", user.getCurrentWorkoutPlan());
         return plans;
+    }
+    // Inside com.fitnesstan.fitnesstan_backend.Services.UserServices
+
+    public void changePassword(String email, String currentPassword, String newPassword) throws Exception {
+        // Find the user by email
+        Users user = userRepository.findByEmail(email);
+        if (user == null) {
+            throw new Exception("User not found.");
+        }
+
+        // Check if the provided current password matches the stored password
+        if (!passwordEncoder.matches(currentPassword, user.getPassword())) {
+            throw new Exception("Current password is incorrect.");
+        }
+
+        // Update password with an encoded version of the new password
+        user.setPassword(passwordEncoder.encode(newPassword));
+        user.setUpdatedAt(LocalDateTime.now());
+        userRepository.save(user);
     }
 }
