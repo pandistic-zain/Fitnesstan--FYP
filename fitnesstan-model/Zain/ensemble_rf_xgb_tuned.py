@@ -170,11 +170,7 @@ def run_ensemble_pipeline(target_col):
         n_iter=36,  # Full grid
         cv=strat_kfold,
         scoring='accuracy',
-<<<<<<< HEAD
         n_jobs=2,
-=======
-        n_jobs=1,
->>>>>>> 09159d911956bd9a4fbaf8ed2db6d052c376d895
         verbose=1,
         random_state=42
     )
@@ -194,11 +190,7 @@ def run_ensemble_pipeline(target_col):
         n_iter=36,  # Full grid
         cv=strat_kfold,
         scoring='accuracy',
-<<<<<<< HEAD
         n_jobs=2,
-=======
-        n_jobs=1,
->>>>>>> 09159d911956bd9a4fbaf8ed2db6d052c376d895
         verbose=1,
         random_state=42
     )
@@ -215,11 +207,7 @@ def run_ensemble_pipeline(target_col):
         min_samples_leaf=best_rf_params['min_samples_leaf'],
         class_weight='balanced',
         random_state=42,
-<<<<<<< HEAD
         n_jobs=2
-=======
-        n_jobs=1
->>>>>>> 09159d911956bd9a4fbaf8ed2db6d052c376d895
     )
     tuned_xgb = xgb.XGBClassifier(
         n_estimators=best_xgb_params['n_estimators'],
@@ -233,11 +221,8 @@ def run_ensemble_pipeline(target_col):
         verbosity=1,
         use_label_encoder=False,
         random_state=42,
-<<<<<<< HEAD
         n_jobs=2
-=======
-        n_jobs=1
->>>>>>> 09159d911956bd9a4fbaf8ed2db6d052c376d895
+
     )
     
     # STEP F: Generate Meta-Features via Stacking (5-Fold Stratified CV)
