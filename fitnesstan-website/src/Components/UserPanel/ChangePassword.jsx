@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Loader from '../Loader';
 import styles from './ChangePassword.module.css';
-import { changePassword } from '../../API/RegisterAPI'; // This function should call the PUT /user/change-password endpoint
+import { changePassword } from '../../API/RegisterAPI';
 
 const ChangePassword = () => {
   const [currentPassword, setCurrentPassword] = useState('');
@@ -15,83 +15,95 @@ const ChangePassword = () => {
 
   const navigate = useNavigate();
 
+  // Utility to clear messages after 5 seconds
+  const clearMessagesAfterTimeout = () => {
+    setTimeout(() => {
+      setErrorMessage('');
+      setSuccessMessage('');
+    }, 5000);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setErrorMessage('');
-    setSuccessMessage('');
-
-    // Check that new password and confirm password are identical
+    
+    // Check if the new password and confirm password match
     if (newPassword !== confirmPassword) {
       setErrorMessage('New password and confirmation do not match.');
       return;
     }
 
     setLoading(true);
+    setErrorMessage('');
+    setSuccessMessage('');
+
     try {
-      // Call the API to change the password (make sure it returns a success status if changed)
-      await changePassword({ currentPassword, newPassword });
-      setSuccessMessage('Password changed successfully.');
-      // Clear form fields
-      setCurrentPassword('');
-      setNewPassword('');
-      setConfirmPassword('');
-      // Navigate back to dashboard after a short delay (e.g., 2 seconds)
-      setTimeout(() => {
-        navigate('/userdashboard');
-      }, 2000);
+      // Call the changePassword API function (ensure it points to /user/change-password endpoint)
+      const response = await changePassword({ 
+        currentPassword, 
+        newPassword 
+      });
+      
+      if (response.status === 200) {
+        setSuccessMessage('Password changed successfully.');
+        setTimeout(() => {
+          navigate('/userdashboard');
+        }, 2000);
+      } else {
+        setErrorMessage(response.data?.message || 'Failed to change password.');
+      }
     } catch (error) {
-      // Display error response from backend if available, or a generic error message.
-      const msg = error.response?.data || 'Failed to change password. Please try again.';
-      setErrorMessage(msg);
+      console.error("Change password error:", error.response?.data || error);
+      setErrorMessage(error.response?.data?.message || 'Failed to change password.');
     } finally {
       setLoading(false);
+      clearMessagesAfterTimeout();
     }
   };
 
   return (
     <div className={styles.changePasswordContainer}>
-      <h1 className={styles.pageTitle}>Change Password</h1>
-      {loading && <Loader />}
-      {errorMessage && <div className={styles.errorMessage}>{errorMessage}</div>}
-      {successMessage && <div className={styles.successMessage}>{successMessage}</div>}
-      <form onSubmit={handleSubmit} className={styles.changePasswordForm}>
-        <div className={styles.formGroup}>
-          <label htmlFor="currentPassword">Current Password:</label>
+      <div className={styles.changePasswordCard}>
+        <div className={styles.header}></div>
+        {loading && <Loader />}
+        <div className={styles.logoWrapper}>
+          {/* You can add a logo image here if desired */}
+        </div>
+        <h1 className={styles.title}>Change Password</h1>
+        <p className={styles.subtitle}>
+          Please enter your current password and choose a new password.
+        </p>
+        <form onSubmit={handleSubmit} className={styles.formGroup}>
           <input
             type="password"
-            id="currentPassword"
+            placeholder="Current Password"
+            className={styles.inputField}
             value={currentPassword}
             onChange={(e) => setCurrentPassword(e.target.value)}
             required
-            className={styles.inputField}
           />
-        </div>
-        <div className={styles.formGroup}>
-          <label htmlFor="newPassword">New Password:</label>
           <input
             type="password"
-            id="newPassword"
+            placeholder="New Password"
+            className={styles.inputField}
             value={newPassword}
             onChange={(e) => setNewPassword(e.target.value)}
             required
-            className={styles.inputField}
           />
-        </div>
-        <div className={styles.formGroup}>
-          <label htmlFor="confirmPassword">Confirm New Password:</label>
           <input
             type="password"
-            id="confirmPassword"
+            placeholder="Confirm New Password"
+            className={styles.inputField}
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
             required
-            className={styles.inputField}
           />
-        </div>
-        <button type="submit" className={styles.submitButton}>
-          Change Password
-        </button>
-      </form>
+          {errorMessage && <p className={styles.errorMessage}>{errorMessage}</p>}
+          {successMessage && <p className={styles.successMessage}>{successMessage}</p>}
+          <button type="submit" className={styles.submitButton}>
+            Change Password
+          </button>
+        </form>
+      </div>
     </div>
   );
 };
