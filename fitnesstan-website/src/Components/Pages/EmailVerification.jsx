@@ -1,6 +1,8 @@
+// src/components/EmailVerification.jsx
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { verifyEmail, resendOtp } from "../../API/RegisterAPI.jsx";
+import { verifyEmail, getFullUserData, resendOtp } from "../../API/RegisterAPI.jsx";
+import Loader from "../Loader.jsx";
 import styles from "./EmailVerification.module.css";
 
 const EmailVerification = () => {
@@ -9,12 +11,14 @@ const EmailVerification = () => {
   const [errorMessage, setErrorMessage] = useState("");
   const [isCooldown, setIsCooldown] = useState(true);
   const [cooldownTime, setCooldownTime] = useState(60);
+  const [loading, setLoading] = useState(false);
+
   const navigate = useNavigate();
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const email = queryParams.get("email");
 
-  // Function to clear messages after 5 seconds
+  // Utility: Clear messages after 5 seconds
   const clearMessagesAfterTimeout = () => {
     setTimeout(() => {
       setMessage("");
@@ -27,30 +31,49 @@ const EmailVerification = () => {
     e.preventDefault();
     setMessage("");
     setErrorMessage("");
+    setLoading(true);
 
     try {
-      const response = await verifyEmail(email, otp);
-      if (response.status === 200) {
+      // 1) Call the verifyEmail API
+      const verifyResponse = await verifyEmail(email, otp);
+      console.log("[DEBUG] verifyEmail response:", verifyResponse);
+
+      // If successful, verifyResponse.status === 200 and verifyResponse.data contains a valid user
+      if (
+        verifyResponse.status === 200 &&
+        verifyResponse.data &&
+        verifyResponse.data.email
+      ) {
         setMessage("Email verified!");
-        setErrorMessage(""); // Clear error if any
-        setTimeout(() => navigate("/user-dashboard"), 1000);
+
+        // 2) Fetch full user data (expects an object { user, diet, workoutPlan })
+        const fullUserData = await getFullUserData();
+        console.log("[DEBUG] FullUserInfoDTO:", fullUserData);
+        if (fullUserData && fullUserData.user) {
+          localStorage.setItem("userData", JSON.stringify(fullUserData.user));
+          // 3) Navigate to the dashboard after a short delay
+          setTimeout(() => navigate("/userdashboard"), 1000);
+        } else {
+          setErrorMessage("Failed to fetch full user data.");
+          clearMessagesAfterTimeout();
+          setLoading(false);
+          return;
+        }
       } else {
-        setErrorMessage(response.data.message || "Invalid OTP. Try again.");
-        setMessage(""); // Clear success message if any
+        setErrorMessage(
+          (verifyResponse.data && verifyResponse.data.message) ||
+            "Invalid OTP. Please try again."
+        );
       }
-      clearMessagesAfterTimeout();
     } catch (error) {
-      console.error("Verification error: ", error.response?.data || error);
+      console.error("Verification error:", error.response?.data || error);
       setErrorMessage(
-        error.response?.status === 400
-          ? "Invalid OTP. Please try again."
-          : error.response?.status === 404
-          ? "Email not found. Check your entry."
-          : error.response?.status === 500
-          ? "Server error. Please try later."
-          : "An error occurred. Try again."
+        error.response?.data?.message ||
+          error.response?.data ||
+          "Verification failed. Please try again."
       );
-      setMessage("");
+    } finally {
+      setLoading(false);
       clearMessagesAfterTimeout();
     }
   };
@@ -66,33 +89,41 @@ const EmailVerification = () => {
       setMessage("Resending OTP...");
       await resendOtp(email);
       setMessage("OTP has been resent. Please check your email.");
-      setErrorMessage(""); // Clear error if any
     } catch (error) {
-      console.error("Resend OTP error: ", error.response?.data || error);
+      console.error("Resend OTP error:", error.response?.data || error);
       setErrorMessage("Could not resend OTP. Try again later.");
-      setMessage(""); // Clear success message if any
-      setIsCooldown(false); // Re-enable if resend fails
+      setIsCooldown(false);
       setCooldownTime(0);
     }
     clearMessagesAfterTimeout();
   };
 
-  // Cooldown timer effect
+  // Cooldown timer effect for Resend OTP
   useEffect(() => {
     if (isCooldown && cooldownTime > 0) {
       const timer = setInterval(() => {
         setCooldownTime((prevTime) => prevTime - 1);
       }, 1000);
-
       return () => clearInterval(timer);
     } else if (cooldownTime === 0) {
       setIsCooldown(false);
     }
   }, [isCooldown, cooldownTime]);
 
+  // Debug logs
+  console.log("EmailVerification component loaded");
+  console.log("Email:", email);
+  console.log("OTP:", otp);
+  console.log("Message:", message);
+  console.log("Error Message:", errorMessage);
+  console.log("Is Cooldown:", isCooldown);
+  console.log("Cooldown Time:", cooldownTime);
+  console.log("Loading:", loading);
+
   return (
     <div className={styles.verificationContainer}>
       <div className={styles.card}>
+        {loading && <Loader />}
         <div className={styles.header}></div>
         <div className={styles.info}>
           <p className={styles.title}>Verify Your Email</p>
@@ -105,7 +136,9 @@ const EmailVerification = () => {
             placeholder="Enter OTP"
           />
           {message && <div className={styles.message}>{message}</div>}
-          {errorMessage && <div className={styles.errorMessage}>{errorMessage}</div>}
+          {errorMessage && (
+            <div className={styles.errorMessage}>{errorMessage}</div>
+          )}
         </div>
         <div className={styles.footer}>
           <p
@@ -114,11 +147,7 @@ const EmailVerification = () => {
           >
             {isCooldown ? `Resend OTP in ${cooldownTime}s` : "Resend OTP"}
           </p>
-          <button
-            type="button"
-            className={styles.action}
-            onClick={handleVerify}
-          >
+          <button type="button" className={styles.action} onClick={handleVerify}>
             Verify OTP
           </button>
         </div>

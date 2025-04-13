@@ -72,6 +72,7 @@ const AdditionalInfoForm = () => {
       additionalInfo: formData,
     };
 
+    
     try {
       await registerUser(payload);
       navigate(
@@ -89,11 +90,11 @@ const AdditionalInfoForm = () => {
 
   return (
     <div className={styles.backgroundDiv}>
+       {loading && <Loader />}
       <Container className={styles.container}>
         <Row className="justify-content-center">
           <Col>
             <h2 className={styles.textCenter}>Additional Information</h2>
-            {loading && <Loader />}
             <Form onSubmit={handleSubmit}>
               <Form.Group controlId="heightFt" className="mb-3">
                 <Form.Label>Height (ft)</Form.Label>
@@ -208,7 +209,7 @@ const AdditionalInfoForm = () => {
                   required
                 >
                   <option value="">Select your exercise level</option>
-                  {["3 days a week", "4 days a week", "5 days a week", "6 days a week", "7 days a week"].map((level) => (
+                  {["No Exercise","1 days a week","2 days a week","3 days a week", "4 days a week", "5 days a week", "6 days a week", "7 days a week"].map((level) => (
                     <option key={level} value={level}>
                       {level}
                     </option>

@@ -1,0 +1,15 @@
+{
+    "properties": [
+      {
+        "name": "exercisedb.api.key",
+        "type": "java.lang.String",
+        "description": "RapidAPI key for ExerciseDB API"
+      },
+      {
+        "name": "exercisedb.api.host",
+        "type": "java.lang.String",
+        "description": "RapidAPI host for ExerciseDB API"
+      }
+    ]
+  }
+  

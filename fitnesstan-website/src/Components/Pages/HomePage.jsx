@@ -144,9 +144,9 @@ const HomePage = () => {
         <Container>
           <Row className="align-items-center">
             <Col lg={6}>
-              <h1>Welcome to Fitnesstan</h1>
+              <h1>Welcome to Fitnessstan</h1>
               <p>
-                Welcome to Fitnesstan, the app designed to transform your
+                Welcome to Fitnessstan, the app designed to transform your
                 fitness goals into reality! Whether you're a beginner or a
                 seasoned athlete, our platform offers tailored workout and diet
                 plans crafted just for you.
@@ -394,7 +394,7 @@ const HomePage = () => {
             </div>
           ))}
         </div>
-        <div className={styles.horizontalDividerFinalfeedback}></div>
+        {/* <div className={styles.horizontalDividerFinalfeedback}></div> */}
       </section>
       {/* Team Section */}
       <section className={styles["team-section"]} id="team">

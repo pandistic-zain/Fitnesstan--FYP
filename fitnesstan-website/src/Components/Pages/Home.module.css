@@ -682,6 +682,7 @@ p {
   background-color: #1a1a1a; /* Light background */
   padding: 50px 20px; /* Increased padding for more space */
   text-align: center;
+  margin-bottom: 50px;
 }
 
 .give-feedback-section h2 {
@@ -719,14 +720,15 @@ p {
   width: 100%; /* Full width fields */
   padding: 12px; /* Increased padding inside fields */
   border-radius: 5px; /* Rounded corners */
+  border-color: transparent !important;
   transition: border-color 0.3s; /* Smooth border transition */
   font-size: 1rem; /* Consistent font size */
 }
 
 .feedback-form input:focus,
 .feedback-form textarea:focus {
-  border-color: #ff0000 !important; /* Green border on focus */
-  outline: none; /* Remove default outline */
+  border-color: transparent !important; /* Highlight focus */
+  outline: none !important; /* Remove default outline */
 }
 .feedback-form input:active,
 .feedback-form textarea:active {

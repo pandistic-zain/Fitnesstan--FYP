@@ -1,0 +1,118 @@
+/* ---------------------------------------------
+   MAIN CAROUSEL CONTAINER
+   --------------------------------------------- */
+   .exerciseCarousel {
+    margin-top: 30px !important;
+    /* Container is narrower than screen so overlay can show on sides */
+    width: 70% !important;
+    margin: 40px auto;
+    position: relative;
+    padding: 20px;
+    text-align: center;
+    border-radius: 20px;
+    background-color: #ff0000; /* Solid red background */
+    overflow: visible; /* so overlay & glow can extend outside container */
+    z-index: 0;        /* container above background but behind pseudo-els */
+  }
+  
+  /* 
+     DARK OVERLAY EXTENDING BEYOND THE RED CONTAINER
+     to the left and right (and a bit above/below).
+  */
+  .exerciseCarousel::before {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    
+    /* 
+      Move overlay above/below container, 
+      and make it wider so it extends left & right. 
+      Adjust these numbers to taste.
+    */
+    top: -40px;
+    bottom: -40px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 120%;
+    
+    /* Semi-transparent black + blur effect */
+    background-color: rgba(25, 25, 25, 0.4);
+    backdrop-filter: blur(8px);
+  
+    /* Keep corners rounded beyond container edges */
+    border-radius: 30px;
+  }
+  
+  /* ---------------------------------------------
+     CAROUSEL SLIDE CONTENT
+     --------------------------------------------- */
+  .carouselItemContent {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 30px 0;
+  }
+  
+  /* Day heading (e.g. "Day 1") */
+  .dayHeading {
+    font-size: 1.6rem;
+    margin-bottom: 10px;
+    color: #ffffff;
+  }
+  
+  /* Exercise name (large heading) */
+  .exerciseName {
+    font-size: 2.2rem;
+    margin-bottom: 8px;
+    color: #ffffff;
+  }
+  
+  /* Subheading for muscle group, etc. */
+  .muscleGroup {
+    font-size: 1.3rem;
+    margin-bottom: 12px;
+    color: #f5f5f5;
+  }
+  
+  /* Basic text for description/equipment */
+  .description,
+  .equipment {
+    margin: 8px 0;
+    font-size: 1.1rem;
+    color: #ffffff; /* White text for readability on red */
+  }
+  
+  /* ---------------------------------------------
+     CIRCULAR GIF WITH BLINKING GLOW
+     --------------------------------------------- */
+  .exerciseGifContainer {
+    display: inline-block;
+    border-radius: 50%;
+    padding: 15px;
+    margin: 20px 0;
+    background-color: #ff0000; /* same red or darker variant */
+    
+    /* Larger, slower blinking/pulsing effect */
+    animation: blink 2.5s infinite;
+  }
+  
+  /* The actual GIF or image inside the circle */
+  .exerciseGif {
+    width: 300px;
+    height: 300px;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+  
+  /* Keyframes for the blinking/pulsing glow around the circle */
+  @keyframes blink {
+    0%, 100% {
+      box-shadow: 0 0 40px 15px #1a1a1a;
+    }
+    50% {
+      box-shadow: 0 0 70px 25px #1a1a1a;
+    }
+  }
+  
+
+  

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { registerUser, loginUser } from "../../API/RegisterAPI.jsx";
+import { loginUser, getFullUserData } from "../../API/RegisterAPI.jsx";
+
 import Loader from "../Loader.jsx"; // Import the Loader component
 import "./Register.css";
 
@@ -40,45 +41,80 @@ const Register = () => {
 
   const handleLoginSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true); // Start loading
+    setLoading(true);
+
     try {
+      console.log("[DEBUG] Sending login request with data:", loginData);
+
+      // 1) Login request (returns the full Axios response)
       const response = await loginUser(loginData);
-      const data = response.data;
+      console.log("[DEBUG] loginUser response:", response);
 
+      // 2) Check if login was successful
       if (response.status === 200) {
-        // Store email and password in local storage for future API requests
-        localStorage.setItem("email", loginData.email);
-        localStorage.setItem("password", loginData.password); // Only do this for secure environments
+        // This is the JSON from the server's /login
+        const loginPayload = response.data;
+        console.log("[DEBUG] loginPayload:", loginPayload);
 
-        if (data.roles.includes("ADMIN")) {
-          navigate("/AdminDashboard");
+        // 3) Store Basic Auth credentials in localStorage
+        localStorage.setItem("username", loginData.email);
+        localStorage.setItem("password", loginData.password);
+
+        // 4) Fetch the full user data (which returns only the JSON)
+        const fullUserData = await getFullUserData();
+        console.log("[DEBUG] FullUserInfoDTO:", fullUserData);
+
+        // 5) Since fullUserData is { user, diet, workoutPlan }, check if it's not null
+        if (fullUserData) {
+          // Optionally store user info
+          localStorage.setItem("userData", JSON.stringify(fullUserData.user));
+
+          // 6) Decide navigation based on roles
+          const userRoles = fullUserData.user?.roles || [];
+          if (userRoles.includes("ADMIN")) {
+            navigate("/AdminDashboard");
+          } else {
+            navigate("/userdashboard");
+          }
         } else {
-          navigate("/user-dashboard");
+          console.error("Failed to fetch full user data:", fullUserData);
+          setErrorMessage("Failed to fetch full user data.");
         }
       } else {
-        setErrorMessage(data.message || "Login failed. Please try again.");
+        // Non-200 login
+        console.error("Login failed with status:", response.status, response.data);
+        setErrorMessage(
+          response.data?.message || "Login failed. Please try again."
+        );
       }
     } catch (error) {
-      console.error("Login error: ", error.response?.data || error);
+      console.error("[DEBUG] Login error:", error);
       setErrorMessage(
-        error.response?.data.message ||
-          "Invalid email or password. Please try again."
+        error.response?.data?.message || "Invalid email or password."
       );
     } finally {
-      setLoading(false); // Stop loading
+      setLoading(false);
     }
   };
 
+  // -----------------------------------------
+  // SIGN UP SUBMIT -> Move user to Additional Info
+  // -----------------------------------------
   const handleSignUpSubmit = async (e) => {
     e.preventDefault();
     if (signUpData.password !== signUpData.confirmPassword) {
       setErrorMessage("Passwords do not match.");
       return;
     }
+    // We store the email/password so that the next steps
+    // (AdditionalInfoForm, etc.) can use them
+    localStorage.setItem("username", signUpData.email);
+    localStorage.setItem("password", signUpData.password);
 
-    // Navigate to Additional Info Page with user data
+    // Move to AdditionalInfoForm with signUpData in state
     navigate("/AdditionalInfoForm", { state: { signUpData } });
   };
+
   return (
     <>
       {loading && <Loader />} {/* Conditionally render the loader */}
@@ -107,12 +143,27 @@ const Register = () => {
             </span>
           </div>
         </div>
+
+        {/* Container that toggles between Sign Up and Login forms */}
         <div
           className={`container ${isSignUp ? "right-panel-active" : ""}`}
           id="container"
         >
+          {/* SIGN UP FORM */}
           <div className="form-container sign-up-container">
-            <form onSubmit={handleSignUpSubmit}>
+            <form onSubmit={handleSignUpSubmit} autoComplete="off">
+              {/* Hidden fields to trick some browsers into not autofilling */}
+              <input
+                type="text"
+                name="fakeusernameremembered"
+                style={{ display: "none" }}
+              />
+              <input
+                type="password"
+                name="fakepasswordremembered"
+                style={{ display: "none" }}
+              />
+
               <h1>SIGN UP</h1>
               <div className="form-fields">
                 <input
@@ -122,6 +173,7 @@ const Register = () => {
                   value={signUpData.username}
                   onChange={handleSignUpChange}
                   required
+                  autoComplete="off"
                 />
                 <input
                   type="email"
@@ -130,8 +182,8 @@ const Register = () => {
                   value={signUpData.email}
                   onChange={handleSignUpChange}
                   required
+                  autoComplete="off"
                 />
-
                 <input
                   type="password"
                   name="password"
@@ -139,8 +191,8 @@ const Register = () => {
                   value={signUpData.password}
                   onChange={handleSignUpChange}
                   required
+                  autoComplete="new-password"
                 />
-
                 <input
                   type="password"
                   name="confirmPassword"
@@ -148,14 +200,29 @@ const Register = () => {
                   value={signUpData.confirmPassword}
                   onChange={handleSignUpChange}
                   required
+                  autoComplete="new-password"
                 />
               </div>
               <button type="submit">Sign Up</button>
               {errorMessage && <p className="error">{errorMessage}</p>}
             </form>
           </div>
+
+          {/* LOGIN FORM */}
           <div className="form-container sign-in-container">
-            <form onSubmit={handleLoginSubmit}>
+            <form onSubmit={handleLoginSubmit} autoComplete="off">
+              {/* Hidden fields to trick some browsers into not autofilling */}
+              <input
+                type="text"
+                name="fakeusernameremembered"
+                style={{ display: "none" }}
+              />
+              <input
+                type="password"
+                name="fakepasswordremembered"
+                style={{ display: "none" }}
+              />
+
               <h1>LOGIN</h1>
               <div className="form-fields">
                 <input
@@ -165,6 +232,7 @@ const Register = () => {
                   value={loginData.email}
                   onChange={handleLoginChange}
                   required
+                  autoComplete="off"
                 />
                 <div className="password-container">
                   <input
@@ -175,6 +243,7 @@ const Register = () => {
                     onChange={handleLoginChange}
                     required
                     className={showPassword ? "password-visible" : ""}
+                    autoComplete="new-password"
                   />
                   <span
                     className="show-password"
@@ -193,6 +262,8 @@ const Register = () => {
               {errorMessage && <p className="error">{errorMessage}</p>}
             </form>
           </div>
+
+          {/* Overlay for transitions */}
           <div className="overlay-container">
             <div className="overlay">
               <div className="overlay-panel overlay-left">

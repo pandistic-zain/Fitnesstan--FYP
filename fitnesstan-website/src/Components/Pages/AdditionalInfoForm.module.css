@@ -12,7 +12,7 @@
 /* General container styling */
 /* General container styling */
 .container {
-  background-color: rgba(255, 255, 255, 0.5) !important; /* Semi-transparent background for the blur effect */
+  background-color: rgba(255, 255, 255, 0.8) !important; /* Semi-transparent background for the blur effect */
   backdrop-filter: blur(15px) !important; /* Apply blur effect to the background */
   border-radius: 20px !important; /* Smooth rounded edges */
   padding: 40px !important; /* Space around the content */

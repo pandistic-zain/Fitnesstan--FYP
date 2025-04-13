@@ -36,7 +36,9 @@ public class SpringSecurity {
                         // Explicitly allow OPTIONS for all routes
                         .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/register/**").permitAll()
-                        .requestMatchers("/users/**", "/trainer/**").authenticated()
+                        .requestMatchers("/images/**").permitAll() 
+                        .requestMatchers("/verify-email/**").permitAll()
+                        .requestMatchers("/users/**").authenticated()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
 
                         .anyRequest().authenticated())
