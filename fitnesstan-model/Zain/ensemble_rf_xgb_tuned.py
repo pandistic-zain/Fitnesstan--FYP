@@ -2,21 +2,22 @@
 File: ensemble_rf_xgb_tuned_multi_target_with_custom_progress.py
 
 Description:
-    This script demonstrates an ensemble of a tuned Random Forest and XGBoost classifier using stacking,
+    This script demonstrates an ensemble of tuned Random Forest and XGBoost classifiers using stacking,
     handling two target variables: "Primary_Cluster" and "Secondary_Cluster". It performs:
       - Data preprocessing with RobustScaler and Label Encoding,
       - Applies a refined SMOTE variant (BorderlineSMOTE) for class balancing,
-      - Hyperparameter tuning via GridSearchCV for Random Forest and XGBoost (with a reduced parameter grid and n_jobs=1),
-      - Stacking with 5-fold CV (with early stopping in XGBoost) to generate meta-features,
+      - Hyperparameter tuning via GridSearchCV for Random Forest and XGBoost (using a reduced parameter grid and n_jobs=1),
+      - Stacking with 5-fold CV to generate meta-features,
       - Training of a meta-learner (Gradient Boosting Classifier) on the meta-features,
       - Evaluation (Accuracy, Precision, Recall, F1 Score) displayed in a formatted table,
-      - Saving of the ensemble package to a pickle file.
+      - Saving the ensemble package to a pickle file.
       
-    An overall progress bar (custom-designed) is updated in 1% increments through 13 major steps.
+    An overall progress bar (custom-designed) updates in 1% increments through 13 major steps.
     
 Usage:
     1. Ensure your CSV file (e.g., generated_synthetic_data.csv) is in the same directory.
-    2. In Colab, run the cell to install dependencies, then run this code cell.
+    2. Run:
+           python ensemble_rf_xgb_tuned_multi_target_with_custom_progress.py
 """
 
 # ===============================
@@ -28,11 +29,11 @@ import pandas as pd
 import numpy as np
 
 from sklearn.model_selection import train_test_split, KFold, GridSearchCV
-from sklearn.preprocessing import LabelEncoder, RobustScaler
+from sklearn.preprocessing import LabelEncoder, RobustScaler  # RobustScaler to handle outliers
 from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, classification_report
 import xgboost as xgb
-from imblearn.over_sampling import BorderlineSMOTE
+from imblearn.over_sampling import BorderlineSMOTE  # Refined SMOTE variant
 import pickle
 from tqdm import tqdm
 import matplotlib.pyplot as plt
@@ -41,12 +42,11 @@ from tabulate import tabulate
 # ------------------------------
 # Define a custom overall progress bar.
 overall = tqdm(total=100, desc="Overall Progress", bar_format="{l_bar}{bar:20}{r_bar} {n_fmt}%")
-
 def update_overall_progress(percent):
     """Update overall progress bar in 1% increments for a given percent."""
     for _ in range(percent):
         overall.update(1)
-        time.sleep(0.01)  # A very short delay for visualization; adjust if needed.
+        time.sleep(0.01)  # Short delay for visualization
 
 # ===============================
 # STEP 2: Set the File Path (Hardcoded)
@@ -88,7 +88,7 @@ if missing_features:
     print(f"[ERROR] Missing expected features: {missing_features}")
     exit(1)
 else:
-    print("[DEBUG] All expected features found.")
+    print("[DEBUG] All expected features found in the dataset.")
 
 print("[DEBUG] Encoding categorical features...")
 label_encoders = {}
@@ -138,7 +138,6 @@ def run_ensemble_pipeline(target_col):
     
     # STEP D: Hyperparameter Tuning for Base Models using a reduced grid.
     print("[DEBUG] Tuning hyperparameters using GridSearchCV (reduced grid)...")
-    # Reduced parameter grids for faster execution.
     rf_param_grid = {
         'n_estimators': [100, 300],
         'max_depth': [10, 15],
@@ -173,7 +172,7 @@ def run_ensemble_pipeline(target_col):
     best_xgb_params = xgb_cv.best_params_
     print(f"[DEBUG] Best XGB parameters for {target_col}: {best_xgb_params}")
     
-    # STEP E: Define Tuned Base Models for Stacking
+    # STEP E: Define Tuned Base Models for Stacking.
     print("[DEBUG] Defining tuned base models for stacking...")
     tuned_rf = RandomForestClassifier(
         n_estimators=best_rf_params['n_estimators'],
@@ -216,10 +215,9 @@ def run_ensemble_pipeline(target_col):
         meta_train_rf[val_index] = rf_fold.predict_proba(X_fold_val)
         meta_test_rf += rf_fold.predict_proba(X_test) / 5
         
-        # Train tuned XGBoost on current fold with early stopping.
+        # Train tuned XGBoost on current fold (without early stopping).
         xgb_fold = tuned_xgb
-        xgb_fold.fit(X_fold_train, y_fold_train, eval_set=[(X_fold_val, y_fold_val)],
-                     early_stopping_rounds=30, verbose=False)
+        xgb_fold.fit(X_fold_train, y_fold_train, eval_set=[(X_fold_val, y_fold_val)], verbose=False)
         meta_train_xgb[val_index] = xgb_fold.predict_proba(X_fold_val)
         meta_test_xgb += xgb_fold.predict_proba(X_test) / 5
 
@@ -250,11 +248,11 @@ def run_ensemble_pipeline(target_col):
     print(f"Ensemble Model Evaluation Metrics for {target_col} (Weighted Averages)")
     print("="*50)
     print(tabulate(metrics_table, headers=["Metric", "Score"], tablefmt="pretty"))
-    print("\n")  # Extra line spacing for clarity
+    print("\n")  # Extra spacing for clarity
     print("Full Classification Report:")
     print(classification_report(y_test, ensemble_pred, target_names=[str(l) for l in unique_labels]))
     
-    # STEP I: Save the Ensemble Package for the Current Target
+    # STEP I: Save the Ensemble Package for Current Target
     ensemble_package = {
         "meta_learner": meta_learner,
         "label_mapping": label_mapping,
@@ -268,6 +266,8 @@ def run_ensemble_pipeline(target_col):
     print(f"\n[DEBUG] Ensemble model package for {target_col} saved as {file_name}")
     print("\n" + "="*50 + "\n")
     # End of pipeline for the current target.
+
+# End of run_ensemble_pipeline function.
 
 # ===============================
 # STEP 12: Main Execution: Run pipeline for both targets.
