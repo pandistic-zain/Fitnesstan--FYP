@@ -46,7 +46,6 @@ OPTIONAL_NUM  = ["saturated_fat", "fiber", "sugar", "sodium"]
 re_digits = re.compile(r"[^0-9.]")
 
 # ---------- helpers ---------
-
 def to_float(series: pd.Series) -> pd.Series:
     """Strip non‑numeric chars & convert to float; preserves index length."""
     return pd.to_numeric(series.astype(str).str.replace(re_digits, "", regex=True), errors="coerce")
@@ -99,18 +98,18 @@ hgb_grid = {
 alpha_vals = [1e-4, 1e-3, 0.01, 0.1, 1, 5, 10, 50, 100, 500, 1000]
 
 # ---------- HGB -------------------------------------------
-# Tuning HGB (HistGradientBoostingRegressor) with cross-validation and plotting
 log.info("🔍 Tuning HGB …")
-
 # Perform grid search to tune HGB
-HGB = GridSearchCV(HistGradientBoostingRegressor(random_state=42), hgb_grid,
-                   cv=5, scoring="neg_root_mean_squared_error", n_jobs=12).fit(X_tr, y_tr).best_estimator_
+grid_search = GridSearchCV(HistGradientBoostingRegressor(random_state=42), hgb_grid,
+                           cv=5, scoring="neg_root_mean_squared_error", n_jobs=12)
+grid_search.fit(X_tr, y_tr)
+HGB = grid_search.best_estimator_  # Get the best model after grid search
 
 # Predict using the best estimator
 pred_hgb = HGB.predict(X_te)
 
-# Get the cross-validation results for HGB
-cv_results = HGB.cv_results_
+# Get the cross-validation results for HGB from the GridSearchCV object
+cv_results = grid_search.cv_results_  # Accessing cv_results_ from GridSearchCV
 
 # Plot the validation curve for HGB's learning_rate
 plt.figure(figsize=(6, 4))
@@ -121,10 +120,8 @@ plt.ylabel("Negative Mean Test Score (RMSE)")
 plt.title("HGB Learning Rate vs Performance (Cross-validation)")
 plt.grid(True)
 plt.tight_layout()
-plt.savefig(models_dir/"cv_hgb_learning_rate.png", dpi=250)
+plt.savefig(args.outdir/"cv_hgb_learning_rate.png", dpi=250)
 plt.show()
-
-# You can repeat similar plotting for other hyperparameters like max_depth, min_samples_leaf, l2_regularization
 
 # Example: Plot for max_depth
 plt.figure(figsize=(6, 4))
@@ -135,7 +132,7 @@ plt.ylabel("Negative Mean Test Score (RMSE)")
 plt.title("HGB Max Depth vs Performance (Cross-validation)")
 plt.grid(True)
 plt.tight_layout()
-plt.savefig(models_dir/"cv_hgb_max_depth.png", dpi=250)
+plt.savefig(args.outdir/"cv_hgb_max_depth.png", dpi=250)
 plt.show()
 
 # Example: Plot for min_samples_leaf
@@ -147,7 +144,7 @@ plt.ylabel("Negative Mean Test Score (RMSE)")
 plt.title("HGB Min Samples Leaf vs Performance (Cross-validation)")
 plt.grid(True)
 plt.tight_layout()
-plt.savefig(models_dir/"cv_hgb_min_samples_leaf.png", dpi=250)
+plt.savefig(args.outdir/"cv_hgb_min_samples_leaf.png", dpi=250)
 plt.show()
 
 # Example: Plot for l2_regularization
@@ -159,7 +156,7 @@ plt.ylabel("Negative Mean Test Score (RMSE)")
 plt.title("HGB L2 Regularization vs Performance (Cross-validation)")
 plt.grid(True)
 plt.tight_layout()
-plt.savefig(models_dir/"cv_hgb_l2_regularization.png", dpi=250)
+plt.savefig(args.outdir/"cv_hgb_l2_regularization.png", dpi=250)
 plt.show()
 
 
@@ -168,15 +165,21 @@ plt.show()
 log.info("🔍 Tuning Ridge …")
 
 # Perform grid search and get the best model
-RIDGE = GridSearchCV(Pipeline([
+grid_search_ridge = GridSearchCV(Pipeline([
                 ("poly", PolynomialFeatures(degree=2, include_bias=False)),
                 ("scale", StandardScaler()),
                 ("ridge", Ridge())]),
                 {"ridge__alpha": alpha_vals}, cv=5,
-                scoring="neg_root_mean_squared_error", n_jobs=12).fit(X_tr, y_tr).best_estimator_
+                scoring="neg_root_mean_squared_error", n_jobs=12)
+
+# Fit the model using grid search
+grid_search_ridge.fit(X_tr, y_tr)
+
+# Get the best estimator from the grid search
+RIDGE = grid_search_ridge.best_estimator_
 
 # Get the cross-validation results for Ridge
-cv_results = RIDGE.cv_results_
+cv_results = grid_search_ridge.cv_results_  # Access cv_results_ from GridSearchCV object
 
 # Plot the validation curve for Ridge's alpha values
 plt.figure(figsize=(6, 4))
@@ -187,7 +190,7 @@ plt.ylabel("Negative Mean Test Score (RMSE)")
 plt.title("Ridge α Regularization Curve (Cross-validation)")
 plt.grid(True)
 plt.tight_layout()
-plt.savefig(models_dir/"cv_ridge.png", dpi=250)
+plt.savefig(args.outdir/"cv_ridge.png", dpi=250)
 plt.show()
 
 
