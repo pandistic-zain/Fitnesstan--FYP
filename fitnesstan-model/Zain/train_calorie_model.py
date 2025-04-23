@@ -99,6 +99,7 @@ alpha_vals = [1e-4, 1e-3, 0.01, 0.1, 1, 5, 10, 50, 100, 500, 1000]
 
 # ---------- HGB -------------------------------------------
 log.info("🔍 Tuning HGB …")
+
 # Perform grid search to tune HGB
 grid_search = GridSearchCV(HistGradientBoostingRegressor(random_state=42), hgb_grid,
                            cv=5, scoring="neg_root_mean_squared_error", n_jobs=12)
@@ -111,9 +112,12 @@ pred_hgb = HGB.predict(X_te)
 # Get the cross-validation results for HGB from the GridSearchCV object
 cv_results = grid_search.cv_results_  # Accessing cv_results_ from GridSearchCV
 
+# Now we need to plot correctly for learning_rate and handle cross-validation results
+mean_test_scores = cv_results["mean_test_score"].reshape(len(hgb_grid["max_depth"]), -1).mean(axis=1)
+
 # Plot the validation curve for HGB's learning_rate
 plt.figure(figsize=(6, 4))
-plt.plot(hgb_grid["learning_rate"], -cv_results["mean_test_score"], marker="o")
+plt.plot(hgb_grid["learning_rate"], -mean_test_scores, marker="o")
 plt.xscale("log")
 plt.xlabel("Learning Rate (Log Scale)")
 plt.ylabel("Negative Mean Test Score (RMSE)")
@@ -181,9 +185,12 @@ RIDGE = grid_search_ridge.best_estimator_
 # Get the cross-validation results for Ridge
 cv_results = grid_search_ridge.cv_results_  # Access cv_results_ from GridSearchCV object
 
+# Reshaping cv_results to match the alpha_vals for plotting
+mean_test_scores = cv_results["mean_test_score"].reshape(len(alpha_vals), -1).mean(axis=1)
+
 # Plot the validation curve for Ridge's alpha values
 plt.figure(figsize=(6, 4))
-plt.plot(alpha_vals, -cv_results["mean_test_score"], marker="o")
+plt.plot(alpha_vals, -mean_test_scores, marker="o")
 plt.xscale("log")
 plt.xlabel("Alpha (Log Scale)")
 plt.ylabel("Negative Mean Test Score (RMSE)")
@@ -192,7 +199,6 @@ plt.grid(True)
 plt.tight_layout()
 plt.savefig(args.outdir/"cv_ridge.png", dpi=250)
 plt.show()
-
 
 # ---------- Ensemble --------------------------------------
 blend_pred = 0.5 * (pred_hgb + pred_ridge)
