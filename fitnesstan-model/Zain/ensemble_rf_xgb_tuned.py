@@ -1,12 +1,20 @@
 """
+<<<<<<< HEAD
+File: ensemble_rf_xgb_tuned.py
+=======
 File: ensemble_rf_xgb_tuned_multi_target_with_custom_progress.py
+>>>>>>> 09159d911956bd9a4fbaf8ed2db6d052c376d895
 
 Description:
     This script demonstrates an ensemble of tuned Random Forest and XGBoost classifiers using stacking,
     handling two target variables: "Primary_Cluster" and "Secondary_Cluster". It performs:
       - Data preprocessing with RobustScaler and Label Encoding,
       - Applies a refined SMOTE variant (BorderlineSMOTE) for class balancing,
+<<<<<<< HEAD
+      - Hyperparameter tuning via RandomizedSearchCV for Random Forest and XGBoost (using the full parameter grid, n_jobs=2=22, and StratifiedKFold),
+=======
       - Hyperparameter tuning via RandomizedSearchCV for Random Forest and XGBoost (using the full parameter grid, n_jobs=12, and StratifiedKFold),
+>>>>>>> 09159d911956bd9a4fbaf8ed2db6d052c376d895
       - Stacking with 5-fold StratifiedCV (without early stopping) to generate meta-features,
       - Training of a meta-learner (Gradient Boosting Classifier) on the meta-features,
       - Evaluation (Accuracy, Precision, Recall, F1 Score) displayed in a formatted table,
@@ -162,7 +170,7 @@ def run_ensemble_pipeline(target_col):
         n_iter=36,  # Full grid
         cv=strat_kfold,
         scoring='accuracy',
-        n_jobs=1,
+        n_jobs=2,
         verbose=1,
         random_state=42
     )
@@ -182,7 +190,7 @@ def run_ensemble_pipeline(target_col):
         n_iter=36,  # Full grid
         cv=strat_kfold,
         scoring='accuracy',
-        n_jobs=1,
+        n_jobs=2,
         verbose=1,
         random_state=42
     )
@@ -199,7 +207,7 @@ def run_ensemble_pipeline(target_col):
         min_samples_leaf=best_rf_params['min_samples_leaf'],
         class_weight='balanced',
         random_state=42,
-        n_jobs=1
+        n_jobs=2
     )
     tuned_xgb = xgb.XGBClassifier(
         n_estimators=best_xgb_params['n_estimators'],
@@ -213,7 +221,8 @@ def run_ensemble_pipeline(target_col):
         verbosity=1,
         use_label_encoder=False,
         random_state=42,
-        n_jobs=1
+        n_jobs=2
+
     )
     
     # STEP F: Generate Meta-Features via Stacking (5-Fold Stratified CV)
