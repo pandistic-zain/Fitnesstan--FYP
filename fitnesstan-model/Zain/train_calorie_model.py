@@ -46,6 +46,7 @@ OPTIONAL_NUM  = ["saturated_fat", "fiber", "sugar", "sodium"]
 re_digits = re.compile(r"[^0-9.]")
 
 # ---------- helpers ---------
+
 def to_float(series: pd.Series) -> pd.Series:
     """Strip non‑numeric chars & convert to float; preserves index length."""
     return pd.to_numeric(series.astype(str).str.replace(re_digits, "", regex=True), errors="coerce")
@@ -90,7 +91,7 @@ X_tr, X_te, y_tr, y_te = train_test_split(X, y, test_size=0.2, random_state=42)
 
 # ---------- hyper‑grids -----------------------------------
 hgb_grid = {
-    "learning_rate":     [0.01, 0.03, 0.05, 0.1, 0.2, 0.3],
+    "learning_rate":     [0.001, 0.01, 0.03, 0.05, 0.1, 0.2, 0.3],
     "max_depth":         [None, 3, 5, 7, 9, 12],
     "min_samples_leaf":  [5, 10, 20, 50, 100],
     "l2_regularization": [0.0, 0.01, 0.1, 1.0, 5.0]
@@ -99,7 +100,6 @@ alpha_vals = [1e-4, 1e-3, 0.01, 0.1, 1, 5, 10, 50, 100, 500, 1000]
 
 # ---------- HGB -------------------------------------------
 log.info("🔍 Tuning HGB …")
-
 # Perform grid search to tune HGB
 grid_search = GridSearchCV(HistGradientBoostingRegressor(random_state=42), hgb_grid,
                            cv=5, scoring="neg_root_mean_squared_error", n_jobs=12)
@@ -108,61 +108,6 @@ HGB = grid_search.best_estimator_  # Get the best model after grid search
 
 # Predict using the best estimator
 pred_hgb = HGB.predict(X_te)
-
-# Get the cross-validation results for HGB from the GridSearchCV object
-cv_results = grid_search.cv_results_  # Accessing cv_results_ from GridSearchCV
-
-# Now we need to plot correctly for learning_rate and handle cross-validation results
-mean_test_scores = cv_results["mean_test_score"].reshape(len(hgb_grid["max_depth"]), -1).mean(axis=1)
-
-# Plot the validation curve for HGB's learning_rate
-plt.figure(figsize=(6, 4))
-plt.plot(hgb_grid["learning_rate"], -mean_test_scores, marker="o")
-plt.xscale("log")
-plt.xlabel("Learning Rate (Log Scale)")
-plt.ylabel("Negative Mean Test Score (RMSE)")
-plt.title("HGB Learning Rate vs Performance (Cross-validation)")
-plt.grid(True)
-plt.tight_layout()
-plt.savefig(args.outdir/"cv_hgb_learning_rate.png", dpi=250)
-plt.show()
-
-# Example: Plot for max_depth
-plt.figure(figsize=(6, 4))
-plt.plot(hgb_grid["max_depth"], -cv_results["mean_test_score"], marker="o")
-plt.xscale("log")
-plt.xlabel("Max Depth")
-plt.ylabel("Negative Mean Test Score (RMSE)")
-plt.title("HGB Max Depth vs Performance (Cross-validation)")
-plt.grid(True)
-plt.tight_layout()
-plt.savefig(args.outdir/"cv_hgb_max_depth.png", dpi=250)
-plt.show()
-
-# Example: Plot for min_samples_leaf
-plt.figure(figsize=(6, 4))
-plt.plot(hgb_grid["min_samples_leaf"], -cv_results["mean_test_score"], marker="o")
-plt.xscale("log")
-plt.xlabel("Min Samples Leaf")
-plt.ylabel("Negative Mean Test Score (RMSE)")
-plt.title("HGB Min Samples Leaf vs Performance (Cross-validation)")
-plt.grid(True)
-plt.tight_layout()
-plt.savefig(args.outdir/"cv_hgb_min_samples_leaf.png", dpi=250)
-plt.show()
-
-# Example: Plot for l2_regularization
-plt.figure(figsize=(6, 4))
-plt.plot(hgb_grid["l2_regularization"], -cv_results["mean_test_score"], marker="o")
-plt.xscale("log")
-plt.xlabel("L2 Regularization")
-plt.ylabel("Negative Mean Test Score (RMSE)")
-plt.title("HGB L2 Regularization vs Performance (Cross-validation)")
-plt.grid(True)
-plt.tight_layout()
-plt.savefig(args.outdir/"cv_hgb_l2_regularization.png", dpi=250)
-plt.show()
-
 
 # ---------- Ridge + Poly ----------------------------------
 # Ridge α curve plotting (cross-validation results)
@@ -181,24 +126,8 @@ grid_search_ridge.fit(X_tr, y_tr)
 
 # Get the best estimator from the grid search
 RIDGE = grid_search_ridge.best_estimator_
-
-# Get the cross-validation results for Ridge
-cv_results = grid_search_ridge.cv_results_  # Access cv_results_ from GridSearchCV object
-
-# Reshaping cv_results to match the alpha_vals for plotting
-mean_test_scores = cv_results["mean_test_score"].reshape(len(alpha_vals), -1).mean(axis=1)
-
-# Plot the validation curve for Ridge's alpha values
-plt.figure(figsize=(6, 4))
-plt.plot(alpha_vals, -mean_test_scores, marker="o")
-plt.xscale("log")
-plt.xlabel("Alpha (Log Scale)")
-plt.ylabel("Negative Mean Test Score (RMSE)")
-plt.title("Ridge α Regularization Curve (Cross-validation)")
-plt.grid(True)
-plt.tight_layout()
-plt.savefig(args.outdir/"cv_ridge.png", dpi=250)
-plt.show()
+# Predict using the best estimator
+pred_ridge = RIDGE.predict(X_te)  # This line was missing before, defining pred_ridge
 
 # ---------- Ensemble --------------------------------------
 blend_pred = 0.5 * (pred_hgb + pred_ridge)
@@ -214,19 +143,6 @@ allowed_err = 0.20 * y_te.mean()
 models_dir = args.outdir
 joblib.dump(HGB,   models_dir/"hgb.pkl")
 joblib.dump(RIDGE, models_dir/"ridge_poly.pkl")
-
-perm = permutation_importance(HGB, X_te, y_te, n_repeats=10, random_state=42)
-plt.figure(figsize=(max(6, len(feature_names)*0.25),3))
-plt.bar(feature_names, perm.importances_mean)
-plt.xticks(rotation=90, ha="right", fontsize=6)
-plt.tight_layout(); plt.ylabel("Mean ΔRMSE"); plt.title("HGB Feature Importance")
-plt.savefig(models_dir/"importance_hgb.png", dpi=250)
-
-plt.figure(figsize=(4,3))
-plt.plot(alpha_vals, -RIDGE.named_steps["ridge"].alpha if hasattr(RIDGE.named_steps["ridge"], "alpha") else alpha_vals, marker="o")
-plt.xscale("log"); plt.xlabel("alpha"); plt.ylabel("CV curve")
-plt.tight_layout(); plt.title("Ridge α curve"); plt.grid(True)
-plt.savefig(models_dir/"cv_ridge.png", dpi=250)
 
 # ---------- Comparison Graph: Model vs FDA Tolerance -----------------
 plt.figure(figsize=(6, 4))
@@ -275,11 +191,6 @@ row[3].text = f"{r2_b:.3f}"
 doc.add_heading('3. FDA Comparison', level=1)
 doc.add_paragraph('The following graph shows the comparison between model metrics and FDA\'s 20% calorie-label tolerance.')
 doc.add_picture(str(models_dir/"metrics_compare.png"))
-
-# Add feature importance graph to doc
-doc.add_heading('4. Feature Importance', level=1)
-doc.add_paragraph("This graph shows the feature importance as determined by the HistGradientBoosting model.")
-doc.add_picture(str(models_dir/"importance_hgb.png"))
 
 # Save the Word document
 doc.save(models_dir/"report.docx")
