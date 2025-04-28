@@ -1,0 +1,21 @@
+# Ignore all .pkl files
+*.pkl
+
+# Ignore Python bytecode files
+*.pyc
+*.pyo
+__pycache__/
+
+# Ignore virtual environment directories
+venv/
+env/
+
+# Ignore any log files
+*.log
+
+# Ignore node_modules (for JavaScript/Node.js projects)
+node_modules/
+
+# Ignore IDE-specific files (e.g., VS Code, IntelliJ, etc.)
+.vscode/
+.idea/
