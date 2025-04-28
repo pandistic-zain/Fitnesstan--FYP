@@ -1,28 +1,7 @@
-"""
-File: ensemble_rf_xgb_tuned_multi_target_with_custom_progress.py
-
-Description:
-    This script demonstrates an ensemble of tuned Random Forest and XGBoost classifiers using stacking,
-    handling two target variables: "Primary_Cluster" and "Secondary_Cluster".
-    It performs:
-      - Data preprocessing with RobustScaler and Label Encoding,
-      - Applies BorderlineSMOTE for class balancing,
-      - Hyperparameter tuning via HalvingGridSearchCV for Random Forest and XGBoost with full grids,
-        using parallelism (n_jobs=4) and early stopping for XGBoost,
-      - Stacking with 5-fold CV to generate meta-features,
-      - Training of a meta-learner (Gradient Boosting Classifier),
-      - Evaluation (Accuracy, Precision, Recall, F1 Score) displayed in a table,
-      - Saving of the ensemble package via joblib.
-
-    A custom overall progress bar is updated in 1% increments through 13 major steps.
-
-Usage:
-    python ensemble_rf_xgb_tuned_multi_target_with_custom_progress.py
-"""
-import os, time
+import os
+import time
 import pandas as pd
 import numpy as np
-
 from sklearn.experimental import enable_halving_search_cv  # noqa
 from sklearn.model_selection import train_test_split, KFold, HalvingGridSearchCV
 from sklearn.preprocessing import LabelEncoder, RobustScaler
@@ -38,6 +17,7 @@ from tabulate import tabulate
 # Define a custom overall progress bar.
 overall = tqdm(total=100, desc="Overall Progress", bar_format="{l_bar}{bar:20}{r_bar} {n_fmt}%")
 def update_overall_progress(percent):
+    """Update overall progress bar in 1% increments for a given percent."""
     for _ in range(percent):
         overall.update(1)
         time.sleep(0.005)
@@ -147,10 +127,10 @@ def run_ensemble_pipeline(target_col):
     best_rf = rf_cv.best_estimator_
     print(f"[DEBUG] Best RF params: {rf_cv.best_params_}")
 
-    print("[DEBUG] Tuning XGB with HalvingGridSearchCV + early stopping...")
+    print("[DEBUG] Tuning XGB with HalvingGridSearchCV...")
     xgb_base = xgb.XGBClassifier(
         objective='multi:softmax', num_class=len(np.unique(y)),
-        use_label_encoder=False, eval_metric='mlogloss',
+        eval_metric='mlogloss',
         random_state=42, n_jobs=4
     )
     xgb_cv = HalvingGridSearchCV(
@@ -161,13 +141,6 @@ def run_ensemble_pipeline(target_col):
     )
     xgb_cv.fit(X_train_tune, y_train_tune)
     best_xgb = xgb_cv.best_estimator_
-    # Refit best XGB with early stopping on validation split
-    best_xgb.fit(
-        X_train_tune, y_train_tune,
-        eval_set=[(X_val_tune, y_val_tune)],
-        early_stopping_rounds=30,
-        verbose=False
-    )
     print(f"[DEBUG] Best XGB params: {xgb_cv.best_params_}")
     update_overall_progress(7)
 
@@ -177,18 +150,22 @@ def run_ensemble_pipeline(target_col):
     meta_train = np.zeros((X_train.shape[0], n_classes*2))
     meta_test  = np.zeros((X_test.shape[0],  n_classes*2))
     
+    # ===============================
+    # Generating stacking meta-features
+    # ===============================
     for tr, va in kf.split(X_train):
-        best_rf.fit(X_train[tr], y_train[tr])
+        best_rf.fit(X_train.iloc[tr], y_train.iloc[tr])  # Use iloc to index rows
         best_xgb.fit(
-            X_train[tr], y_train[tr],
-            eval_set=[(X_train[va], y_train[va])],
-            early_stopping_rounds=20, verbose=False)
+            X_train.iloc[tr], y_train.iloc[tr],  # Use iloc to index rows
+            eval_set=[(X_train.iloc[va], y_train.iloc[va])],  # Use iloc to index validation rows
+            early_stopping_rounds=20, verbose=False
+        )
 
-        meta_train[va,:n_classes]    = best_rf.predict_proba(X_train[va])
-        meta_train[va,n_classes:]    = best_xgb.predict_proba(X_train[va])
+        meta_train[va,:n_classes]    = best_rf.predict_proba(X_train.iloc[va])  # Use iloc
+        meta_train[va,n_classes:]    = best_xgb.predict_proba(X_train.iloc[va])  # Use iloc
         meta_test[:,:n_classes]     += best_rf.predict_proba(X_test)  / 5
         meta_test[:,n_classes:]     += best_xgb.predict_proba(X_test) / 5
-    update_overall_progress(7)
+        update_overall_progress(7)
 
     print("[DEBUG] Training meta-learner...")
     meta_learner = GradientBoostingClassifier(random_state=42)
