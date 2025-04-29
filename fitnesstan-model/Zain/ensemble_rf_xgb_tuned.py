@@ -1,37 +1,9 @@
-"""
-<<<<<<< HEAD
-File: ensemble_rf_xgb_tuned.py
-=======
-File: ensemble_rf_xgb_tuned_multi_target_with_custom_progress.py
->>>>>>> 09159d911956bd9a4fbaf8ed2db6d052c376d895
-
-Description:
-    This script demonstrates an ensemble of tuned Random Forest and XGBoost classifiers using stacking,
-    handling two target variables: "Primary_Cluster" and "Secondary_Cluster". It performs:
-      - Data preprocessing with RobustScaler and Label Encoding,
-      - Applies a refined SMOTE variant (BorderlineSMOTE) for class balancing,
-      - Stacking with 5-fold StratifiedCV (without early stopping) to generate meta-features,
-      - Training of a meta-learner (Gradient Boosting Classifier) on the meta-features,
-      - Evaluation (Accuracy, Precision, Recall, F1 Score) displayed in a formatted table,
-      - Saving of the ensemble package to a pickle file.
-      
-    An overall progress bar (custom-designed) is updated in 1% increments through 13 major steps.
-    
-Usage:
-    1. Ensure your CSV file (e.g., generated_synthetic_data.csv) is in the same directory.
-    2. Run:
-           python ensemble_rf_xgb_tuned_multi_target_with_custom_progress.py
-"""
-
-# ===============================
-# STEP 1: Import Libraries
-# ===============================
 import os
 import time
 import pandas as pd
 import numpy as np
 import joblib
-from sklearn.model_selection import train_test_split, StratifiedKFold, RandomizedSearchCV
+from sklearn.model_selection import train_test_split, StratifiedKFold
 from sklearn.preprocessing import LabelEncoder, RobustScaler
 from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, classification_report
@@ -45,6 +17,7 @@ from tabulate import tabulate
 # ------------------------------
 # Define a custom overall progress bar.
 overall = tqdm(total=100, desc="Overall Progress", bar_format="{l_bar}{bar:20}{r_bar} {n_fmt}%")
+
 def update_overall_progress(percent):
     """Update overall progress bar in 1% increments for a given percent."""
     for _ in range(percent):
@@ -139,88 +112,36 @@ def run_ensemble_pipeline(target_col):
     X_train, X_test, y_train, y_test = train_test_split(X_bal, y_bal, test_size=0.2, random_state=42, stratify=y_bal)
     print(f"[DEBUG] Training set: {X_train.shape}, Test set: {X_test.shape}")
     
-    # STEP D: Hyperparameter Tuning for Base Models using RandomizedSearchCV with StratifiedKFold.
-    print("[DEBUG] Tuning hyperparameters using RandomizedSearchCV...")
-    rf_param_grid = {
-        'n_estimators': [300, 500, 400],
-        'max_depth': [15, 25, 35],
-        'min_samples_split': [2, 5],
-        'min_samples_leaf': [1, 2]
-    }
-    xgb_param_grid = {
-        'n_estimators': [300, 500, 400],
-        'max_depth': [15, 25, 35],
-        'learning_rate': [0.001, 0.0005],
-        'subsample': [0.8, 1.0],
-        'colsample_bytree': [0.8, 1.0]
-    }
+    # STEP D: Hyperparameter Settings for Base Models
+    print("[DEBUG] Defining base models with fixed hyperparameters...")
     
-    strat_kfold = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
-    
-    print("[DEBUG] Tuning Random Forest hyperparameters...")
-    from sklearn.model_selection import RandomizedSearchCV
-    rf_rs = RandomizedSearchCV(
-        RandomForestClassifier(class_weight='balanced', random_state=42),
-        rf_param_grid,
-        n_iter=36,  # Full grid
-        cv=strat_kfold,
-        scoring='accuracy',
-        n_jobs=8,
-        verbose=1,
-        random_state=42
-    )
-    rf_rs.fit(X_train, y_train)
-    best_rf_params = rf_rs.best_params_
-    print(f"[DEBUG] Best RF parameters for {target_col}: {best_rf_params}")
-    
-    print("[DEBUG] Tuning XGBoost hyperparameters...")
-    xgb_rs = RandomizedSearchCV(
-        xgb.XGBClassifier(objective='multi:softmax',
-                          num_class=len(unique_labels),
-                          eval_metric='mlogloss',
-                          verbosity=1,
-                          use_label_encoder=False,
-                          random_state=42),
-        xgb_param_grid,
-        n_iter=36,  # Full grid
-        cv=strat_kfold,
-        scoring='accuracy',
-        n_jobs=8,
-        verbose=1,
-        random_state=42
-    )
-    xgb_rs.fit(X_train, y_train)
-    best_xgb_params = xgb_rs.best_params_
-    print(f"[DEBUG] Best XGB parameters for {target_col}: {best_xgb_params}")
-    
-    # STEP E: Define Tuned Base Models for Stacking.
-    print("[DEBUG] Defining tuned base models for stacking...")
-    tuned_rf = RandomForestClassifier(
-        n_estimators=best_rf_params['n_estimators'],
-        max_depth=best_rf_params['max_depth'],
-        min_samples_split=best_rf_params['min_samples_split'],
-        min_samples_leaf=best_rf_params['min_samples_leaf'],
+    # Random Forest (Fixed Hyperparameters)
+    rf = RandomForestClassifier(
+        n_estimators=1000,  # Maximum number of trees
+        max_depth=35,  # Maximum depth of each tree
+        min_samples_split=2,
+        min_samples_leaf=1,
         class_weight='balanced',
         random_state=42,
-        n_jobs=8
+        n_jobs=-1  # Use all available cores (12 cores)
     )
-    tuned_xgb = xgb.XGBClassifier(
-        n_estimators=best_xgb_params['n_estimators'],
-        max_depth=best_xgb_params['max_depth'],
-        learning_rate=best_xgb_params['learning_rate'],
-        subsample=best_xgb_params['subsample'],
-        colsample_bytree=best_xgb_params['colsample_bytree'],
+    
+    # XGBoost (Fixed Hyperparameters)
+    xgb_model = xgb.XGBClassifier(
+        n_estimators=1000,  # Maximum number of trees
+        max_depth=35,  # Maximum depth of each tree
+        learning_rate=0.0001,  # Low learning rate to ensure better convergence
+        subsample=1.0,  # Use all data for each boosting round
+        colsample_bytree=1.0,  # Use all features for each tree
         objective='multi:softmax',
         num_class=len(unique_labels),
         eval_metric='mlogloss',
         verbosity=1,
-        use_label_encoder=False,
         random_state=42,
-        n_jobs=8
-
+        n_jobs=-1  # Use all available cores (12 cores)
     )
     
-    # STEP F: Generate Meta-Features via Stacking (5-Fold Stratified CV)
+    # STEP E: Generate Meta-Features via Stacking (5-Fold Stratified CV)
     print("[DEBUG] Generating meta-features for stacking using 5-Fold Stratified CV...")
     strat_kf = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
     meta_train_rf = np.zeros((X_train.shape[0], len(unique_labels)))
@@ -232,25 +153,22 @@ def run_ensemble_pipeline(target_col):
         X_fold_train, X_fold_val = X_train[train_index], X_train[val_index]
         y_fold_train, y_fold_val = y_train[train_index], y_train[val_index]
         
-        # Train tuned Random Forest on current fold.
-        rf_fold = tuned_rf
-        rf_fold.fit(X_fold_train, y_fold_train)
-        meta_train_rf[val_index] = rf_fold.predict_proba(X_fold_val)
-        meta_test_rf += rf_fold.predict_proba(X_test) / 5
+        # Train Random Forest on current fold
+        rf.fit(X_fold_train, y_fold_train)
+        meta_train_rf[val_index] = rf.predict_proba(X_fold_val)
+        meta_test_rf += rf.predict_proba(X_test) / 5
         
-        # Train tuned XGBoost on current fold without early stopping.
-        xgb_fold = tuned_xgb
-        xgb_fold.fit(X_fold_train, y_fold_train, eval_set=[(X_fold_val, y_fold_val)], verbose=False)
-        meta_train_xgb[val_index] = xgb_fold.predict_proba(X_fold_val)
-        meta_test_xgb += xgb_fold.predict_proba(X_test) / 5
+        # Train XGBoost on current fold
+        xgb_model.fit(X_fold_train, y_fold_train)
+        meta_train_xgb[val_index] = xgb_model.predict_proba(X_fold_val)
+        meta_test_xgb += xgb_model.predict_proba(X_test) / 5
 
     meta_train = np.concatenate([meta_train_rf, meta_train_xgb], axis=1)
     meta_test = np.concatenate([meta_test_rf, meta_test_xgb], axis=1)
     print(f"[DEBUG] Meta-features generated for {target_col}. Meta_train shape: {meta_train.shape}")
     
-    # STEP G: Train Meta-Learner (Gradient Boosting Classifier)
+    # STEP F: Train Meta-Learner (Gradient Boosting Classifier)
     print(f"[DEBUG] Training meta-learner (Gradient Boosting Classifier) for {target_col}...")
-    from sklearn.ensemble import GradientBoostingClassifier
     meta_learner = GradientBoostingClassifier(random_state=42)
     meta_learner.fit(meta_train, y_train)
     
@@ -260,7 +178,7 @@ def run_ensemble_pipeline(target_col):
     ensemble_recall = recall_score(y_test, ensemble_pred, average='weighted')
     ensemble_f1 = f1_score(y_test, ensemble_pred, average='weighted')
     
-    # STEP H: Display Evaluation Metrics in a Formatted Table
+    # STEP G: Display Evaluation Metrics in a Formatted Table
     metrics_table = [
         ["Accuracy (%)", f"{ensemble_accuracy*100:.2f}"],
         ["Precision (%)", f"{ensemble_precision*100:.2f}"],
@@ -275,22 +193,20 @@ def run_ensemble_pipeline(target_col):
     print("Full Classification Report:")
     print(classification_report(y_test, ensemble_pred, target_names=[str(l) for l in unique_labels]))
     
-    # STEP I: Save the Ensemble Package for Current Target
+    # STEP H: Save the Ensemble Package for Current Target
     ensemble_package = {
         "meta_learner": meta_learner,
         "label_mapping": label_mapping,
         "scaler": scaler,
-        "base_model_rf": tuned_rf,
-        "base_model_xgb": tuned_xgb
+        "base_model_rf": rf,
+        "base_model_xgb": xgb_model
     }
     file_name = f"ensemble_rf_xgb_tuned_{target_col.lower()}.joblib"
     with open(file_name, "wb") as f:
         joblib.dump(ensemble_package, f)
     print(f"\n[DEBUG] Ensemble model package for {target_col} saved as {file_name}")
     print("\n" + "="*50 + "\n")
-    # End of pipeline for current target.
-
-# End of run_ensemble_pipeline function.
+    # End of pipeline for the current target.
 
 # ===============================
 # STEP 12: Main Execution: Run pipeline for both targets.
