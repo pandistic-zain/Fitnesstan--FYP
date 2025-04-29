@@ -10,11 +10,6 @@ Description:
     handling two target variables: "Primary_Cluster" and "Secondary_Cluster". It performs:
       - Data preprocessing with RobustScaler and Label Encoding,
       - Applies a refined SMOTE variant (BorderlineSMOTE) for class balancing,
-<<<<<<< HEAD
-      - Hyperparameter tuning via RandomizedSearchCV for Random Forest and XGBoost (using the full parameter grid, n_jobs=2=22, and StratifiedKFold),
-=======
-      - Hyperparameter tuning via RandomizedSearchCV for Random Forest and XGBoost (using the full parameter grid, n_jobs=12, and StratifiedKFold),
->>>>>>> 09159d911956bd9a4fbaf8ed2db6d052c376d895
       - Stacking with 5-fold StratifiedCV (without early stopping) to generate meta-features,
       - Training of a meta-learner (Gradient Boosting Classifier) on the meta-features,
       - Evaluation (Accuracy, Precision, Recall, F1 Score) displayed in a formatted table,
