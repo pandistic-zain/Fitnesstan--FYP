@@ -203,7 +203,7 @@ def run_ensemble_pipeline(target_col):
     }
     file_name = f"ensemble_rf_xgb_tuned_{target_col.lower()}.joblib"
     with open(file_name, "wb") as f:
-        joblib.dump(ensemble_package, f)
+        joblib.dump(ensemble_package, f, compress=5)
     print(f"\n[DEBUG] Ensemble model package for {target_col} saved as {file_name}")
     print("\n" + "="*50 + "\n")
     # End of pipeline for the current target.
