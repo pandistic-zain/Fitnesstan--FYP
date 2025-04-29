@@ -30,7 +30,7 @@ import os
 import time
 import pandas as pd
 import numpy as np
-
+import joblib
 from sklearn.model_selection import train_test_split, StratifiedKFold, RandomizedSearchCV
 from sklearn.preprocessing import LabelEncoder, RobustScaler
 from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
@@ -142,13 +142,13 @@ def run_ensemble_pipeline(target_col):
     # STEP D: Hyperparameter Tuning for Base Models using RandomizedSearchCV with StratifiedKFold.
     print("[DEBUG] Tuning hyperparameters using RandomizedSearchCV...")
     rf_param_grid = {
-        'n_estimators': [300, 500, 1000],
+        'n_estimators': [300, 500, 400],
         'max_depth': [15, 25, 35],
         'min_samples_split': [2, 5],
         'min_samples_leaf': [1, 2]
     }
     xgb_param_grid = {
-        'n_estimators': [300, 500, 1000],
+        'n_estimators': [300, 500, 400],
         'max_depth': [15, 25, 35],
         'learning_rate': [0.001, 0.0005],
         'subsample': [0.8, 1.0],
@@ -165,7 +165,7 @@ def run_ensemble_pipeline(target_col):
         n_iter=36,  # Full grid
         cv=strat_kfold,
         scoring='accuracy',
-        n_jobs=2,
+        n_jobs=8,
         verbose=1,
         random_state=42
     )
@@ -185,7 +185,7 @@ def run_ensemble_pipeline(target_col):
         n_iter=36,  # Full grid
         cv=strat_kfold,
         scoring='accuracy',
-        n_jobs=2,
+        n_jobs=8,
         verbose=1,
         random_state=42
     )
@@ -202,7 +202,7 @@ def run_ensemble_pipeline(target_col):
         min_samples_leaf=best_rf_params['min_samples_leaf'],
         class_weight='balanced',
         random_state=42,
-        n_jobs=2
+        n_jobs=8
     )
     tuned_xgb = xgb.XGBClassifier(
         n_estimators=best_xgb_params['n_estimators'],
@@ -216,7 +216,7 @@ def run_ensemble_pipeline(target_col):
         verbosity=1,
         use_label_encoder=False,
         random_state=42,
-        n_jobs=2
+        n_jobs=8
 
     )
     
@@ -283,9 +283,9 @@ def run_ensemble_pipeline(target_col):
         "base_model_rf": tuned_rf,
         "base_model_xgb": tuned_xgb
     }
-    file_name = f"ensemble_rf_xgb_tuned_{target_col.lower()}.pkl"
+    file_name = f"ensemble_rf_xgb_tuned_{target_col.lower()}.joblib"
     with open(file_name, "wb") as f:
-        pickle.dump(ensemble_package, f)
+        joblib.dump(ensemble_package, f)
     print(f"\n[DEBUG] Ensemble model package for {target_col} saved as {file_name}")
     print("\n" + "="*50 + "\n")
     # End of pipeline for current target.
