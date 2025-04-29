@@ -1,88 +1,132 @@
 from flask import Flask, request, jsonify
-from datetime import date, timedelta
+from datetime import datetime, date, timedelta
+import warnings
+import pickle
+import os
+import joblib, random
+import pandas as pd
+from sklearn.exceptions import InconsistentVersionWarning
+
+# Suppress sklearn version mismatch warnings
+warnings.filterwarnings("ignore", category=InconsistentVersionWarning)
 
 app = Flask(__name__)
 
-# Dummy trained model function
-def trained_model(user_attributes):
-    print("[DEBUG] Inside trained_model function")
-    print(f"[DEBUG] User attributes received: {user_attributes}")
-    bmi = user_attributes.get("bmi", 0)
-    if bmi < 18.5:
-        return {"health_status": "Underweight"}
-    elif 18.5 <= bmi < 25:
-        return {"health_status": "Normal weight"}
-    elif 25 <= bmi < 30:
-        return {"health_status": "Overweight"}
-    else:
-        return {"health_status": "Obese"}
+# --- Configuration ---
+PRIMARY_MODEL_PATH   = './Classification/ensemble_rf_xgb_tuned_primary_cluster.joblib'
+SECONDARY_MODEL_PATH = './Classification/ensemble_rf_xgb_tuned_secondary_cluster.joblib'
+ITEMS_CSV_PATH       = './Clustered_Nutrition.csv'
 
-# Dummy diet plan generator
-def dummy_diet_plan():
-    meal_plan = {}
-    for day in range(1, 15):
-        # Create two meals per day with detailed meal items
-        meal1 = [
-            {"name": "Oatmeal", "protein": 5.0, "carbs": 27.0, "fats": 3.0, "calories": 150.0, "weight": 40.0},
-            {"name": "Fruit Salad", "protein": 1.0, "carbs": 15.0, "fats": 0.5, "calories": 70.0, "weight": 150.0},
-            {"name": "Green Tea", "protein": 0.0, "carbs": 0.0, "fats": 0.0, "calories": 0.0, "weight": 250.0}
-        ]
-        meal2 = [
-            {"name": "Grilled Chicken", "protein": 30.0, "carbs": 0.0, "fats": 5.0, "calories": 200.0, "weight": 100.0},
-            {"name": "Brown Rice", "protein": 3.0, "carbs": 45.0, "fats": 1.0, "calories": 210.0, "weight": 150.0},
-            {"name": "Steamed Vegetables", "protein": 2.0, "carbs": 10.0, "fats": 0.5, "calories": 50.0, "weight": 100.0}
-        ]
-        # The keys are strings so that Spring Boot can later parse them as integers.
-        meal_plan[str(day)] = {"meal1": meal1, "meal2": meal2}
-    return meal_plan
+# --- Load item catalog ---
+items_df = pd.read_csv(ITEMS_CSV_PATH)
+items_df = items_df.loc[:, ~items_df.columns.str.contains(r'^Unnamed')]
+
+# --- Utility to load ensemble packages ---
+def load_ensemble(path):
+    if not os.path.exists(path):
+        raise FileNotFoundError(f"Model file not found: {path}")
+    try:
+        pkg = joblib.load(path)
+    except EOFError as e:
+        raise RuntimeError(f"Model file appears truncated or corrupted: {path}. Re-generate with joblib.dump.")
+    except Exception as e:
+        raise RuntimeError(f"Failed to load model: {e}")
+    if not isinstance(pkg, dict) or not {'meta_learner','scaler','label_encoders'}.issubset(pkg):
+        raise RuntimeError(f"Loaded object from {path} is not a valid ensemble package.")
+    return pkg['meta_learner'], pkg['scaler'], pkg['label_encoders']
+
+# Attempt to load primary ensemble
+try:
+    primary_clf, primary_scaler, primary_encoders = load_ensemble(PRIMARY_MODEL_PATH)
+except Exception as e:
+    app.logger.error(f"Primary model load failed: {e}")
+    primary_clf = primary_scaler = primary_encoders = None
+
+# Attempt to load secondary ensemble
+try:
+    secondary_clf, secondary_scaler, secondary_encoders = load_ensemble(SECONDARY_MODEL_PATH)
+except Exception as e:
+    app.logger.error(f"Secondary model load failed: {e}")
+    secondary_clf = secondary_scaler = secondary_encoders = None
+
+# Expected feature order
+FEATURE_ORDER = [
+    'Age', 'Weight', 'Height_ft', 'Profession', 'Religion',
+    'Sleeping_Hours', 'Gender', 'Exercise_Level_days_per_week', 'Medical_History'
+]
 
 @app.route('/user', methods=['POST'])
 def process_user():
-    print("[DEBUG] Inside process_user endpoint")
-    user_data = request.json
-    if not user_data:
-        print("[DEBUG] No data provided in the request")
-        return jsonify({"error": "No data provided"}), 400
+    # --- Manual testing override (comment out for Spring Boot) ---
+    user_data = {
+        'dob': '2004-01-18',  # YYYY-MM-DD
+        'weightKg': 68,
+        'heightFt': 5.6,
+        'profession': 'Student',
+        'religion': 'Muslim',
+        'sleepHours': 7,
+        'gender': 'Male',
+        'exerciseLevel': 6,
+        'medicalHistory': 'None'
+    }
+    # --- For Spring Boot, uncomment below ---
+    # user_data = request.json or {}
+    # if not user_data:
+    #     return jsonify({'error':'No data provided'}),400
 
     try:
-        # Extract relevant attributes from the user data
-        user_attributes = {
-            "height_ft": user_data.get("heightFt"),
-            "weight_kg": user_data.get("weightKg"),
-            "bmi": user_data.get("bmi"),
-            "ree": user_data.get("ree"),
-            "tdee": user_data.get("tdee"),
-            "exercise_level": user_data.get("exerciseLevel"),
-            "sleep_hours": user_data.get("sleepHours"),
-            "medical_history": user_data.get("medicalHistory"),
-            "gender": user_data.get("gender"),
-            "age": user_data.get("dob"),  # You can calculate age if needed
+        # Compute age
+        dob = datetime.fromisoformat(user_data['dob'])
+        age = (datetime.today()-dob).days//365
+        # Build raw features
+        row = {
+            'Age': age,
+            'Weight': user_data['weightKg'],
+            'Height_ft': user_data['heightFt'],
+            'Profession': user_data['profession'],
+            'Religion': user_data['religion'],
+            'Sleeping_Hours': user_data['sleepHours'],
+            'Gender': user_data['gender'],
+            'Exercise_Level_days_per_week': user_data['exerciseLevel'],
+            'Medical_History': user_data['medicalHistory']
         }
-        print(f"[DEBUG] Extracted user attributes: {user_attributes}")
+        # Encode + assemble input vector
+        input_vec = []
+        for feat in FEATURE_ORDER:
+            if feat in primary_encoders:
+                input_vec.append(primary_encoders[feat].transform([row[feat]])[0])
+            else:
+                input_vec.append(row[feat])
 
-        # Get dummy response from the trained model function
-        model_response = trained_model(user_attributes)
-        print(f"[DEBUG] Model response: {model_response}")
+        # Predict clusters
+        Xp = primary_scaler.transform([input_vec])
+        primary_pred = primary_clf.predict(Xp)[0]
+        print(f"[DEBUG] Primary cluster: {primary_pred}")
+        Xs = secondary_scaler.transform([input_vec])
+        secondary_pred = secondary_clf.predict(Xs)[0]
+        print(f"[DEBUG] Secondary cluster: {secondary_pred}")
 
-        # Generate dummy diet plan
-        diet_plan = dummy_diet_plan()
-        start_date = date.today().isoformat()
-        end_date = (date.today() + timedelta(days=14)).isoformat()
+        # Build 14-day meal plan
+        prim_items = items_df[items_df['KMeans_Cluster_14']==primary_pred].to_dict('records')
+        sec_items  = items_df[items_df['KMeans_Cluster_14']==secondary_pred].to_dict('records')
+        meal_plan = {}
+        for day in range(1,15):
+            m1 = random.choice(prim_items) if prim_items else {}
+            m2 = random.choice(sec_items)  if sec_items else {}
+            meal_plan[str(day)] = {'meal1':m1,'meal2':m2}
 
-        # Create combined response
-        response = {
-            "model_response": model_response,
-            "mealPlan": diet_plan,
-            "startDate": start_date,
-            "endDate": end_date
-        }
-        print(f"[DEBUG] Response prepared: {response}")
-        return jsonify(response), 200
-
+        start = date.today().isoformat()
+        end   = (date.today()+timedelta(days=13)).isoformat()
+        return jsonify({
+            'primary_cluster':primary_pred,
+            'secondary_cluster':secondary_pred,
+            'startDate':start,
+            'endDate':end,
+            'mealPlan':meal_plan
+        }),200
     except Exception as e:
-        print(f"[DEBUG] Error occurred: {str(e)}")
-        return jsonify({"error": str(e)}), 500
+        app.logger.exception('Error in /user')
+        return jsonify({'error':str(e)}),500
 
-if __name__ == '__main__':
-    print("[DEBUG] Starting Flask server on port 5000")
-    app.run(debug=True, port=5000)
+if __name__=='__main__':
+    app.run(debug=True,port=5000)
