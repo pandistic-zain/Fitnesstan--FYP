@@ -1,6 +1,6 @@
 # Ignore all .pkl files
 *.pkl
-
+*.joblib
 # Ignore Python bytecode files
 *.pyc
 *.pyo
