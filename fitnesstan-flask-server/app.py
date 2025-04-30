@@ -38,36 +38,41 @@ def load_ensemble(path):
     missing = expected - set(pkg.keys())
     if missing:
         raise RuntimeError(f"{path} is missing keys: {missing}")
-    return (pkg['meta_learner'],
-            pkg['scaler'],
-            pkg['label_mapping'],
-            pkg['label_encoders'],
-            pkg['base_model_rf'],
-            pkg['base_model_xgb'])
+    # Return in the same order we saved them:
+    return (
+        pkg['meta_learner'],
+        pkg['scaler'],
+        pkg['label_mapping'],
+        pkg['label_encoders'],
+        pkg['base_model_rf'],
+        pkg['base_model_xgb']
+    )
 
 # --- Load primary ensemble ---
 try:
     (primary_clf,
      primary_scaler,
+     primary_label_mapping,
      primary_label_encoders,
      primary_rf,
      primary_xgb) = load_ensemble(PRIMARY_MODEL_PATH)
     app.logger.debug("Primary model loaded successfully")
 except Exception as e:
     app.logger.error(f"Primary model load failed: {e}")
-    primary_clf = primary_scaler = primary_label_encoders = primary_rf = primary_xgb = None
+    primary_clf = primary_scaler = primary_label_mapping = primary_label_encoders = primary_rf = primary_xgb = None
 
 # --- Load secondary ensemble ---
 try:
     (secondary_clf,
      secondary_scaler,
+     secondary_label_mapping,
      secondary_label_encoders,
      secondary_rf,
      secondary_xgb) = load_ensemble(SECONDARY_MODEL_PATH)
     app.logger.debug("Secondary model loaded successfully")
 except Exception as e:
     app.logger.error(f"Secondary model load failed: {e}")
-    secondary_clf = secondary_scaler = secondary_label_encoders = secondary_rf = secondary_xgb = None
+    secondary_clf = secondary_scaler = secondary_label_mapping = secondary_label_encoders = secondary_rf = secondary_xgb = None
 
 # --- Feature order (must match training) ---
 FEATURE_ORDER = [
@@ -114,8 +119,7 @@ def process_user():
         input_vec = []
         for feat in FEATURE_ORDER:
             if feat in primary_label_encoders:
-                le = primary_label_encoders[feat]
-                code = le.transform([row[feat]])[0]
+                code = primary_label_encoders[feat].transform([row[feat]])[0]
                 input_vec.append(code)
             else:
                 input_vec.append(row[feat])
@@ -132,8 +136,8 @@ def process_user():
         app.logger.debug(f"Secondary cluster prediction: {secondary_pred}")
 
         # 6) Lookup items in each cluster & log top 5
-        prim_items = items_df[items_df['KMeans_Cluster_14']==primary_pred]
-        sec_items  = items_df[items_df['KMeans_Cluster_14']==secondary_pred]
+        prim_items = items_df[items_df['KMeans_Cluster_14'] == primary_pred]
+        sec_items  = items_df[items_df['KMeans_Cluster_14'] == secondary_pred]
 
         app.logger.debug(
             f"Primary cluster has {len(prim_items)} items; top 5:\n"
