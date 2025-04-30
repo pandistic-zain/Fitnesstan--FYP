@@ -195,12 +195,14 @@ def run_ensemble_pipeline(target_col):
     
     # STEP H: Save the Ensemble Package for Current Target
     ensemble_package = {
-        "meta_learner": meta_learner,
-        "label_mapping": label_mapping,
-        "scaler": scaler,
-        "base_model_rf": rf,
+        "meta_learner":   meta_learner,
+        "label_mapping":  label_mapping,      # target → integer mapping
+        "label_encoders": label_encoders,     # feature encoders for categorical inputs
+        "scaler":         scaler,
+        "base_model_rf":  rf,
         "base_model_xgb": xgb_model
     }
+
     file_name = f"ensemble_rf_xgb_tuned_{target_col.lower()}.joblib"
     with open(file_name, "wb") as f:
         joblib.dump(ensemble_package, f, compress=0)
