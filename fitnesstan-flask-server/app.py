@@ -22,15 +22,15 @@ ITEMS_CSV_PATH = './Clustered_Nutrition.csv'
 items_df = pd.read_csv(ITEMS_CSV_PATH)
 items_df = items_df.loc[:, ~items_df.columns.str.contains(r'^Unnamed')]
 
-# --- Utility to load ensemble packages ---
-import joblib
 
+
+# --- Utility to load ensemble packages ---
 def load_ensemble(path):
     if not os.path.exists(path):
         raise FileNotFoundError(f"Model file not found: {path}")
     try:
-        # Use joblib's memory-mapped loading functionality
-        pkg = joblib.load(path, mmap_mode='r')  # Load in read-only mode (memory-mapped)
+        # Load the model with joblib and compress the file
+        pkg = joblib.load(path)  # joblib will handle compression automatically
     except EOFError as e:
         raise RuntimeError(f"Model file appears truncated or corrupted: {path}. Re-generate with joblib.dump.")
     except Exception as e:
@@ -43,7 +43,6 @@ def load_ensemble(path):
     
     # Return the components of the ensemble package
     return pkg['meta_learner'], pkg['scaler'], pkg['label_mapping'], pkg['base_model_rf'], pkg['base_model_xgb']
-
 # Attempt to load primary ensemble
 try:
     primary_clf, primary_scaler, primary_label_mapping, primary_rf, primary_xgb = load_ensemble(PRIMARY_MODEL_PATH)

@@ -117,8 +117,8 @@ def run_ensemble_pipeline(target_col):
     
     # Random Forest (Fixed Hyperparameters)
     rf = RandomForestClassifier(
-        n_estimators=1000,  # Maximum number of trees
-        max_depth=35,  # Maximum depth of each tree
+        n_estimators=500,  # Maximum number of trees
+        max_depth=20,  # Maximum depth of each tree
         min_samples_split=2,
         min_samples_leaf=1,
         class_weight='balanced',
@@ -128,8 +128,8 @@ def run_ensemble_pipeline(target_col):
     
     # XGBoost (Fixed Hyperparameters)
     xgb_model = xgb.XGBClassifier(
-        n_estimators=1000,  # Maximum number of trees
-        max_depth=35,  # Maximum depth of each tree
+        n_estimators=500,  # Maximum number of trees
+        max_depth=20,  # Maximum depth of each tree
         learning_rate=0.0001,  # Low learning rate to ensure better convergence
         subsample=1.0,  # Use all data for each boosting round
         colsample_bytree=1.0,  # Use all features for each tree
@@ -203,7 +203,7 @@ def run_ensemble_pipeline(target_col):
     }
     file_name = f"ensemble_rf_xgb_tuned_{target_col.lower()}.joblib"
     with open(file_name, "wb") as f:
-        joblib.dump(ensemble_package, f, compress=5)
+        joblib.dump(ensemble_package, f, compress=0)
     print(f"\n[DEBUG] Ensemble model package for {target_col} saved as {file_name}")
     print("\n" + "="*50 + "\n")
     # End of pipeline for the current target.
