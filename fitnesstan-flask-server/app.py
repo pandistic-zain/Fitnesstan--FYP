@@ -199,7 +199,7 @@ def process_user():
                 ratio = per_item_cal / blend
 
                 # --- 7) scale macronutrients & serving_weight ---
-                for nutr in MANDATORY_NUM:
+                for nutr in MANDATORY_NUM + OPTIONAL_NUM:
                     rec[nutr] = round(rec[nutr] * ratio, 2)
 
                 # serving_weight is mandatory too
