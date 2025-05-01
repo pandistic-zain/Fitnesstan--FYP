@@ -17,7 +17,7 @@ test_meal = {
     "protein": 20.0,  # Example: grilled chicken breast
     "carbohydrate": 35.0,  # Example: rice (1/2 cup)
     "total_fat": 10.0,  # Example: olive oil in cooking
-    "serving_weight": 150.0,  # 150 grams of the food
+    "serving_weight": 100.0,  # 100 grams of the food
     "saturated_fat": 2.5,  # Example: from cooking oil or butter
     "fiber": 4.0,  # Example: fiber from vegetables
     "sugar": 5.0,  # Example: added sugars in sauce or dressing
@@ -35,16 +35,35 @@ X_test = pd.get_dummies(test_data[MANDATORY_NUM + OPTIONAL_NUM + ["category"]],
 # Ensure the correct order of columns (same as training data)
 feature_names = X_test.columns.tolist()
 
+# Convert the DataFrame to a NumPy array to avoid warnings
+X_test_values = X_test.to_numpy()
+
 # Make predictions with both models
-hgb_prediction = hgb_model.predict(X_test)
-ridge_prediction = ridge_model.predict(X_test)
+hgb_prediction = hgb_model.predict(X_test_values)
+ridge_prediction = ridge_model.predict(X_test_values)
 
 # Blend the predictions (average of both models' predictions)
 blend_prediction = 0.5 * (hgb_prediction + ridge_prediction)
 
-# Output predictions
-print(f"HGB Model Prediction: {hgb_prediction[0]:.2f} calories")
-print(f"Ridge Model Prediction: {ridge_prediction[0]:.2f} calories")
-print(f"Blend Model Prediction (Average): {blend_prediction[0]:.2f} calories")
+# Set the target calories (e.g., 400 calories)
+target_calories = 400
 
-# Compare predictions to see if both models are consistent or varying
+# Calculate the ratio of the target calories to the predicted calories
+calorie_ratio = target_calories / blend_prediction[0]
+
+# Initialize the scaling process
+scaled_meal = test_meal.copy()
+
+# Scale the macronutrients and serving size proportionally
+for nutrient in MANDATORY_NUM + OPTIONAL_NUM:
+    scaled_meal[nutrient] = test_meal[nutrient] * calorie_ratio
+
+# Update the serving weight separately (static value)
+scaled_meal["serving_weight"] = test_meal["serving_weight"] * calorie_ratio
+
+# Output the scaled meal
+print(f"Target Calories: {target_calories}")
+print(f"Predicted Calories for the given meal: {blend_prediction[0]:.2f}")
+print(f"Scaled meal to meet target calories of {target_calories}:")
+scaled_df = pd.DataFrame([scaled_meal])
+print(scaled_df)

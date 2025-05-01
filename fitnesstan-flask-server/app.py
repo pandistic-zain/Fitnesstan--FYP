@@ -2,7 +2,7 @@
 
 from flask import Flask, jsonify, request
 from datetime import datetime, date, timedelta
-import logging, warnings, os, joblib, random, pandas as pd, numpy as np
+import logging, warnings, os, joblib, random, pandas as pd, numpy as np, re
 from sklearn.exceptions import InconsistentVersionWarning
 
 # ------------------------------
@@ -10,33 +10,37 @@ from sklearn.exceptions import InconsistentVersionWarning
 warnings.filterwarnings("ignore", category=InconsistentVersionWarning)
 
 app = Flask(__name__)
-app.logger.setLevel(logging.DEBUG)    # enable debug logging
+app.logger.setLevel(logging.DEBUG)
 
 # --- Configuration ---
 PRIMARY_MODEL_PATH   = './Classification/ensemble_rf_xgb_tuned_primary_cluster.joblib'
 SECONDARY_MODEL_PATH = './Classification/ensemble_rf_xgb_tuned_secondary_cluster.joblib'
 ITEMS_CSV_PATH       = './Clustered_Nutrition.csv'
+HGB_MODEL_PATH       = './Regression/hgb.pkl'
+RIDGE_MODEL_PATH     = './Regression/ridge_poly.pkl'
+
+# --- Nutrition regressor feature sets ---
+MANDATORY_NUM = ["protein", "carbohydrate", "total_fat", "serving_weight"]
+OPTIONAL_NUM  = ["saturated_fat", "fiber", "sugar", "sodium"]
+CATEGORY_COL  = "category"
 
 # --- Load item catalog ---
 items_df = pd.read_csv(ITEMS_CSV_PATH)
-# drop any unnamed index columns
 items_df = items_df.loc[:, ~items_df.columns.str.contains(r'^Unnamed')]
-app.logger.debug(f"Loaded items catalog with {len(items_df)} rows and {items_df.shape[1]} columns")
+app.logger.debug(f"Loaded items catalog: {len(items_df)} rows, {items_df.shape[1]} cols")
 
-# --- Utility to load an ensemble package ---
+# --- Load calorie regressors ---
+hgb_model   = joblib.load(HGB_MODEL_PATH)
+ridge_model = joblib.load(RIDGE_MODEL_PATH)
+app.logger.debug("Loaded HGB and Ridge calorie regressors")
+
+# --- Ensemble loader ---
 def load_ensemble(path):
     if not os.path.exists(path):
-        raise FileNotFoundError(f"Model file not found: {path}")
+        raise FileNotFoundError(f"Missing model file: {path}")
     pkg = joblib.load(path, mmap_mode='r')
-    app.logger.debug(f"Loaded ensemble package keys={list(pkg.keys())} from {path}")
-    expected = {
-        'meta_learner',
-        'scaler',
-        'label_mapping',
-        'label_encoders',
-        'base_model_rf',
-        'base_model_xgb'
-    }
+    app.logger.debug(f"Loaded ensemble keys={list(pkg.keys())} from {path}")
+    expected = {'meta_learner','scaler','label_mapping','label_encoders','base_model_rf','base_model_xgb'}
     missing = expected - set(pkg.keys())
     if missing:
         raise RuntimeError(f"{path} is missing keys: {missing}")
@@ -51,50 +55,39 @@ def load_ensemble(path):
 
 # --- Load primary ensemble ---
 try:
-    (
-        primary_meta,
-        primary_scaler,
-        primary_label_map,
-        primary_label_encs,
-        primary_rf,
-        primary_xgb
-    ) = load_ensemble(PRIMARY_MODEL_PATH)
-    app.logger.debug("Primary ensemble loaded successfully")
+    (primary_meta,
+     primary_scaler,
+     primary_label_map,
+     primary_label_encs,
+     primary_rf,
+     primary_xgb) = load_ensemble(PRIMARY_MODEL_PATH)
+    app.logger.debug("Primary ensemble loaded")
 except Exception as e:
-    app.logger.error(f"Primary model load failed: {e}")
+    app.logger.error(f"Primary load failed: {e}")
     primary_meta = primary_scaler = primary_label_map = primary_label_encs = primary_rf = primary_xgb = None
 
 # --- Load secondary ensemble ---
 try:
-    (
-        secondary_meta,
-        secondary_scaler,
-        secondary_label_map,
-        secondary_label_encs,
-        secondary_rf,
-        secondary_xgb
-    ) = load_ensemble(SECONDARY_MODEL_PATH)
-    app.logger.debug("Secondary ensemble loaded successfully")
+    (secondary_meta,
+     secondary_scaler,
+     secondary_label_map,
+     secondary_label_encs,
+     secondary_rf,
+     secondary_xgb) = load_ensemble(SECONDARY_MODEL_PATH)
+    app.logger.debug("Secondary ensemble loaded")
 except Exception as e:
-    app.logger.error(f"Secondary model load failed: {e}")
+    app.logger.error(f"Secondary load failed: {e}")
     secondary_meta = secondary_scaler = secondary_label_map = secondary_label_encs = secondary_rf = secondary_xgb = None
 
-# --- Feature order (must match training) ---
+# --- Feature order for clustering input ---
 FEATURE_ORDER = [
-    'Age',
-    'Weight',
-    'Height_ft',
-    'Profession',
-    'Religion',
-    'Sleeping_Hours',
-    'Gender',
-    'Exercise_Level_days_per_week',
-    'Medical_History'
+    'Age','Weight','Height_ft','Profession','Religion',
+    'Sleeping_Hours','Gender','Exercise_Level_days_per_week','Medical_History'
 ]
 
 @app.route('/user', methods=['POST'])
 def process_user():
-    # --- Demo override: replace with request.json in prod ---
+    # In production use: user_data = request.json or {}
     user_data = {
         'dob'            : '2004-01-18',
         'weightKg'       : 68,
@@ -104,7 +97,8 @@ def process_user():
         'sleepHours'     : 7,
         'gender'         : 'male',
         'exerciseLevel'  : 6,
-        'medicalHistory' : 'NON'
+        'medicalHistory' : 'NON',
+        'tdee'           : 2400
     }
     app.logger.debug(f"Received user_data: {user_data}")
 
@@ -113,7 +107,7 @@ def process_user():
         dob = datetime.fromisoformat(user_data['dob'])
         age = (datetime.today() - dob).days // 365
 
-        # 2) Build raw feature dict
+        # 2) Raw feature dict
         row = {
             'Age'                          : age,
             'Weight'                       : user_data['weightKg'],
@@ -125,70 +119,105 @@ def process_user():
             'Exercise_Level_days_per_week' : user_data['exerciseLevel'],
             'Medical_History'              : user_data['medicalHistory']
         }
-        app.logger.debug(f"Raw features dict: {row}")
+        app.logger.debug(f"Raw features: {row}")
 
-        # 3) Encode & assemble input vector
+        # 3) Encode & assemble clustering input
         X_raw = []
         for feat in FEATURE_ORDER:
             if feat in primary_label_encs:
-                # use saved LabelEncoder for this feature
-                le = primary_label_encs[feat]
-                X_raw.append(le.transform([row[feat]])[0])
+                code = primary_label_encs[feat].transform([row[feat]])[0]
+                X_raw.append(code)
             else:
                 X_raw.append(row[feat])
-        app.logger.debug(f"Encoded raw vector (before scaling): {X_raw}")
+        app.logger.debug(f"Encoded raw: {X_raw}")
 
-        # 4) Scale
-        X_scaled = primary_scaler.transform([X_raw])
-        app.logger.debug(f"Scaled vector: {X_scaled}")
+        # 4) Scale & predict primary cluster
+        X_scaled    = primary_scaler.transform([X_raw])
+        rf_p, xgb_p = primary_rf.predict_proba(X_scaled), primary_xgb.predict_proba(X_scaled)
+        meta_p      = np.hstack([rf_p, xgb_p])
+        primary_pred= primary_meta.predict(meta_p)[0]
+        app.logger.debug(f"Primary cluster: {primary_pred}")
 
-        # 5) Build meta-features for primary
-        rf_proba  = primary_rf.predict_proba(X_scaled)
-        xgb_proba = primary_xgb.predict_proba(X_scaled)
-        meta_feat = np.hstack([rf_proba, xgb_proba])
-        app.logger.debug(f"Primary meta-features shape: {meta_feat.shape}")
+        # 5) Scale & predict secondary cluster
+        X_scaled_s     = secondary_scaler.transform([X_raw])
+        rf_s, xgb_s    = secondary_rf.predict_proba(X_scaled_s), secondary_xgb.predict_proba(X_scaled_s)
+        meta_s         = np.hstack([rf_s, xgb_s])
+        secondary_pred = secondary_meta.predict(meta_s)[0]
+        app.logger.debug(f"Secondary cluster: {secondary_pred}")
 
-        primary_pred = primary_meta.predict(meta_feat)[0]
-        app.logger.debug(f"Primary cluster prediction: {primary_pred}")
+        # 6) Select item pools
+        prim_items = items_df[items_df['KMeans_Cluster_14'] == primary_pred]
+        sec_items  = items_df[items_df['KMeans_Cluster_14'] == secondary_pred]
+        app.logger.debug(f"Primary pool size={len(prim_items)}, Secondary pool size={len(sec_items)}")
 
-        # 6) Build meta-features for secondary
-        X_scaled_s  = secondary_scaler.transform([X_raw])
-        rf_proba_s  = secondary_rf.predict_proba(X_scaled_s)
-        xgb_proba_s = secondary_xgb.predict_proba(X_scaled_s)
-        meta_feat_s = np.hstack([rf_proba_s, xgb_proba_s])
-        app.logger.debug(f"Secondary meta-features shape: {meta_feat_s.shape}")
+        # 7) Compute per‐item calorie target
+        tdee         = float(user_data['tdee'])
+        half         = tdee / 2
+        per_item_cal = half / 3
+        app.logger.debug(f"TDEE={tdee}, half={half}, per_item_cal={per_item_cal}")
 
-        secondary_pred = secondary_meta.predict(meta_feat_s)[0]
-        app.logger.debug(f"Secondary cluster prediction: {secondary_pred}")
+        # 8) Annotate helper with straight proportional scaling
+        def annotate(sub):
+            out = []
+            for _, r in sub.iterrows():
+                # parse numeric nutrients into a dict
+                rec = {}
+                for k in MANDATORY_NUM + OPTIONAL_NUM:
+                    val = r.get(k, 0.0)
+                    num = float(re.sub(r"[^\d.]", "", str(val)) or 0.0)
+                    rec[k] = num
+                # build regressor input DataFrame
+                df_reg = pd.DataFrame([{
+                    **{k: rec[k] for k in MANDATORY_NUM + OPTIONAL_NUM},
+                    CATEGORY_COL: r.get(CATEGORY_COL, "main_course")
+                }])
+                Xr = pd.get_dummies(df_reg, columns=[CATEGORY_COL], drop_first=True)
+                # blend predictions
+                h = hgb_model.predict(Xr)[0]
+                ri = ridge_model.predict(Xr)[0]
+                blend = 0.5 * (h + ri) or 1.0
 
-        # 7) Lookup items & log top 5
-        prim_items = items_df[items_df['KMeans_Cluster_14']==primary_pred]
-        sec_items  = items_df[items_df['KMeans_Cluster_14']==secondary_pred]
+                # compute ratio to hit target calories
+                ratio = per_item_cal / blend
 
-        app.logger.debug(
-            f"Primary cluster has {len(prim_items)} items; top 5:\n"
-            + prim_items.head(5).to_string(index=False)
-        )
-        app.logger.debug(
-            f"Secondary cluster has {len(sec_items)} items; top 5:\n"
-            + sec_items.head(5).to_string(index=False)
-        )
+                # scale all macronutrients + serving_weight
+                scaled = {}
+                for nutrient in MANDATORY_NUM + OPTIONAL_NUM:
+                    scaled[nutrient] = round(rec[nutrient] * ratio, 2)
+                # serving_weight is in MANDATORY_NUM
+                scaled["serving_weight"] = scaled.pop("serving_weight")  # already done above
 
-        # 8) Build 14-day meal plan
-        meal_plan = {}
-        for d in range(1,15):
-            m1 = prim_items.sample(1).to_dict('records')[0] if not prim_items.empty else {}
-            m2 = sec_items.sample(1).to_dict('records')[0]  if not sec_items.empty  else {}
-            meal_plan[str(d)] = {'meal1': m1, 'meal2': m2}
+                # attach required_calories
+                scaled["required_calories"] = round(per_item_cal, 2)
+
+                out.append(scaled)
+            return out
+
+
+
+        # 9) Build 14‐day plan
+        full_plan = {}
+        for day in range(1, 15):
+            bf_items = prim_items.sample(min(3, len(prim_items)), replace=False)
+            dn_items = sec_items.sample(min(3, len(sec_items)), replace=False)
+            full_plan[str(day)] = {
+                'breakfast': annotate(bf_items),
+                'dinner'   : annotate(dn_items)
+            }
+
+        # 10) Log each day’s selection
+        for d, meals in full_plan.items():
+            app.logger.debug(f"Day {d} breakfast: {meals['breakfast']}")
+            app.logger.debug(f"Day {d} dinner:   {meals['dinner']}")
 
         resp = {
             'primary_cluster'   : int(primary_pred),
             'secondary_cluster' : int(secondary_pred),
             'startDate'         : date.today().isoformat(),
             'endDate'           : (date.today()+timedelta(days=13)).isoformat(),
-            'mealPlan'          : meal_plan
+            'mealPlan'          : full_plan
         }
-        app.logger.debug(f"Response JSON: {resp}")
+        app.logger.debug("Returning full response")
         return jsonify(resp), 200
 
     except Exception:
