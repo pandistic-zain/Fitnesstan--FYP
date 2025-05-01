@@ -156,44 +156,58 @@ def process_user():
         per_item_cal = half / 3
         app.logger.debug(f"TDEE={tdee}, half={half}, per_item_cal={per_item_cal}")
 
-        # 8) Annotate helper with straight proportional scaling
+        # 8) Annotate helper: apply regressors & proportional scaling per item
+        #    Assumes you’ve captured the exact list of regressor input columns in REG_FEATURES.
+        REG_FEATURES = [
+            *MANDATORY_NUM, 
+            *OPTIONAL_NUM,
+            # then all of your one-hot category columns, e.g.:
+            # "category_main_course", "category_snack", ...
+        ]
+
         def annotate(sub):
             out = []
             for _, r in sub.iterrows():
-                # parse numeric nutrients into a dict
+                # --- 1) parse raw numeric features ---
                 rec = {}
                 for k in MANDATORY_NUM + OPTIONAL_NUM:
                     val = r.get(k, 0.0)
-                    num = float(re.sub(r"[^\d.]", "", str(val)) or 0.0)
-                    rec[k] = num
-                # build regressor input DataFrame
+                    rec[k] = float(re.sub(r"[^\d.]", "", str(val)) or 0.0)
+
+                # --- 2) required calories target ---
+                rec['required_calories'] = round(per_item_cal, 2)
+
+                # --- 3) build regressor DataFrame ---
                 df_reg = pd.DataFrame([{
                     **{k: rec[k] for k in MANDATORY_NUM + OPTIONAL_NUM},
                     CATEGORY_COL: r.get(CATEGORY_COL, "main_course")
                 }])
                 Xr = pd.get_dummies(df_reg, columns=[CATEGORY_COL], drop_first=True)
-                # blend predictions
+
+                # --- 4) align columns to training ---
+                for c in REG_FEATURES:
+                    if c not in Xr.columns:
+                        Xr[c] = 0
+                Xr = Xr[REG_FEATURES]
+
+                # --- 5) blended calorie prediction ---
                 h = hgb_model.predict(Xr)[0]
                 ri = ridge_model.predict(Xr)[0]
                 blend = 0.5 * (h + ri) or 1.0
 
-                # compute ratio to hit target calories
+                # --- 6) compute scaling ratio ---
                 ratio = per_item_cal / blend
 
-                # scale all macronutrients + serving_weight
-                scaled = {}
-                for nutrient in MANDATORY_NUM + OPTIONAL_NUM:
-                    scaled[nutrient] = round(rec[nutrient] * ratio, 2)
-                # serving_weight is in MANDATORY_NUM
-                scaled["serving_weight"] = scaled.pop("serving_weight")  # already done above
+                # --- 7) scale macronutrients & serving_weight ---
+                for nutr in MANDATORY_NUM:
+                    rec[nutr] = round(rec[nutr] * ratio, 2)
 
-                # attach required_calories
-                scaled["required_calories"] = round(per_item_cal, 2)
+                # serving_weight is mandatory too
+                rec['serving_weight'] = rec['serving_weight']  # already scaled
 
-                out.append(scaled)
+                out.append(rec)
+
             return out
-
-
 
         # 9) Build 14‐day plan
         full_plan = {}
