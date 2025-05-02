@@ -87,20 +87,83 @@ FEATURE_ORDER = [
 
 @app.route('/user', methods=['POST'])
 def process_user():
-    # In production use: user_data = request.json or {}
-    user_data = {
-        'dob'            : '2004-01-18',
-        'weightKg'       : 68,
-        'heightFt'       : 5.6,
-        'profession'     : 'student',
-        'religion'       : 'muslim',
-        'sleepHours'     : 7,
-        'gender'         : 'male',
-        'exerciseLevel'  : 6,
-        'medicalHistory' : 'NON',
-        'tdee'           : 2400
-    }
+    # in production, grab the JSON body directly
+    user_data = request.get_json(force=True, silent=True)
+    if not user_data:
+        app.logger.error("No JSON body provided")
+        return jsonify({'error': 'No user data provided'}), 400
+
+    app.logger.debug(f"Received user_data from Spring Boot: {user_data}")
+
+    # user_data = {
+    #     'dob'            : '2004-01-18',
+    #     'weightKg'       : 68,
+    #     'heightFt'       : 5.6,
+    #     'profession'     : 'student',
+    #     'religion'       : 'muslim',
+    #     'sleepHours'     : 7,
+    #     'gender'         : 'male',
+    #     'exerciseLevel'  : 6,
+    #     'medicalHistory' : 'NON',
+    #     'tdee'           : 2400
+    # }
     app.logger.debug(f"Received user_data: {user_data}")
+
+    # — clamp any negative TDEE/REE coming from the client —
+    # if 'tdee' in user_data:
+    #     user_data['tdee'] = abs(user_data['tdee'])
+    # if 'ree' in user_data:
+    #     user_data['ree'] = abs(user_data['ree'])
+
+    raw_dob = user_data.get('dob')
+    if isinstance(raw_dob, list) and len(raw_dob) == 3:
+        # raw_dob: [year, month, day]
+        user_data['dob'] = f"{raw_dob[0]:04d}-{raw_dob[1]:02d}-{raw_dob[2]:02d}"
+
+
+    # exerciseLevel may be "6 days a week" -> extract integer
+    ex = user_data.get('exerciseLevel')
+    if isinstance(ex, str):
+        m = re.search(r"(\d+)", ex)
+        user_data['exerciseLevel'] = int(m.group(1)) if m else 0
+
+    # sleepHours may come as "9 hours" -> extract integer
+    sl = user_data.get('sleepHours')
+    if isinstance(sl, str):
+        n = re.search(r"(\d+)", sl)
+        user_data['sleepHours'] = int(n.group(1)) if n else 0
+
+    # medicalHistory may come as a single-element list
+    mh = user_data.get('medicalHistory')
+    if isinstance(mh, list) and len(mh) == 1:
+        mh = mh[0]
+    # normalize any “none”-like value → 'NON'
+    if isinstance(mh, str) and mh.strip().lower() in ('', 'none'):
+        normalized_mh = 'NON'
+    else:
+        # match against LabelEncoder classes if possible
+        le = primary_label_encs.get('Medical_History') if primary_label_encs else None
+        normalized_mh = mh
+        if le is not None:
+            for cls in le.classes_:
+                if cls.lower() == str(mh).strip().lower():
+                    normalized_mh = cls
+                    break
+    user_data['medicalHistory'] = normalized_mh
+
+    # ensure categorical fields are lowercase for model compatibility
+    for cat in ['profession', 'religion', 'gender']:
+        if cat in user_data and isinstance(user_data[cat], str):
+            user_data[cat] = user_data[cat].lower()
+    app.logger.debug(
+        f"Lowercased categorical fields: "
+        f"{{'profession': {user_data.get('profession')}, "
+        f"'religion': {user_data.get('religion')}, "
+        f"'gender': {user_data.get('gender')}, "
+        f"'medicalHistory': {user_data['medicalHistory']}}}"
+    )
+
+    app.logger.debug(f"Normalized user_data: {user_data}")
 
     try:
         # 1) Compute age
@@ -108,12 +171,23 @@ def process_user():
         age = (datetime.today() - dob).days // 365
 
         # 2) Raw feature dict
+        # — fall back empty profession/religion to the first encoder class —
+        prof = user_data.get('profession', '')
+        le_prof = primary_label_encs.get('Profession') if primary_label_encs else None
+        if le_prof and prof not in le_prof.classes_:
+            prof = le_prof.classes_[0]
+
+        relig = user_data.get('religion', '')
+        le_relig = primary_label_encs.get('Religion') if primary_label_encs else None
+        if le_relig and relig not in le_relig.classes_:
+            relig = le_relig.classes_[0]
+
         row = {
             'Age'                          : age,
             'Weight'                       : user_data['weightKg'],
             'Height_ft'                    : user_data['heightFt'],
-            'Profession'                   : user_data['profession'],
-            'Religion'                     : user_data['religion'],
+            'Profession'                   : prof,
+            'Religion'                     : relig,
             'Sleeping_Hours'               : user_data['sleepHours'],
             'Gender'                       : user_data['gender'],
             'Exercise_Level_days_per_week' : user_data['exerciseLevel'],
@@ -150,7 +224,7 @@ def process_user():
         sec_items  = items_df[items_df['KMeans_Cluster_14'] == secondary_pred]
         app.logger.debug(f"Primary pool size={len(prim_items)}, Secondary pool size={len(sec_items)}")
 
-        # 7) Compute per‐item calorie target
+        # 7) Compute per-item calorie target
         tdee         = float(user_data['tdee'])
         half         = tdee / 2
         per_item_cal = half / 3
@@ -159,7 +233,7 @@ def process_user():
         # 8) Annotate helper: apply regressors & proportional scaling per item
         #    Assumes you’ve captured the exact list of regressor input columns in REG_FEATURES.
         REG_FEATURES = [
-            *MANDATORY_NUM, 
+            *MANDATORY_NUM,
             *OPTIONAL_NUM,
             # then all of your one-hot category columns, e.g.:
             # "category_main_course", "category_snack", ...
@@ -191,7 +265,7 @@ def process_user():
                 Xr = Xr[REG_FEATURES]
 
                 # --- 5) blended calorie prediction ---
-                h = hgb_model.predict(Xr)[0]
+                h  = hgb_model.predict(Xr)[0]
                 ri = ridge_model.predict(Xr)[0]
                 blend = 0.5 * (h + ri) or 1.0
 
@@ -209,20 +283,20 @@ def process_user():
 
             return out
 
-        # 9) Build 14‐day plan
+        # 9) Build 14-day plan
         full_plan = {}
         for day in range(1, 15):
             bf_items = prim_items.sample(min(3, len(prim_items)), replace=False)
             dn_items = sec_items.sample(min(3, len(sec_items)), replace=False)
             full_plan[str(day)] = {
-                'breakfast': annotate(bf_items),
-                'dinner'   : annotate(dn_items)
+                'meal1': annotate(bf_items),
+                'meal2': annotate(dn_items)
             }
 
         # 10) Log each day’s selection
         for d, meals in full_plan.items():
-            app.logger.debug(f"Day {d} breakfast: {meals['breakfast']}")
-            app.logger.debug(f"Day {d} dinner:   {meals['dinner']}")
+            app.logger.debug(f"Day {d} meal1: {meals['meal1']}")
+            app.logger.debug(f"Day {d} meal2: {meals['meal2']}")
 
         resp = {
             'primary_cluster'   : int(primary_pred),
@@ -231,12 +305,16 @@ def process_user():
             'endDate'           : (date.today()+timedelta(days=13)).isoformat(),
             'mealPlan'          : full_plan
         }
+        # --- add this line ---
+        resp['user'] = user_data
+
         app.logger.debug("Returning full response")
         return jsonify(resp), 200
 
     except Exception:
         app.logger.exception("Error in /user")
         return jsonify({'error':'server error'}), 500
+
 
 if __name__=='__main__':
     app.run(debug=True, port=5000)

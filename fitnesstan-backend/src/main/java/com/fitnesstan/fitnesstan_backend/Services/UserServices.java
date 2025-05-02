@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.time.LocalDate;
 import java.time.Period;
 import java.security.SecureRandom;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -415,69 +416,69 @@ public class UserServices {
     @SuppressWarnings("unchecked")
     @Transactional
     public Diet addDietPlanFromFlaskResponse(String userId, Map<String, Object> flaskResponse) throws Exception {
-        // Retrieve the user by their ID
-        Optional<Users> optionalUser = userRepository.findById(new ObjectId(userId));
-        if (!optionalUser.isPresent()) {
-            throw new Exception("User not found with id: " + userId);
-        }
-        Users user = optionalUser.get();
+        // 1) Load user
+        Users user = userRepository.findById(new ObjectId(userId))
+            .orElseThrow(() -> new Exception("User not found with id: " + userId));
 
-        // Extract the mealPlan, startDate, and endDate from the Flask response.
-        Object mealPlanObj = flaskResponse.get("mealPlan");
-        if (mealPlanObj == null) {
+        // 2) Extract mealPlan
+        @SuppressWarnings("unchecked")
+        Map<String, Object> flaskMealPlan = (Map<String, Object>) flaskResponse.get("mealPlan");
+        if (flaskMealPlan == null) {
             throw new Exception("MealPlan is missing in the Flask response.");
         }
 
-        // Convert the mealPlan into the expected structure
-        Map<String, Object> flaskMealPlan = (Map<String, Object>) mealPlanObj;
+        // 3) Convert into our structure: Map<day, Map<"breakfast"/"dinner", List<MealItem>>>
         Map<Integer, Map<String, List<MealItem>>> mealPlan = new HashMap<>();
 
-        for (Map.Entry<String, Object> dayEntry : flaskMealPlan.entrySet()) {
-            // Convert day number key from String to Integer
-            Integer dayNumber = Integer.parseInt(dayEntry.getKey());
+        for (var dayEntry : flaskMealPlan.entrySet()) {
+            Integer day = Integer.valueOf(dayEntry.getKey());
+            @SuppressWarnings("unchecked")
+            Map<String,Object> mealsMap = (Map<String,Object>) dayEntry.getValue();
 
-            // Each day's value is a Map: { "meal1": [...], "meal2": [...] }
-            Map<String, Object> mealMap = (Map<String, Object>) dayEntry.getValue();
-            Map<String, List<MealItem>> dayMeals = new HashMap<>();
+            Map<String,List<MealItem>> mealsForDay = new HashMap<>();
+            for (var mealEntry : mealsMap.entrySet()) {
+                String mealName = mealEntry.getKey();           // "breakfast" or "dinner"
+                @SuppressWarnings("unchecked")
+                List<Map<String,Object>> items = (List<Map<String,Object>>) mealEntry.getValue();
 
-            for (Map.Entry<String, Object> mealEntry : mealMap.entrySet()) {
-                String mealName = mealEntry.getKey();
-                List<Object> itemsList = (List<Object>) mealEntry.getValue();
-                List<MealItem> mealItems = new java.util.ArrayList<>();
+                List<MealItem> list = new ArrayList<>(items.size());
+                for (var item : items) {
+                    // parse out only the mandatory fields + required_calories
+                    double protein   = Double.parseDouble(item.get("protein").toString());
+                    double carbs     = Double.parseDouble(item.get("carbohydrate").toString());
+                    double fats      = Double.parseDouble(item.get("total_fat").toString());
+                    double weight    = Double.parseDouble(item.get("serving_weight").toString());
+                    double calories  = Double.parseDouble(item.get("required_calories").toString());
 
-                for (Object itemObj : itemsList) {
-                    Map<String, Object> itemMap = (Map<String, Object>) itemObj;
-                    MealItem mealItem = MealItem.builder()
-                            .name((String) itemMap.get("name"))
-                            .protein(Double.parseDouble(itemMap.get("protein").toString()))
-                            .carbs(Double.parseDouble(itemMap.get("carbs").toString()))
-                            .fats(Double.parseDouble(itemMap.get("fats").toString()))
-                            .calories(Double.parseDouble(itemMap.get("calories").toString()))
-                            .weight(Double.parseDouble(itemMap.get("weight").toString()))
-                            .build();
-                    mealItems.add(mealItem);
+                    MealItem m = MealItem.builder()
+                        .protein(protein)
+                        .carbs(carbs)
+                        .fats(fats)
+                        .weight(weight)
+                        .calories(calories)
+                        .build();
+                    list.add(m);
                 }
-                dayMeals.put(mealName, mealItems);
+
+                mealsForDay.put(mealName, list);
             }
-            mealPlan.put(dayNumber, dayMeals);
+            mealPlan.put(day, mealsForDay);
         }
 
-        // Parse startDate and endDate from the Flask response.
-        String startDateStr = (String) flaskResponse.get("startDate");
-        String endDateStr = (String) flaskResponse.get("endDate");
-        LocalDate startDate = LocalDate.parse(startDateStr);
-        LocalDate endDate = LocalDate.parse(endDateStr);
+        // 4) Parse dates
+        String start = (String) flaskResponse.get("startDate");
+        String end   = (String) flaskResponse.get("endDate");
+        LocalDate startDate = LocalDate.parse(start);
+        LocalDate endDate   = LocalDate.parse(end);
 
-        // Create and save the Diet object
+        // 5) Persist
         Diet diet = Diet.builder()
-                .user(user)
-                .mealPlan(mealPlan)
-                .startDate(startDate)
-                .endDate(endDate)
-                .build();
-        diet = dietRepository.save(diet);
-
-        return diet;
+            .user(user)
+            .mealPlan(mealPlan)
+            .startDate(startDate)
+            .endDate(endDate)
+            .build();
+        return dietRepository.save(diet);
     }
 
     public Users findByUsername(String username) {
