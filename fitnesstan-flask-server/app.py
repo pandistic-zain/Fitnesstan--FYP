@@ -263,8 +263,10 @@ def process_user():
                 Xr = Xr[REG_FEATURES]
 
                 # --- 5) blended calorie prediction ---
-                h  = hgb_model.predict(Xr)[0]
-                ri = ridge_model.predict(Xr)[0]
+                arr = Xr.values
+                h  = hgb_model.predict(arr)[0]
+                ri = ridge_model.predict(arr)[0]
+
                 blend = 0.5 * (h + ri) or 1.0
 
                 # --- 6) compute scaling ratio ---
