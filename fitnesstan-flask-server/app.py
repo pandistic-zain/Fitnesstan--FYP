@@ -109,17 +109,10 @@ def process_user():
     # }
     app.logger.debug(f"Received user_data: {user_data}")
 
-    # — clamp any negative TDEE/REE coming from the client —
-    # if 'tdee' in user_data:
-    #     user_data['tdee'] = abs(user_data['tdee'])
-    # if 'ree' in user_data:
-    #     user_data['ree'] = abs(user_data['ree'])
-
     raw_dob = user_data.get('dob')
     if isinstance(raw_dob, list) and len(raw_dob) == 3:
         # raw_dob: [year, month, day]
         user_data['dob'] = f"{raw_dob[0]:04d}-{raw_dob[1]:02d}-{raw_dob[2]:02d}"
-
 
     # exerciseLevel may be "6 days a week" -> extract integer
     ex = user_data.get('exerciseLevel')
@@ -206,14 +199,19 @@ def process_user():
         app.logger.debug(f"Encoded raw: {X_raw}")
 
         # 4) Scale & predict primary cluster
-        X_scaled    = primary_scaler.transform([X_raw])
+        # --- assemble a DataFrame with the exact feature names the scaler was trained on ---
+        scaler_cols = primary_scaler.feature_names_in_
+        X_df = pd.DataFrame([X_raw], columns=scaler_cols)
+        X_scaled = primary_scaler.transform(X_df)
         rf_p, xgb_p = primary_rf.predict_proba(X_scaled), primary_xgb.predict_proba(X_scaled)
         meta_p      = np.hstack([rf_p, xgb_p])
         primary_pred= primary_meta.predict(meta_p)[0]
         app.logger.debug(f"Primary cluster: {primary_pred}")
 
         # 5) Scale & predict secondary cluster
-        X_scaled_s     = secondary_scaler.transform([X_raw])
+        scaler_cols_s = secondary_scaler.feature_names_in_
+        X_df_s = pd.DataFrame([X_raw], columns=scaler_cols_s)
+        X_scaled_s     = secondary_scaler.transform(X_df_s)
         rf_s, xgb_s    = secondary_rf.predict_proba(X_scaled_s), secondary_xgb.predict_proba(X_scaled_s)
         meta_s         = np.hstack([rf_s, xgb_s])
         secondary_pred = secondary_meta.predict(meta_s)[0]
@@ -314,7 +312,6 @@ def process_user():
     except Exception:
         app.logger.exception("Error in /user")
         return jsonify({'error':'server error'}), 500
-
 
 if __name__=='__main__':
     app.run(debug=True, port=5000)
