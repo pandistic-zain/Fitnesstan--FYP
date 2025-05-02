@@ -242,8 +242,8 @@ def process_user():
         def annotate(sub):
             out = []
             for _, r in sub.iterrows():
-                # --- 1) parse raw numeric features ---
-                rec = {}
+                # --- 1) capture the item name (so we return it) ---
+                rec = {'name': r.get('name')}
                 for k in MANDATORY_NUM + OPTIONAL_NUM:
                     val = r.get(k, 0.0)
                     rec[k] = float(re.sub(r"[^\d.]", "", str(val)) or 0.0)
