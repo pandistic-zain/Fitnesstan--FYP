@@ -153,11 +153,13 @@ const DietPage = () => {
     console.log("[DEBUG] Handle item change for:", currentItem);
   
     try {
+      // Fetch userData from localStorage
       const userData = JSON.parse(localStorage.getItem("userData"));
+      console.log("[DEBUG] Retrieved userData from localStorage:", userData);
+  
       const userId = userData ? userData._id.toString() : "";  // Ensure ObjectId is converted to string
   
-      console.log("[DEBUG] userData:", userData); // Log the full user data to check the structure
-  
+      // Check if userId is found
       if (!userId) {
         alert("User not logged in");
         return;
@@ -165,6 +167,7 @@ const DietPage = () => {
   
       console.log("[DEBUG] Making API call with userId:", userId, "itemName:", currentItem.name);
   
+      // API call to update the item
       const response = await fetch("http://localhost:8080/register/change-item", {
         method: "POST",
         headers: {
@@ -183,10 +186,10 @@ const DietPage = () => {
       const data = await response.json();
       console.log("[DEBUG] Food item updated successfully:", data);
   
-      // Update the UI to reflect the changes after the successful API call
+      // Update the UI to reflect the changes
       const updatedMeals = { ...selectedDay };
-      const updatedMeal = updatedMeals[mealType]; // Dynamically access the correct meal
-      updatedMeal[itemIndex].name = currentItem.name; // No name change here, but update the state
+      const updatedMeal = updatedMeals[mealType];
+      updatedMeal[itemIndex].name = currentItem.name;
       setSelectedDay(updatedMeals);
     } catch (error) {
       console.error("[ERROR] Error updating food item:", error);
