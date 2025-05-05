@@ -367,13 +367,11 @@ def change_item_in_cluster():
     # Regressor logic to scale the item
     scaled_item = annotate(pd.DataFrame([item_data]))[0]
 
-    # Add scaled values to the item data
-    scaled_item['name'] = new_item_name
-
     app.logger.debug(f"Scaled item: {scaled_item}")
 
     # Step 4: Return the updated scaled item
     return jsonify(scaled_item), 200
+
 
 if __name__=='__main__':
     app.run(debug=True, port=5000)

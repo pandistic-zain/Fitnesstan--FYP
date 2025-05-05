@@ -560,100 +560,125 @@ public class UserServices {
     }
 
     @Transactional
-public boolean changeItemFromCluster(Map<String, Object> userRequestData) {
-    String flaskUrl = "http://localhost:5000/change_item"; // Flask server URL
+    public boolean changeItemFromCluster(Map<String, Object> userRequestData) {
+        String flaskUrl = "http://localhost:5000/change_item"; // Flask server URL
 
-    // Create HTTP headers
-    HttpHeaders headers = new HttpHeaders();
-    headers.set("Content-Type", "application/json");
+        // Create HTTP headers
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Content-Type", "application/json");
 
-    // Wrap the user data in an HttpEntity
-    HttpEntity<Map<String, Object>> requestEntity = new HttpEntity<>(userRequestData, headers);
+        // Wrap the user data in an HttpEntity
+        HttpEntity<Map<String, Object>> requestEntity = new HttpEntity<>(userRequestData, headers);
 
-    try {
-        // Send the request to Flask server
-        RestTemplate restTemplate = new RestTemplate();
-        ResponseEntity<Map> response = restTemplate.postForEntity(flaskUrl, requestEntity, Map.class);
+        try {
+            // Debugging: log the data being sent to the Flask server
+            System.out.println("[DEBUG] Sending request to Flask server: " + requestEntity);
 
-        // Check response status and proceed only if successful
-        if (response.getStatusCode().is2xxSuccessful()) {
-            Map<String, Object> scaledItemResponse = response.getBody();
-            if (scaledItemResponse == null || !scaledItemResponse.containsKey("name")) {
-                return false; // If the response doesn't contain a valid item
-            }
+            // Send the request to Flask server
+            RestTemplate restTemplate = new RestTemplate();
+            ResponseEntity<Map> response = restTemplate.postForEntity(flaskUrl, requestEntity, Map.class);
 
-            // Extract the updated item from the Flask response
-            String newItemName = (String) scaledItemResponse.get("name");
-            double protein = (Double) scaledItemResponse.get("protein");
-            double carbs = (Double) scaledItemResponse.get("carbohydrate");
-            double fats = (Double) scaledItemResponse.get("total_fat");
-            double weight = (Double) scaledItemResponse.get("serving_weight");
-            double calories = (Double) scaledItemResponse.get("required_calories");
+            // Debugging: log the response from Flask server
+            System.out.println("[DEBUG] Response from Flask server: " + response);
 
-            // Get the userId directly from userRequestData
-            String userId = (String) userRequestData.get("userId");
-            if (userId == null || userId.isEmpty()) {
-                throw new Exception("User ID is missing in the request.");
-            }
-
-            // Fetch the user from the database using the provided userId
-            Users user = userRepository.findById(new ObjectId(userId))
-                    .orElseThrow(() -> new Exception("User not found with id: " + userId));
-
-            // Find and remove the old item from the meal plan
-            Map<Integer, Map<String, List<MealItem>>> mealPlan = user.getCurrentDiet().getMealPlan();
-            if (mealPlan == null) {
-                return false; // Meal plan doesn't exist
-            }
-
-            boolean itemReplaced = false;
-
-            // Iterate over all days and meals in the meal plan
-            for (Map.Entry<Integer, Map<String, List<MealItem>>> dayEntry : mealPlan.entrySet()) {
-                for (Map.Entry<String, List<MealItem>> mealEntry : dayEntry.getValue().entrySet()) {
-                    List<MealItem> mealItems = mealEntry.getValue();
-
-                    for (int i = 0; i < mealItems.size(); i++) {
-                        MealItem item = mealItems.get(i);
-                        if (item.getName().equals(newItemName)) {
-                            // Item to replace found, remove it and add the new scaled item
-                            mealItems.remove(i);
-
-                            MealItem newItem = MealItem.builder()
-                                    .name(newItemName)
-                                    .protein(protein)
-                                    .carbs(carbs)
-                                    .fats(fats)
-                                    .weight(weight)
-                                    .calories(calories)
-                                    .build();
-
-                            mealItems.add(newItem);
-                            itemReplaced = true;
-                            break;
-                        }
-                    }
-
-                    if (itemReplaced) break;
+            // Check response status and proceed only if successful
+            if (response.getStatusCode().is2xxSuccessful()) {
+                Map<String, Object> scaledItemResponse = response.getBody();
+                if (scaledItemResponse == null || !scaledItemResponse.containsKey("name")) {
+                    System.out.println("[DEBUG] Invalid response from Flask: Missing 'name' in response.");
+                    return false; // If the response doesn't contain a valid item
                 }
-                if (itemReplaced) break;
-            }
 
-            if (itemReplaced) {
-                // Save the updated user with the new meal plan
-                userRepository.save(user);
-                return true; // Successfully replaced the item
+                // Extract the updated item from the Flask response
+                String newItemName = (String) scaledItemResponse.get("name");
+                double protein = (Double) scaledItemResponse.get("protein");
+                double carbs = (Double) scaledItemResponse.get("carbohydrate");
+                double fats = (Double) scaledItemResponse.get("total_fat");
+                double weight = (Double) scaledItemResponse.get("serving_weight");
+                double calories = (Double) scaledItemResponse.get("required_calories");
+
+                // Debugging: log the extracted data
+                System.out.println("[DEBUG] Extracted new item details: " +
+                        "Name: " + newItemName + ", Protein: " + protein + ", Carbs: " + carbs +
+                        ", Fats: " + fats + ", Weight: " + weight + ", Calories: " + calories);
+
+                // Get the userId directly from userRequestData
+                String userId = (String) userRequestData.get("userId");
+                if (userId == null || userId.isEmpty()) {
+                    throw new Exception("User ID is missing in the request.");
+                }
+
+                // Fetch the user from the database using the provided userId
+                Users user = userRepository.findById(new ObjectId(userId))
+                        .orElseThrow(() -> new Exception("User not found with id: " + userId));
+
+                // Debugging: log the retrieved user
+                System.out.println("[DEBUG] Retrieved user: " + user);
+
+                // Find and remove the old item from the meal plan
+                Map<Integer, Map<String, List<MealItem>>> mealPlan = user.getCurrentDiet().getMealPlan();
+                if (mealPlan == null) {
+                    System.out.println("[DEBUG] Meal plan not found for user.");
+                    return false; // Meal plan doesn't exist
+                }
+
+                boolean itemReplaced = false;
+
+                // Iterate over all days and meals in the meal plan
+                for (Map.Entry<Integer, Map<String, List<MealItem>>> dayEntry : mealPlan.entrySet()) {
+                    for (Map.Entry<String, List<MealItem>> mealEntry : dayEntry.getValue().entrySet()) {
+                        List<MealItem> mealItems = mealEntry.getValue();
+
+                        for (int i = 0; i < mealItems.size(); i++) {
+                            MealItem item = mealItems.get(i);
+                            if (item.getName().equals(newItemName)) {
+                                // Item to replace found, remove it and add the new scaled item
+                                mealItems.remove(i);
+
+                                MealItem newItem = MealItem.builder()
+                                        .name(newItemName)
+                                        .protein(protein)
+                                        .carbs(carbs)
+                                        .fats(fats)
+                                        .weight(weight)
+                                        .calories(calories)
+                                        .build();
+
+                                mealItems.add(newItem);
+                                itemReplaced = true;
+                                System.out.println("[DEBUG] Replaced item: " + item.getName() + " with new item: "
+                                        + newItem.getName());
+                                break;
+                            }
+                        }
+
+                        if (itemReplaced)
+                            break;
+                    }
+                    if (itemReplaced)
+                        break;
+                }
+
+                if (itemReplaced) {
+                    // Save the updated user with the new meal plan
+                    userRepository.save(user);
+                    System.out.println("[DEBUG] Successfully updated meal plan for user.");
+                    return true; // Successfully replaced the item
+                } else {
+                    System.out.println("[DEBUG] No matching item found to replace.");
+                    return false; // No matching item found to replace
+                }
             } else {
-                return false; // No matching item found to replace
+                // If Flask response is not successful
+                System.out.println("[DEBUG] Flask response was not successful. Status: " + response.getStatusCode());
+                return false;
             }
-        } else {
-            // If Flask response is not successful
-            return false;
+        } catch (Exception e) {
+            // Debugging: log any exceptions encountered during the process
+            System.out.println("[DEBUG] Error during item change: " + e.getMessage());
+            e.printStackTrace();
+            return false; // Error occurred
         }
-    } catch (Exception e) {
-        e.printStackTrace();
-        return false; // Error occurred
     }
-}
 
 }

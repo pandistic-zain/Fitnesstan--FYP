@@ -47,23 +47,23 @@ public class UserController {
     public ResponseEntity<?> getFullUserInfo(Authentication authentication) {
         String email = authentication.getName();
         System.out.println("[DEBUG] Authenticated user's email: " + email);
-        
+
         Users user = userRepository.findByEmail(email);
         if (user == null) {
             System.out.println("[DEBUG] No user found for email: " + email);
             return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
         }
-        
+
         Diet diet = user.getCurrentDiet();
         WorkoutPlan workoutPlan = user.getCurrentWorkoutPlan();
-        
+
         System.out.println("[DEBUG] Retrieved User: " + user);
         System.out.println("[DEBUG] Retrieved Diet: " + diet);
         System.out.println("[DEBUG] Retrieved WorkoutPlan: " + workoutPlan);
-        
+
         FullUserInfoDTO fullInfo = new FullUserInfoDTO(user, diet, workoutPlan);
         System.out.println("[DEBUG] FullUserInfoDTO: " + fullInfo);
-        
+
         return ResponseEntity.ok(fullInfo);
     }
 
@@ -117,7 +117,7 @@ public class UserController {
             return new ResponseEntity<>("User updated successfully", HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>("Failed to update user: " + e.getMessage(),
-                                        HttpStatus.INTERNAL_SERVER_ERROR);
+                    HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -134,13 +134,13 @@ public class UserController {
             // 2) Check if the user exists.
             if (user == null) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                                     .body("User not found.");
+                        .body("User not found.");
             }
 
             // 3) Verify if the provided current password matches the one in the database.
             if (!passwordEncoder.matches(passwordChangeRequest.getCurrentPassword(), user.getPassword())) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                                     .body("Current password is incorrect.");
+                        .body("Current password is incorrect.");
             }
 
             // 4) Update the user's password with the new password (properly encoded)
@@ -152,7 +152,7 @@ public class UserController {
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                                 .body("Error changing password: " + e.getMessage());
+                    .body("Error changing password: " + e.getMessage());
         }
     }
 
@@ -173,20 +173,6 @@ public class UserController {
         }
     }
 
-    // New endpoint for changing the assigned item from a cluster
-    @PostMapping("/change-item")
-    public ResponseEntity<String> changeItemFromCluster(@RequestBody Map<String, Object> userRequestData) {
-        try {
-            // Call the UserServices method to forward request to Flask server for item change
-            boolean isItemChanged = userServices.changeItemFromCluster(userRequestData);
+       
 
-            if (isItemChanged) {
-                return ResponseEntity.ok("Item successfully changed from cluster.");
-            } else {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to change item.");
-            }
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error: " + e.getMessage());
-        }
-    }
 }

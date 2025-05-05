@@ -1,4 +1,3 @@
-// src/components/DietPage.jsx
 import React, { useEffect, useState } from "react";
 import Carousel from "react-bootstrap/Carousel";
 import { getFullUserData } from "../../API/RegisterAPI";
@@ -149,18 +148,51 @@ const DietPage = () => {
     }, 10000);
   };
 
-  // Function to handle changing a specific meal item (name).
-  const handleItemChange = (mealNumber, itemIndex) => {
-    const newItemName = prompt("Enter the new food item name:");
-    if (!newItemName) return; // If no name is entered, do nothing.
+  const handleItemChange = async (mealType, itemIndex) => {
+    const currentItem = selectedDay[mealType][itemIndex];
+    console.log("[DEBUG] Handle item change for:", currentItem);
 
-    // Updating the item in the selected day's meal.
-    const updatedMeals = { ...selectedDay };
-    const updatedMeal = updatedMeals[`meal${mealNumber}`];
-    updatedMeal[itemIndex].name = newItemName; // Change the food item name.
+    try {
+      const userData = JSON.parse(localStorage.getItem("userData"));
+      const userId = userData ? userData.id : "";
+      if (!userId) {
+        alert("User not logged in");
+        return;
+      }
 
-    // Update state with new data
-    setSelectedDay(updatedMeals);
+      console.log(
+        "[DEBUG] Making API call with userId:",
+        userId,
+        "itemName:",
+        currentItem.name
+      );
+
+      const response = await fetch("http://localhost:8080/register/change-item", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          userId: userId, // Send userId
+          itemName: currentItem.name, // Send the food item name to be updated
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to update food item");
+      }
+
+      const data = await response.json();
+      console.log("[DEBUG] Food item updated successfully:", data);
+
+      // Update the UI to reflect the changes after the successful API call
+      const updatedMeals = { ...selectedDay };
+      const updatedMeal = updatedMeals[mealType]; // Dynamically access the correct meal
+      updatedMeal[itemIndex].name = currentItem.name; // No name change here, but update the state
+      setSelectedDay(updatedMeals);
+    } catch (error) {
+      console.error("[ERROR] Error updating food item:", error);
+    }
   };
 
   // Helper: format milliseconds as hh:mm:ss.
@@ -317,7 +349,9 @@ const DietPage = () => {
                                   <td>
                                     <button
                                       className={styles.changeButton}
-                                      onClick={() => handleItemChange(1, i)}
+                                      onClick={() =>
+                                        handleItemChange("meal1", i)
+                                      }
                                     >
                                       Change
                                     </button>
@@ -382,7 +416,9 @@ const DietPage = () => {
                                     <td>
                                       <button
                                         className={styles.changeButton}
-                                        onClick={() => handleItemChange(2, i)}
+                                        onClick={() =>
+                                          handleItemChange("meal2", i)
+                                        }
                                       >
                                         Change
                                       </button>
@@ -433,7 +469,9 @@ const DietPage = () => {
                                   <td>
                                     <button
                                       className={styles.changeButton}
-                                      onClick={() => handleItemChange(2, i)}
+                                      onClick={() =>
+                                        handleItemChange("meal2", i)
+                                      }
                                     >
                                       Change
                                     </button>

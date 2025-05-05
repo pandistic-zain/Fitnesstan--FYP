@@ -445,7 +445,6 @@ body {
   height: 350px;
   width: auto; /* Ensure fixed height */
 }
-/* The semi-transparent blur overlay */
 .blurOverlay {
   position: absolute;
   top: 0;
@@ -455,8 +454,22 @@ body {
   backdrop-filter: blur(5px);
   background-color: rgba(255, 0, 0, 0.4);
   border-radius: 8px;
-  z-index: 2; /* Lower than the text & button */
+  z-index: 1; /* Lower z-index so button is clickable */
 }
+
+/* Ensure the Change button is above the blur overlay */
+.changeButton {
+  background-color: #1a1a1a;
+  color: #ff0000;
+  border: 1px solid #ff0000;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s, color 0.3s;
+  position: relative; /* Ensure it's positioned above other elements */
+  z-index: 2; /* Add z-index to ensure it stays above other elements */
+}
+
 
 /* The message in the center of the blur */
 .timerMessage {

@@ -112,4 +112,35 @@ public class PublicController {
             return new ResponseEntity<>("Failed to save user: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+    @PostMapping("/change-item")
+    public ResponseEntity<String> changeItemFromCluster(@RequestBody Map<String, Object> userRequestData) {
+        try {
+            // Debugging: log the incoming request data to ensure correct format
+            System.out.println("[DEBUG] Received request data for item change: " + userRequestData);
+    
+            // Check if the required fields are present
+            if (!userRequestData.containsKey("userId") || !userRequestData.containsKey("itemName")) {
+                return ResponseEntity.badRequest().body("Missing required fields: userId or itemName");
+            }
+    
+            // Extract data from the request
+            String userId = (String) userRequestData.get("userId");
+            String itemName = (String) userRequestData.get("itemName");
+    
+            System.out.println("[DEBUG] userId: " + userId + ", itemName: " + itemName);
+    
+            // Call the service method to process the change
+            boolean isItemChanged = userServices.changeItemFromCluster(userRequestData);
+    
+            if (isItemChanged) {
+                return ResponseEntity.ok("Item successfully changed from cluster.");
+            } else {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to change item.");
+            }
+        } catch (Exception e) {
+            // Debugging: log any exceptions encountered during the process
+            System.out.println("[DEBUG] Error during item change: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error: " + e.getMessage());
+        }
+    }
 }
