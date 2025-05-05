@@ -30,7 +30,9 @@ const DietPage = () => {
     getFullUserData()
       .then((dto) => {
         if (!dto || !dto.diet || !dto.diet.mealPlan || !dto.workoutPlan) {
-          console.warn("[WARN] No diet or mealPlan/workoutPlan found in user data.");
+          console.warn(
+            "[WARN] No diet or mealPlan/workoutPlan found in user data."
+          );
           setLoading(false);
           return;
         }
@@ -39,9 +41,12 @@ const DietPage = () => {
         if (planStart) {
           const startDate = new Date(planStart);
           const now = new Date();
-          computedDay = Math.floor((now - startDate) / (1000 * 60 * 60 * 24)) + 1;
+          computedDay =
+            Math.floor((now - startDate) / (1000 * 60 * 60 * 24)) + 1;
         }
-        const dayKeys = Object.keys(dto.diet.mealPlan).map((k) => parseInt(k, 10));
+        const dayKeys = Object.keys(dto.diet.mealPlan).map((k) =>
+          parseInt(k, 10)
+        );
         const maxDay = Math.max(...dayKeys);
         if (computedDay < 1) computedDay = 1;
         if (computedDay > maxDay) computedDay = maxDay;
@@ -107,7 +112,13 @@ const DietPage = () => {
     return () => {
       if (timer) clearInterval(timer);
     };
-  }, [selectedDay, currentDayNumber, meal1Completed, meal1CompletionTime, forcedMeal2Unlocked]);
+  }, [
+    selectedDay,
+    currentDayNumber,
+    meal1Completed,
+    meal1CompletionTime,
+    forcedMeal2Unlocked,
+  ]);
 
   // Hide sidebar on scroll
   useEffect(() => {
@@ -130,14 +141,26 @@ const DietPage = () => {
   };
 
   // Handler to force unlock Meal 2.
-  // When clicked, this sets forcedMeal2Unlocked to true and resets the meal2 timer.
-  // After 10 seconds, forcedMeal2Unlocked is reset back to false.
   const handleForceUnlockMeal2 = () => {
     setForcedMeal2Unlocked(true);
     setMeal2RemainingTime(0);
     setTimeout(() => {
       setForcedMeal2Unlocked(false);
     }, 10000);
+  };
+
+  // Function to handle changing a specific meal item (name).
+  const handleItemChange = (mealNumber, itemIndex) => {
+    const newItemName = prompt("Enter the new food item name:");
+    if (!newItemName) return; // If no name is entered, do nothing.
+
+    // Updating the item in the selected day's meal.
+    const updatedMeals = { ...selectedDay };
+    const updatedMeal = updatedMeals[`meal${mealNumber}`];
+    updatedMeal[itemIndex].name = newItemName; // Change the food item name.
+
+    // Update state with new data
+    setSelectedDay(updatedMeals);
   };
 
   // Helper: format milliseconds as hh:mm:ss.
@@ -227,8 +250,12 @@ const DietPage = () => {
               <button
                 key={day.dayNumber}
                 className={`${styles.toggleButton} ${
-                  selectedDay && selectedDay.dayNumber === day.dayNumber ? styles.active : ""
-                } ${day.dayNumber > currentDayNumber ? styles.lockedToggle : ""}`}
+                  selectedDay && selectedDay.dayNumber === day.dayNumber
+                    ? styles.active
+                    : ""
+                } ${
+                  day.dayNumber > currentDayNumber ? styles.lockedToggle : ""
+                }`}
                 onClick={() => {
                   if (day.dayNumber <= currentDayNumber) {
                     setSelectedDay(day);
@@ -288,7 +315,10 @@ const DietPage = () => {
                                   <td>{item.calories}</td>
                                   <td>{item.weight}</td>
                                   <td>
-                                    <button className={styles.changeButton}>
+                                    <button
+                                      className={styles.changeButton}
+                                      onClick={() => handleItemChange(1, i)}
+                                    >
                                       Change
                                     </button>
                                   </td>
@@ -323,9 +353,9 @@ const DietPage = () => {
                     <div className={styles.carouselDayContent}>
                       <h3 className={styles.mealHeading}>Meal 2</h3>
                       {selectedDay.meal2 && selectedDay.meal2.length > 0 ? (
-                        // For current day, apply intermittent fasting logic for Meal 2.
                         selectedDay.dayNumber === currentDayNumber &&
-                        (!meal1Completed || (meal2RemainingTime > 0 && !forcedMeal2Unlocked)) ? (
+                        (!meal1Completed ||
+                          (meal2RemainingTime > 0 && !forcedMeal2Unlocked)) ? (
                           <div className={styles.mealLocked}>
                             <div className={styles.blurOverlay}></div>
                             <table className={styles.mealTable}>
@@ -350,7 +380,10 @@ const DietPage = () => {
                                     <td>{item.calories}</td>
                                     <td>{item.weight}</td>
                                     <td>
-                                      <button className={styles.changeButton}>
+                                      <button
+                                        className={styles.changeButton}
+                                        onClick={() => handleItemChange(2, i)}
+                                      >
                                         Change
                                       </button>
                                     </td>
@@ -362,7 +395,10 @@ const DietPage = () => {
                               {!meal1Completed ? (
                                 <span>Complete Meal 1 to unlock Meal 2 😇</span>
                               ) : (
-                                <span>Meal 2 available in: {formatTime(meal2RemainingTime)} ⏳</span>
+                                <span>
+                                  Meal 2 available in:{" "}
+                                  {formatTime(meal2RemainingTime)} ⏳
+                                </span>
                               )}
                             </div>
                             <button
@@ -373,7 +409,6 @@ const DietPage = () => {
                             </button>
                           </div>
                         ) : (
-                          // If Meal 2 is unlocked (current day with timer elapsed/forced unlock)
                           <table className={styles.mealTable}>
                             <thead>
                               <tr>
@@ -396,7 +431,10 @@ const DietPage = () => {
                                   <td>{item.calories}</td>
                                   <td>{item.weight}</td>
                                   <td>
-                                    <button className={styles.changeButton}>
+                                    <button
+                                      className={styles.changeButton}
+                                      onClick={() => handleItemChange(2, i)}
+                                    >
                                       Change
                                     </button>
                                   </td>

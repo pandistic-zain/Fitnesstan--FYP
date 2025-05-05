@@ -315,5 +315,65 @@ def process_user():
         app.logger.exception("Error in /user")
         return jsonify({'error':'server error'}), 500
 
+
+@app.route('/change_item', methods=['POST'])
+def change_item_in_cluster():
+    # Receive the item name to be changed from the request
+    request_data = request.get_json(force=True, silent=True)
+    item_name = request_data.get("item_name")
+
+    if not item_name:
+        app.logger.error("No item_name provided")
+        return jsonify({'error': 'Item name is required'}), 400
+
+    app.logger.debug(f"Received request to change item: {item_name}")
+
+    # Step 1: Find the item in the item catalog (CSV file) and determine its cluster
+    item_row = items_df[items_df['name'] == item_name]
+
+    if item_row.empty:
+        app.logger.error(f"Item {item_name} not found in catalog")
+        return jsonify({'error': f"Item {item_name} not found in catalog"}), 404
+
+    # Get the cluster of the current item
+    primary_cluster = item_row['KMeans_Cluster_14'].values[0]
+    secondary_cluster = item_row['KMeans_Cluster_14'].values[0]  # Assuming both primary and secondary are same for now
+
+    app.logger.debug(f"Item {item_name} belongs to primary cluster: {primary_cluster} and secondary cluster: {secondary_cluster}")
+
+    # Step 2: Select another item from the same cluster
+    cluster_items = items_df[items_df['KMeans_Cluster_14'] == primary_cluster]
+    
+    # Ensure we select a different item than the current one
+    cluster_items = cluster_items[cluster_items['name'] != item_name]
+    
+    if cluster_items.empty:
+        app.logger.error(f"No other items found in the same cluster for {item_name}")
+        return jsonify({'error': f"No other items found in the same cluster for {item_name}"}), 404
+
+    # Pick the first item from the cluster
+    new_item = cluster_items.sample(1)
+    new_item_name = new_item['name'].values[0]
+    
+    app.logger.debug(f"Selected new item from the same cluster: {new_item_name}")
+
+    # Step 3: Apply the regressor to scale the new item (same scaling logic as other items)
+    new_item_data = new_item.iloc[0]
+
+    # Extract necessary values from the new item row
+    item_data = {col: new_item_data[col] for col in MANDATORY_NUM + OPTIONAL_NUM}
+    item_data['category'] = new_item_data[CATEGORY_COL]
+
+    # Regressor logic to scale the item
+    scaled_item = annotate(pd.DataFrame([item_data]))[0]
+
+    # Add scaled values to the item data
+    scaled_item['name'] = new_item_name
+
+    app.logger.debug(f"Scaled item: {scaled_item}")
+
+    # Step 4: Return the updated scaled item
+    return jsonify(scaled_item), 200
+
 if __name__=='__main__':
     app.run(debug=True, port=5000)

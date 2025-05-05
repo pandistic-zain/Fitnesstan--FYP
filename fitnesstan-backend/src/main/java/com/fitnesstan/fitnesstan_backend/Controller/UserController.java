@@ -1,6 +1,8 @@
 package com.fitnesstan.fitnesstan_backend.Controller;
 
 import java.time.LocalDateTime;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -168,6 +170,23 @@ public class UserController {
             return new ResponseEntity<>("User deleted successfully", HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>("Failed to delete user: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    // New endpoint for changing the assigned item from a cluster
+    @PostMapping("/change-item")
+    public ResponseEntity<String> changeItemFromCluster(@RequestBody Map<String, Object> userRequestData) {
+        try {
+            // Call the UserServices method to forward request to Flask server for item change
+            boolean isItemChanged = userServices.changeItemFromCluster(userRequestData);
+
+            if (isItemChanged) {
+                return ResponseEntity.ok("Item successfully changed from cluster.");
+            } else {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to change item.");
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error: " + e.getMessage());
         }
     }
 }
