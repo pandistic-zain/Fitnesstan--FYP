@@ -151,40 +151,38 @@ const DietPage = () => {
   const handleItemChange = async (mealType, itemIndex) => {
     const currentItem = selectedDay[mealType][itemIndex];
     console.log("[DEBUG] Handle item change for:", currentItem);
-
+  
     try {
       const userData = JSON.parse(localStorage.getItem("userData"));
-      const userId = userData ? userData.id : "";
+      const userId = userData ? userData._id.toString() : "";  // Ensure ObjectId is converted to string
+  
+      console.log("[DEBUG] userData:", userData); // Log the full user data to check the structure
+  
       if (!userId) {
         alert("User not logged in");
         return;
       }
-
-      console.log(
-        "[DEBUG] Making API call with userId:",
-        userId,
-        "itemName:",
-        currentItem.name
-      );
-
+  
+      console.log("[DEBUG] Making API call with userId:", userId, "itemName:", currentItem.name);
+  
       const response = await fetch("http://localhost:8080/register/change-item", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          userId: userId, // Send userId
+          userId: userId, // Send userId as string
           itemName: currentItem.name, // Send the food item name to be updated
         }),
       });
-
+  
       if (!response.ok) {
         throw new Error("Failed to update food item");
       }
-
+  
       const data = await response.json();
       console.log("[DEBUG] Food item updated successfully:", data);
-
+  
       // Update the UI to reflect the changes after the successful API call
       const updatedMeals = { ...selectedDay };
       const updatedMeal = updatedMeals[mealType]; // Dynamically access the correct meal
@@ -194,6 +192,7 @@ const DietPage = () => {
       console.error("[ERROR] Error updating food item:", error);
     }
   };
+  
 
   // Helper: format milliseconds as hh:mm:ss.
   const formatTime = (ms) => {

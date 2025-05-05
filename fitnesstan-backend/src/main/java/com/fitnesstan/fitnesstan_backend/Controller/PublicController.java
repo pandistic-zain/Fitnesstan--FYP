@@ -3,6 +3,7 @@ package com.fitnesstan.fitnesstan_backend.Controller;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -112,6 +113,7 @@ public class PublicController {
             return new ResponseEntity<>("Failed to save user: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
     @PostMapping("/change-item")
     public ResponseEntity<String> changeItemFromCluster(@RequestBody Map<String, Object> userRequestData) {
         try {
@@ -124,23 +126,39 @@ public class PublicController {
             }
     
             // Extract data from the request
-            String userId = (String) userRequestData.get("userId");
+            String userIdStr = (String) userRequestData.get("userId");
             String itemName = (String) userRequestData.get("itemName");
     
-            System.out.println("[DEBUG] userId: " + userId + ", itemName: " + itemName);
+            // Debugging: log extracted values
+            System.out.println("[DEBUG] Extracted userId: " + userIdStr + ", itemName: " + itemName);
     
+            // Convert userId string to ObjectId (MongoDB's native ID type)
+            ObjectId userId;
+            try {
+                userId = new ObjectId(userIdStr); // Ensures userId is a valid ObjectId
+            } catch (IllegalArgumentException e) {
+                return ResponseEntity.badRequest().body("Invalid userId format.");
+            }
+    
+            System.out.println("[DEBUG] MongoDB ObjectId: " + userId);
+    
+            // Use the existing userRequestData map (no need to redeclare it)
             // Call the service method to process the change
             boolean isItemChanged = userServices.changeItemFromCluster(userRequestData);
     
+            // Return appropriate responses based on whether the item change was successful
             if (isItemChanged) {
+                System.out.println("[DEBUG] Item successfully changed from cluster.");
                 return ResponseEntity.ok("Item successfully changed from cluster.");
             } else {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to change item.");
+                System.out.println("[DEBUG] Failed to change item.");
+                return ResponseEntity.status(500).body("Failed to change item.");
             }
         } catch (Exception e) {
             // Debugging: log any exceptions encountered during the process
             System.out.println("[DEBUG] Error during item change: " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error: " + e.getMessage());
+            return ResponseEntity.status(500).body("Error: " + e.getMessage());
         }
     }
+    
 }
