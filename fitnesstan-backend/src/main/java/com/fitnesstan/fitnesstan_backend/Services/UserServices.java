@@ -418,7 +418,7 @@ public class UserServices {
     public Diet addDietPlanFromFlaskResponse(String userId, Map<String, Object> flaskResponse) throws Exception {
         // 1) Load user
         Users user = userRepository.findById(new ObjectId(userId))
-            .orElseThrow(() -> new Exception("User not found with id: " + userId));
+                .orElseThrow(() -> new Exception("User not found with id: " + userId));
 
         // 2) Extract mealPlan
         @SuppressWarnings("unchecked")
@@ -427,36 +427,40 @@ public class UserServices {
             throw new Exception("MealPlan is missing in the Flask response.");
         }
 
-        // 3) Convert into our structure: Map<day, Map<"breakfast"/"dinner", List<MealItem>>>
+        // 3) Convert into our structure: Map<day, Map<"breakfast"/"dinner",
+        // List<MealItem>>>
         Map<Integer, Map<String, List<MealItem>>> mealPlan = new HashMap<>();
 
         for (var dayEntry : flaskMealPlan.entrySet()) {
             Integer day = Integer.valueOf(dayEntry.getKey());
             @SuppressWarnings("unchecked")
-            Map<String,Object> mealsMap = (Map<String,Object>) dayEntry.getValue();
+            Map<String, Object> mealsMap = (Map<String, Object>) dayEntry.getValue();
 
-            Map<String,List<MealItem>> mealsForDay = new HashMap<>();
+            Map<String, List<MealItem>> mealsForDay = new HashMap<>();
             for (var mealEntry : mealsMap.entrySet()) {
-                String mealName = mealEntry.getKey();           // "breakfast" or "dinner"
+                String mealName = mealEntry.getKey(); // "breakfast" or "dinner"
                 @SuppressWarnings("unchecked")
-                List<Map<String,Object>> items = (List<Map<String,Object>>) mealEntry.getValue();
+                List<Map<String, Object>> items = (List<Map<String, Object>>) mealEntry.getValue();
 
                 List<MealItem> list = new ArrayList<>(items.size());
                 for (var item : items) {
-                    // parse out only the mandatory fields + required_calories
-                    double protein   = Double.parseDouble(item.get("protein").toString());
-                    double carbs     = Double.parseDouble(item.get("carbohydrate").toString());
-                    double fats      = Double.parseDouble(item.get("total_fat").toString());
-                    double weight    = Double.parseDouble(item.get("serving_weight").toString());
-                    double calories  = Double.parseDouble(item.get("required_calories").toString());
+                    // parse out only the mandatory fields + required_calories, and the item name
+                    String itemName = item.get("name").toString(); // Extract item name
+                    double protein = Double.parseDouble(item.get("protein").toString());
+                    double carbs = Double.parseDouble(item.get("carbohydrate").toString());
+                    double fats = Double.parseDouble(item.get("total_fat").toString());
+                    double weight = Double.parseDouble(item.get("serving_weight").toString());
+                    double calories = Double.parseDouble(item.get("required_calories").toString());
 
+                    // Build MealItem with item name and other details
                     MealItem m = MealItem.builder()
-                        .protein(protein)
-                        .carbs(carbs)
-                        .fats(fats)
-                        .weight(weight)
-                        .calories(calories)
-                        .build();
+                            .name(itemName) // Add the item name here
+                            .protein(protein)
+                            .carbs(carbs)
+                            .fats(fats)
+                            .weight(weight)
+                            .calories(calories)
+                            .build();
                     list.add(m);
                 }
 
@@ -467,17 +471,17 @@ public class UserServices {
 
         // 4) Parse dates
         String start = (String) flaskResponse.get("startDate");
-        String end   = (String) flaskResponse.get("endDate");
+        String end = (String) flaskResponse.get("endDate");
         LocalDate startDate = LocalDate.parse(start);
-        LocalDate endDate   = LocalDate.parse(end);
+        LocalDate endDate = LocalDate.parse(end);
 
         // 5) Persist
         Diet diet = Diet.builder()
-            .user(user)
-            .mealPlan(mealPlan)
-            .startDate(startDate)
-            .endDate(endDate)
-            .build();
+                .user(user)
+                .mealPlan(mealPlan)
+                .startDate(startDate)
+                .endDate(endDate)
+                .build();
         return dietRepository.save(diet);
     }
 
