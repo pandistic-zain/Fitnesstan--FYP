@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import Carousel from "react-bootstrap/Carousel";
-import { getFullUserData } from "../../API/RegisterAPI";
+import { getFullUserData, changeItemFromCluster } from "../../API/RegisterAPI";
 import { useNavigate } from "react-router-dom";
 import Footer from "../../Components/Footer";
 import { MdDashboard } from "react-icons/md";
@@ -15,7 +15,7 @@ const DietPage = () => {
   const [loading, setLoading] = useState(true);
   const [currentDayNumber, setCurrentDayNumber] = useState(null);
   const [sidebarVisible, setSidebarVisible] = useState(false);
-
+  const [tdee, setTdee] = useState(0);
   // States for intermittent fasting functionality (only for current day)
   const [meal1Completed, setMeal1Completed] = useState(false);
   const [meal1CompletionTime, setMeal1CompletionTime] = useState(null);
@@ -26,8 +26,12 @@ const DietPage = () => {
 
   // First fetch: determine current day number from workoutPlan.startDate.
   useEffect(() => {
-    getFullUserData()
-      .then((dto) => {
+        getFullUserData()
+          .then((dto) => {
+            // grab and save tdee from the diet object
+            if (dto?.diet?.tdee) {
+              setTdee(dto.diet.tdee);
+           }
         if (!dto || !dto.diet || !dto.diet.mealPlan || !dto.workoutPlan) {
           console.warn(
             "[WARN] No diet or mealPlan/workoutPlan found in user data."
@@ -148,53 +152,80 @@ const DietPage = () => {
     }, 10000);
   };
 
-  const handleItemChange = async (mealType, itemIndex) => {
-    const currentItem = selectedDay[mealType][itemIndex];
-    console.log("[DEBUG] Handle item change for:", currentItem);
-  
+ // Fetch & compute the plan
+ const reloadDayPlans = useCallback(async () => {
+  setLoading(true);
+  try {
+    const dto = await getFullUserData();              // Axios GET /user/full
+    const mealMap = dto.diet.mealPlan;
+    const dayKeys = Object.keys(mealMap).map(Number);
+    const allDays = dayKeys
+      .sort((a, b) => a - b)
+      .map(dayNum => ({
+        dayNumber: dayNum,
+        ...mealMap[String(dayNum)],
+      }));
+    setDayPlans(allDays);
+    // pick default selectedDay
+    const currentPlan = allDays.find(d => d.dayNumber === currentDayNumber);
+    setSelectedDay(currentPlan);
+  } catch (err) {
+    console.error("[ERROR] reloadDayPlans:", err);
+  } finally {
+    setLoading(false);
+  }
+}, [currentDayNumber]);
+
+// initially load & compute currentDayNumber…
+useEffect(() => {
+  (async () => {
+    setLoading(true);
     try {
-      // Fetch userData from localStorage
-      const userData = JSON.parse(localStorage.getItem("userData"));
-      console.log("[DEBUG] Retrieved userData from localStorage:", userData);
-  
-      const userId = userData ? userData._id.toString() : "";  // Ensure ObjectId is converted to string
-  
-      // Check if userId is found
-      if (!userId) {
-        alert("User not logged in");
-        return;
-      }
-  
-      console.log("[DEBUG] Making API call with userId:", userId, "itemName:", currentItem.name);
-  
-      // API call to update the item
-      const response = await fetch("http://localhost:8080/register/change-item", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          userId: userId, // Send userId as string
-          itemName: currentItem.name, // Send the food item name to be updated
-        }),
-      });
-  
-      if (!response.ok) {
-        throw new Error("Failed to update food item");
-      }
-  
-      const data = await response.json();
-      console.log("[DEBUG] Food item updated successfully:", data);
-  
-      // Update the UI to reflect the changes
-      const updatedMeals = { ...selectedDay };
-      const updatedMeal = updatedMeals[mealType];
-      updatedMeal[itemIndex].name = currentItem.name;
-      setSelectedDay(updatedMeals);
-    } catch (error) {
-      console.error("[ERROR] Error updating food item:", error);
+      const dto = await getFullUserData();            // GET startDate
+      const planStart = dto.workoutPlan.startDate;
+      const days = Math.floor((new Date() - new Date(planStart)) / (1000*60*60*24)) + 1;
+      const keys = Object.keys(dto.diet.mealPlan).map(Number);
+      const max = Math.max(...keys);
+      setCurrentDayNumber(Math.min(Math.max(days, 1), max));
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setLoading(false);
     }
-  };
+  })();
+}, []);
+
+// when currentDayNumber changes…
+useEffect(() => {
+  if (currentDayNumber != null) reloadDayPlans();
+}, [currentDayNumber, reloadDayPlans]);
+
+// your fasting & sidebar logic …
+
+// Updated handler:
+const handleItemChange = async (mealType, itemIndex) => {
+  const currentItem = selectedDay[mealType][itemIndex];
+  console.log("[DEBUG] Handle item change for:", currentItem);
+
+  setLoading(true);
+  try {
+      // include the tdee we saved above
+       const res = await changeItemFromCluster({
+         itemName: currentItem.name,
+         tdee:      tdee
+       });
+    console.log("[DEBUG] change-item response:", res.data);
+
+    // re-fetch the entire plan so the replaced item shows up
+    await reloadDayPlans();
+  } catch (err) {
+    console.error("[ERROR] updating item:", err);
+  } finally {
+    setLoading(false);
+  }
+};
+
+if (loading) return <Loader />;
   
 
   // Helper: format milliseconds as hh:mm:ss.

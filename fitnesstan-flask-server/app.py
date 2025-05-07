@@ -85,6 +85,61 @@ FEATURE_ORDER = [
     'Sleeping_Hours','Gender','Exercise_Level_days_per_week','Medical_History'
 ]
 
+# --- Global REG_FEATURES for annotate helper ---
+REG_FEATURES = [
+    *MANDATORY_NUM,
+    *OPTIONAL_NUM,
+    # then all of your one-hot category columns, e.g.:
+    # "category_main_course", "category_snack", ...
+]
+
+# The annotate helper is now at module‐level so both endpoints can use it:
+def annotate(sub: pd.DataFrame, per_item_cal: float):
+    out = []
+    for _, r in sub.iterrows():
+        # --- 1) capture the item name (so we return it) ---
+        rec = {'name': r.get('name')}
+        for k in MANDATORY_NUM + OPTIONAL_NUM:
+            val = r.get(k, 0.0)
+            rec[k] = float(re.sub(r"[^\d.]", "", str(val)) or 0.0)
+
+        # --- 2) required calories target ---
+        rec['required_calories'] = round(per_item_cal, 2)
+
+        # --- 3) build regressor DataFrame ---
+        df_reg = pd.DataFrame([{
+            **{k: rec[k] for k in MANDATORY_NUM + OPTIONAL_NUM},
+            CATEGORY_COL: r.get(CATEGORY_COL, "main_course")
+        }])
+        Xr = pd.get_dummies(df_reg, columns=[CATEGORY_COL], drop_first=True)
+
+        # --- 4) align columns to training ---
+        for c in REG_FEATURES:
+            if c not in Xr.columns:
+                Xr[c] = 0
+        Xr = Xr[REG_FEATURES]
+
+        # --- 5) blended calorie prediction ---
+        arr = Xr.values
+        h  = hgb_model.predict(arr)[0]
+        ri = ridge_model.predict(arr)[0]
+
+        blend = 0.5 * (h + ri) or 1.0
+
+        # --- 6) compute scaling ratio ---
+        ratio = per_item_cal / blend
+
+        # --- 7) scale macronutrients & serving_weight ---
+        for nutr in MANDATORY_NUM + OPTIONAL_NUM:
+            rec[nutr] = round(rec[nutr] * ratio, 2)
+
+        # serving_weight is mandatory too
+        rec['serving_weight'] = rec['serving_weight']  # already scaled
+
+        out.append(rec)
+
+    return out
+
 @app.route('/user', methods=['POST'])
 def process_user():
     # in production, grab the JSON body directly
@@ -230,58 +285,6 @@ def process_user():
 
         # 8) Annotate helper: apply regressors & proportional scaling per item
         #    Assumes you’ve captured the exact list of regressor input columns in REG_FEATURES.
-        REG_FEATURES = [
-            *MANDATORY_NUM,
-            *OPTIONAL_NUM,
-            # then all of your one-hot category columns, e.g.:
-            # "category_main_course", "category_snack", ...
-        ]
-
-        def annotate(sub):
-            out = []
-            for _, r in sub.iterrows():
-                # --- 1) capture the item name (so we return it) ---
-                rec = {'name': r.get('name')}
-                for k in MANDATORY_NUM + OPTIONAL_NUM:
-                    val = r.get(k, 0.0)
-                    rec[k] = float(re.sub(r"[^\d.]", "", str(val)) or 0.0)
-
-                # --- 2) required calories target ---
-                rec['required_calories'] = round(per_item_cal, 2)
-
-                # --- 3) build regressor DataFrame ---
-                df_reg = pd.DataFrame([{
-                    **{k: rec[k] for k in MANDATORY_NUM + OPTIONAL_NUM},
-                    CATEGORY_COL: r.get(CATEGORY_COL, "main_course")
-                }])
-                Xr = pd.get_dummies(df_reg, columns=[CATEGORY_COL], drop_first=True)
-
-                # --- 4) align columns to training ---
-                for c in REG_FEATURES:
-                    if c not in Xr.columns:
-                        Xr[c] = 0
-                Xr = Xr[REG_FEATURES]
-
-                # --- 5) blended calorie prediction ---
-                arr = Xr.values
-                h  = hgb_model.predict(arr)[0]
-                ri = ridge_model.predict(arr)[0]
-
-                blend = 0.5 * (h + ri) or 1.0
-
-                # --- 6) compute scaling ratio ---
-                ratio = per_item_cal / blend
-
-                # --- 7) scale macronutrients & serving_weight ---
-                for nutr in MANDATORY_NUM + OPTIONAL_NUM:
-                    rec[nutr] = round(rec[nutr] * ratio, 2)
-
-                # serving_weight is mandatory too
-                rec['serving_weight'] = rec['serving_weight']  # already scaled
-
-                out.append(rec)
-
-            return out
 
         # 9) Build 14-day plan
         full_plan = {}
@@ -289,8 +292,8 @@ def process_user():
             bf_items = prim_items.sample(min(3, len(prim_items)), replace=False)
             dn_items = sec_items.sample(min(3, len(sec_items)), replace=False)
             full_plan[str(day)] = {
-                'meal1': annotate(bf_items),
-                'meal2': annotate(dn_items)
+                'meal1': annotate(bf_items, per_item_cal),
+                'meal2': annotate(dn_items, per_item_cal)
             }
 
         # 10) Log each day’s selection
@@ -315,62 +318,63 @@ def process_user():
         app.logger.exception("Error in /user")
         return jsonify({'error':'server error'}), 500
 
+# … your other imports, model‐loading, MANDATORY_NUM, OPTIONAL_NUM, CATEGORY_COL, items_df, annotate(…) …
 
 @app.route('/change_item', methods=['POST'])
 def change_item_in_cluster():
-    # Receive the item name to be changed from the request
-    request_data = request.get_json(force=True, silent=True)
-    item_name = request_data.get("item_name")
-
+    # 1) Grab item_name (snake_case or camelCase)
+    data = request.get_json(force=True, silent=True) or {}
+    item_name = data.get("item_name") or data.get("itemName")
     if not item_name:
         app.logger.error("No item_name provided")
-        return jsonify({'error': 'Item name is required'}), 400
+        return jsonify({'error': 'item_name is required'}), 400
+
+    # 2) Pull in tdee so we can compute per_item_cal
+    tdee = float(data.get("tdee", 0))
+    per_item_cal = (tdee / 2) / 3  # Same logic for per_item_cal as in the user endpoint
+    app.logger.debug(f"Using tdee={tdee}, per_item_cal={per_item_cal}")
 
     app.logger.debug(f"Received request to change item: {item_name}")
 
-    # Step 1: Find the item in the item catalog (CSV file) and determine its cluster
-    item_row = items_df[items_df['name'] == item_name]
+    # 3) Find its cluster
+    rows = items_df[items_df['name'] == item_name]
+    if rows.empty:
+        return jsonify({'error': f"Item '{item_name}' not found"}), 404
+    cluster = rows['KMeans_Cluster_14'].iat[0]
 
-    if item_row.empty:
-        app.logger.error(f"Item {item_name} not found in catalog")
-        return jsonify({'error': f"Item {item_name} not found in catalog"}), 404
+    # 4) Pick a different item in the same cluster
+    pool = items_df[items_df['KMeans_Cluster_14'] == cluster]
+    pool = pool[pool['name'] != item_name]
+    if pool.empty:
+        return jsonify({'error': 'No alternative items in that cluster'}), 404
 
-    # Get the cluster of the current item
-    primary_cluster = item_row['KMeans_Cluster_14'].values[0]
-    secondary_cluster = item_row['KMeans_Cluster_14'].values[0]  # Assuming both primary and secondary are same for now
+    new_row = pool.sample(1).iloc[0]
 
-    app.logger.debug(f"Item {item_name} belongs to primary cluster: {primary_cluster} and secondary cluster: {secondary_cluster}")
+    # Helper to strip non-digits (e.g., "4.80 g" → "4.80") then float
+    def clean_numeric(val):
+        return float(re.sub(r'[^\d.]', '', str(val)) or 0.0)
 
-    # Step 2: Select another item from the same cluster
-    cluster_items = items_df[items_df['KMeans_Cluster_14'] == primary_cluster]
-    
-    # Ensure we select a different item than the current one
-    cluster_items = cluster_items[cluster_items['name'] != item_name]
-    
-    if cluster_items.empty:
-        app.logger.error(f"No other items found in the same cluster for {item_name}")
-        return jsonify({'error': f"No other items found in the same cluster for {item_name}"}), 404
+    # 5) Build the minimal dict for scaling
+    item_data = {
+        col: clean_numeric(new_row.get(col, 0.0))
+        for col in MANDATORY_NUM + OPTIONAL_NUM
+    }
 
-    # Pick the first item from the cluster
-    new_item = cluster_items.sample(1)
-    new_item_name = new_item['name'].values[0]
-    
-    app.logger.debug(f"Selected new item from the same cluster: {new_item_name}")
+    # Fallback if your CSV column isn't exactly CATEGORY_COL
+    if CATEGORY_COL in new_row.index:
+        item_data[CATEGORY_COL] = new_row[CATEGORY_COL]
+    elif 'Category' in new_row.index:
+        item_data[CATEGORY_COL] = new_row['Category']
+    else:
+        item_data[CATEGORY_COL] = 'main_course'
 
-    # Step 3: Apply the regressor to scale the new item (same scaling logic as other items)
-    new_item_data = new_item.iloc[0]
+    # 6) Scale via your annotate helper and return
+    # Pass the per_item_cal parameter like in the user endpoint
+    scaled = annotate(pd.DataFrame([item_data]), per_item_cal)[0]
+    scaled['name'] = new_row['name']
 
-    # Extract necessary values from the new item row
-    item_data = {col: new_item_data[col] for col in MANDATORY_NUM + OPTIONAL_NUM}
-    item_data['category'] = new_item_data[CATEGORY_COL]
-
-    # Regressor logic to scale the item
-    scaled_item = annotate(pd.DataFrame([item_data]))[0]
-
-    app.logger.debug(f"Scaled item: {scaled_item}")
-
-    # Step 4: Return the updated scaled item
-    return jsonify(scaled_item), 200
+    app.logger.debug(f"Scaled item: {scaled}")
+    return jsonify(scaled), 200
 
 
 if __name__=='__main__':

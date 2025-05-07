@@ -112,3 +112,10 @@ export const buildImageUrl = (fullLocalPath) => {
   const filename = fullLocalPath.split(/[\\/]/).pop();
   return `http://localhost:8080/images/${filename}`;
 };
+
+
+// at the bottom of that file:
+export const changeItemFromCluster = async (payload) => {
+  console.debug("[DEBUG API] change-item payload:", payload);
+  return axios.post(`${USER_API_URL}/change-item`, payload);
+};

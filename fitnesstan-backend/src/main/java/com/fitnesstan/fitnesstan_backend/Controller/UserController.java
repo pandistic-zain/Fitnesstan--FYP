@@ -3,6 +3,7 @@ package com.fitnesstan.fitnesstan_backend.Controller;
 import java.time.LocalDateTime;
 import java.util.Map;
 
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -170,6 +171,43 @@ public class UserController {
             return new ResponseEntity<>("User deleted successfully", HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>("Failed to delete user: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PostMapping("/change-item")
+    public ResponseEntity<String> changeItemFromCluster(
+            @RequestBody Map<String,String> payload,
+            Authentication authentication) {
+
+        // 1) Extract the only required field from the JSON.
+        String itemName = payload.get("itemName");
+        if (itemName == null || itemName.isBlank()) {
+            return ResponseEntity
+                .badRequest()
+                .body("Missing required field: itemName");
+        }
+
+        // 2) Get current user from Spring Security context
+        String email = authentication.getName();
+        Users user = userRepository.findByEmail(email);
+        if (user == null) {
+            return ResponseEntity
+                .status(HttpStatus.UNAUTHORIZED)
+                .body("User not found");
+        }
+        String userId = user.getId().toString();
+
+        System.out.println("[DEBUG] change-item called for userId=" + userId + ", itemName=" + itemName);
+
+        // 3) Delegate to service (we’ll update it below)
+        boolean replaced = userServices.changeItemFromCluster(userId, itemName);
+
+        if (replaced) {
+            return ResponseEntity.ok("Item successfully changed from cluster.");
+        } else {
+            return ResponseEntity
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body("Failed to change item.");
         }
     }
 
