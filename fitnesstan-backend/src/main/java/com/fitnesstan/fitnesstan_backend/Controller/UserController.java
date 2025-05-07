@@ -3,7 +3,6 @@ package com.fitnesstan.fitnesstan_backend.Controller;
 import java.time.LocalDateTime;
 import java.util.Map;
 
-import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -176,39 +175,45 @@ public class UserController {
 
     @PostMapping("/change-item")
     public ResponseEntity<String> changeItemFromCluster(
-            @RequestBody Map<String,String> payload,
+            @RequestBody Map<String, Object> payload, // Use Object to accept numbers as well
             Authentication authentication) {
-
-        // 1) Extract the only required field from the JSON.
-        String itemName = payload.get("itemName");
+    
+        // 1) Extract the required fields from the JSON payload
+        String itemName = (String) payload.get("itemName"); // Use get() to extract itemName
+        Double tdee = (Double) payload.get("tdee"); // Cast tdee to Double for correct type
         if (itemName == null || itemName.isBlank()) {
             return ResponseEntity
-                .badRequest()
-                .body("Missing required field: itemName");
+                    .badRequest()
+                    .body("Missing required field: itemName");
         }
-
+        if (tdee == null || tdee <= 0) {
+            return ResponseEntity
+                    .badRequest()
+                    .body("Missing or invalid field: tdee");
+        }
+    
         // 2) Get current user from Spring Security context
         String email = authentication.getName();
+        System.out.println("[DEBUG] Email: " + email);
         Users user = userRepository.findByEmail(email);
         if (user == null) {
             return ResponseEntity
-                .status(HttpStatus.UNAUTHORIZED)
-                .body("User not found");
+                    .status(HttpStatus.UNAUTHORIZED)
+                    .body("User not found");
         }
         String userId = user.getId().toString();
-
         System.out.println("[DEBUG] change-item called for userId=" + userId + ", itemName=" + itemName);
-
-        // 3) Delegate to service (we’ll update it below)
-        boolean replaced = userServices.changeItemFromCluster(userId, itemName);
-
+    
+        // 3) Delegate to service (we now pass tdee to the service method)
+        boolean replaced = userServices.changeItemFromCluster(userId, itemName, tdee);
+    
         if (replaced) {
             return ResponseEntity.ok("Item successfully changed from cluster.");
         } else {
             return ResponseEntity
-                .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body("Failed to change item.");
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Failed to change item.");
         }
-    }
+    }    
 
 }

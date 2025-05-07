@@ -324,6 +324,10 @@ def process_user():
 def change_item_in_cluster():
     # 1) Grab item_name (snake_case or camelCase)
     data = request.get_json(force=True, silent=True) or {}
+
+        # Log the entire request data for debugging
+    app.logger.debug(f"Received request data: {data}")
+
     item_name = data.get("item_name") or data.get("itemName")
     if not item_name:
         app.logger.error("No item_name provided")
@@ -350,17 +354,14 @@ def change_item_in_cluster():
 
     new_row = pool.sample(1).iloc[0]
 
-    # Helper to strip non-digits (e.g., "4.80 g" → "4.80") then float
-    def clean_numeric(val):
-        return float(re.sub(r'[^\d.]', '', str(val)) or 0.0)
-
-    # 5) Build the minimal dict for scaling
+    # 5) Prepare the minimal data for scaling
+    # We will process the item just like in the user endpoint
     item_data = {
-        col: clean_numeric(new_row.get(col, 0.0))
+        col: float(re.sub(r'[^\d.]')) 
         for col in MANDATORY_NUM + OPTIONAL_NUM
     }
 
-    # Fallback if your CSV column isn't exactly CATEGORY_COL
+    # Ensure the category column is populated
     if CATEGORY_COL in new_row.index:
         item_data[CATEGORY_COL] = new_row[CATEGORY_COL]
     elif 'Category' in new_row.index:
@@ -368,13 +369,15 @@ def change_item_in_cluster():
     else:
         item_data[CATEGORY_COL] = 'main_course'
 
-    # 6) Scale via your annotate helper and return
-    # Pass the per_item_cal parameter like in the user endpoint
-    scaled = annotate(pd.DataFrame([item_data]), per_item_cal)[0]
-    scaled['name'] = new_row['name']
+    # 6) Annotate using the same logic as the user endpoint
+    # Here, we're passing per_item_cal to the annotate function to calculate the nutritional values
+    scaled_item = annotate(pd.DataFrame([item_data]), per_item_cal)[0]
+    scaled_item['name'] = new_row['name']
 
-    app.logger.debug(f"Scaled item: {scaled}")
-    return jsonify(scaled), 200
+    app.logger.debug(f"Scaled item: {scaled_item}")
+
+    return jsonify(scaled_item), 200
+
 
 
 if __name__=='__main__':

@@ -555,61 +555,88 @@ public class UserServices {
 
     @SuppressWarnings({ "unchecked", "null" })
     @Transactional
-    public boolean changeItemFromCluster(String userIdStr, String itemName) {
-        // 1) Prepare the JSON you’ll send to Flask
-        Map<String,Object> toFlask = new HashMap<>();
+    public boolean changeItemFromCluster(String userIdStr, String itemName, double tdee) {
+        // 1) Prepare the JSON you’ll send to Flask, including tdee
+        Map<String, Object> toFlask = new HashMap<>();
         toFlask.put("item_name", itemName);
-
-        System.out.println("[DEBUG] Sending to Flask: " + toFlask);
+        toFlask.put("tdee", tdee);  // Add tdee to the request
+    
+        System.out.println("[DEBUG] Sending to Flask with tdee: " + toFlask);
+    
         RestTemplate rt = new RestTemplate();
         ResponseEntity<Map> flaskResp = rt.postForEntity(
             "http://localhost:5000/change_item",
             new HttpEntity<>(toFlask, createJsonHeaders()),
             Map.class
         );
-        System.out.println("[DEBUG] Flask returned: " + flaskResp);
-
-        if (!flaskResp.getStatusCode().is2xxSuccessful() || flaskResp.getBody()==null) {
+    
+        // Debugging the response from Flask
+        System.out.println("[DEBUG] Flask response: " + flaskResp);
+    
+        if (!flaskResp.getStatusCode().is2xxSuccessful() || flaskResp.getBody() == null) {
+            System.out.println("[ERROR] Flask response failed or no body returned");
             return false;
         }
-        Map<String,Object> scaled = flaskResp.getBody();
+    
+        // 2) Extract the scaled-item fields from Flask response
+        Map<String, Object> scaled = flaskResp.getBody();
         if (!scaled.containsKey("name")) {
+            System.out.println("[ERROR] Flask response does not contain item 'name'");
             return false;
         }
-
-        // 2) Extract the scaled‐item fields
+    
         String newName = (String) scaled.get("name");
-        double protein = ((Number)scaled.get("protein")).doubleValue();
-        double carbs   = ((Number)scaled.get("carbohydrate")).doubleValue();
-        double fats    = ((Number)scaled.get("total_fat")).doubleValue();
-        double weight  = ((Number)scaled.get("serving_weight")).doubleValue();
-        double cal     = ((Number)scaled.get("required_calories")).doubleValue();
-
+        double protein = ((Number) scaled.get("protein")).doubleValue();
+        double carbs = ((Number) scaled.get("carbohydrate")).doubleValue();
+        double fats = ((Number) scaled.get("total_fat")).doubleValue();
+        double weight = ((Number) scaled.get("serving_weight")).doubleValue();
+        double cal = ((Number) scaled.get("required_calories")).doubleValue();
+    
+        // Debugging extracted data
+        System.out.println("[DEBUG] Scaled item - Name: " + newName + ", Protein: " + protein + ", Carbs: " + carbs +
+            ", Fats: " + fats + ", Weight: " + weight + ", Calories: " + cal);
+    
         // 3) Load the user & its diet
         Users user = userRepository.findById(new ObjectId(userIdStr))
-            .orElseThrow(() -> new RuntimeException("User not found: "+userIdStr));
-        Map<Integer, Map<String,List<MealItem>>> mealPlan = user.getCurrentDiet().getMealPlan();
-        if (mealPlan==null) return false;
-
+                .orElseThrow(() -> new RuntimeException("User not found: " + userIdStr));
+    
+        Map<Integer, Map<String, List<MealItem>>> mealPlan = user.getCurrentDiet().getMealPlan();
+        if (mealPlan == null) {
+            System.out.println("[ERROR] Meal plan is null");
+            return false;
+        }
+    
         // 4) Find and replace the old item
         boolean replaced = false;
         for (var dayEntry : mealPlan.entrySet()) {
             for (var meals : dayEntry.getValue().entrySet()) {
                 List<MealItem> items = meals.getValue();
-                for (int i=0; i<items.size(); i++) {
+                for (int i = 0; i < items.size(); i++) {
                     if (items.get(i).getName().equals(itemName)) {
+                        // Debugging before removing item
+                        System.out.println("[DEBUG] Found item to replace: " + items.get(i).getName());
+    
+                        // Remove the old item
                         items.remove(i);
+    
+                        // Create new item with updated nutritional values
                         MealItem m = MealItem.builder()
-                            .name(newName)
-                            .protein(protein)
-                            .carbs(carbs)
-                            .fats(fats)
-                            .weight(weight)
-                            .calories(cal)
-                            .build();
+                                .name(newName)
+                                .protein(protein)
+                                .carbs(carbs)
+                                .fats(fats)
+                                .weight(weight)
+                                .calories(cal)
+                                .build();
+    
+                        // Add the new item to the list
                         items.add(m);
+    
+                        // Set replaced flag to true
                         replaced = true;
-                        System.out.println("[DEBUG] Replaced \""+itemName+"\" with \""+newName+"\"");
+    
+                        // Debugging the replacement
+                        System.out.println("[DEBUG] Replaced \"" + itemName + "\" with \"" + newName + "\"");
                         break;
                     }
                 }
@@ -617,22 +644,24 @@ public class UserServices {
             }
             if (replaced) break;
         }
-
+    
+        // 5) Save the updated user and meal plan
         if (replaced) {
             userRepository.save(user);
-            System.out.println("[DEBUG] Meal plan updated in Mongo");
+            System.out.println("[DEBUG] Meal plan updated and saved in MongoDB");
             return true;
         } else {
-            System.out.println("[DEBUG] No matching item \""+itemName+"\" found");
+            System.out.println("[DEBUG] No matching item \"" + itemName + "\" found to replace");
             return false;
         }
     }
-
+    
     private HttpHeaders createJsonHeaders() {
-        HttpHeaders h = new HttpHeaders();
-        h.setContentType(MediaType.APPLICATION_JSON);
-        return h;
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        return headers;
     }
+    
 
 
 }
