@@ -1,11 +1,11 @@
 import React, { useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Form, Button, Container, Row, Col } from "react-bootstrap";
-import { registerUser } from "../../API/RegisterAPI";
+import { reSubmitData } from "../../API/RegisterAPI"; // Replace with correct API function for re-submit
 import Loader from "../Loader";
-import styles from "./AdditionalInfoForm.module.css"; // Import CSS module
+import styles from "./ReSubmitData.module.css"; // Adjust the import path for CSS module
 
-const AdditionalInfoForm = () => {
+const ReSubmitData = () => {
   const [formData, setFormData] = useState({
     heightFt: "",
     dob: "",
@@ -21,13 +21,6 @@ const AdditionalInfoForm = () => {
   const [errorMessage, setErrorMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const location = useLocation();
-
-  const { signUpData } = location.state || {};
-  if (!signUpData) {
-    navigate("/");
-    return null;
-  }
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -36,7 +29,7 @@ const AdditionalInfoForm = () => {
 
   const handleMedicalHistoryChange = (e, value) => {
     const isChecked = e.target.checked;
-
+  
     if (value === "None") {
       // If "None" is checked, clear the other selected conditions
       setFormData({ ...formData, medicalHistory: isChecked ? ["None"] : [] });
@@ -56,24 +49,15 @@ const AdditionalInfoForm = () => {
     setErrorMessage("");
     setLoading(true);
 
-    const payload = {
-      user: {
-        username: signUpData.username,
-        email: signUpData.email,
-        password: signUpData.password,
-      },
-      additionalInfo: formData,
-    };
+    const payload = formData; // Only the collected form data
 
     try {
-      await registerUser(payload);
-      navigate(
-        `/email-verification?email=${encodeURIComponent(signUpData.email)}`
-      );
+      await reSubmitData(payload); // Call the API function for re-submitting the data
+      navigate("/userdashboard"); // Navigate to the user dashboard on success
     } catch (error) {
       setErrorMessage(
         error.response?.data?.message ||
-          "Failed to submit user data. Please try again."
+          "Failed to submit data. Please try again."
       );
     } finally {
       setLoading(false);
@@ -86,7 +70,7 @@ const AdditionalInfoForm = () => {
       <Container className={styles.container}>
         <Row className="justify-content-center">
           <Col>
-            <h2 className={styles.textCenter}>Additional Information</h2>
+            <h2 className={styles.textCenter}>ReSubmit Data</h2>
             <Form onSubmit={handleSubmit}>
               <Form.Group controlId="heightFt" className="mb-3">
                 <Form.Label>Height (ft)</Form.Label>
@@ -198,7 +182,7 @@ const AdditionalInfoForm = () => {
                   <option value="">Select your exercise level</option>
                   {[
                     "No Exercise",
-                    "1 days a week",
+                    "1 day a week",
                     "2 days a week",
                     "3 days a week",
                     "4 days a week",
@@ -275,4 +259,4 @@ const AdditionalInfoForm = () => {
   );
 };
 
-export default AdditionalInfoForm;
+export default ReSubmitData;

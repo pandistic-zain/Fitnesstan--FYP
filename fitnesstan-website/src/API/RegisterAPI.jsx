@@ -119,3 +119,16 @@ export const changeItemFromCluster = async (payload) => {
   console.debug("[DEBUG API] change-item payload:", payload);
   return axios.post(`${USER_API_URL}/change-item`, payload);
 };
+
+// API for resubmitting user data
+export const reSubmitUserData = async (userData) => {
+  try {
+    console.debug("[DEBUG] Resubmitting user data:", userData);
+    const response = await axios.post(`${USER_API_URL}/resubmit-data`, userData);
+    console.debug("[DEBUG] User data resubmission response:", response.data);
+    return response.data;
+  } catch (error) {
+    console.error("[ERROR] Resubmission failed:", error);
+    throw error;
+  }
+};

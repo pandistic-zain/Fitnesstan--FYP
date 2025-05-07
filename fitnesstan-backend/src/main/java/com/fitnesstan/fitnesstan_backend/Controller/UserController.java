@@ -16,6 +16,7 @@ import com.fitnesstan.fitnesstan_backend.Entity.WorkoutPlan;
 import com.fitnesstan.fitnesstan_backend.DTO.ChangePasswordRequest;
 import com.fitnesstan.fitnesstan_backend.DTO.FullUserInfoDTO;
 import com.fitnesstan.fitnesstan_backend.Services.UserServices;
+import com.fitnesstan.fitnesstan_backend.Services.WorkoutPlanServices;
 
 @RestController
 @RequestMapping("/user")
@@ -30,6 +31,8 @@ public class UserController {
     // Autowire the PasswordEncoder bean to encode and match passwords.
     @Autowired
     private PasswordEncoder passwordEncoder;
+    @Autowired
+    private WorkoutPlanServices workoutPlanServices;
 
     // Endpoint to fetch basic user information by email.
     @GetMapping("/{email}")
@@ -174,49 +177,147 @@ public class UserController {
     }
 
     @PostMapping("/change-item")
-public ResponseEntity<String> changeItemFromCluster(
-        @RequestBody Map<String, Object> payload, // Use Object to accept numbers as well
-        Authentication authentication) {
+    public ResponseEntity<String> changeItemFromCluster(
+            @RequestBody Map<String, Object> payload, // Use Object to accept numbers as well
+            Authentication authentication) {
 
-    // 1) Extract the required fields from the JSON payload
-    String itemName = (String) payload.get("itemName"); // Extract itemName
-    if (itemName == null || itemName.isBlank()) {
-        return ResponseEntity
-                .badRequest()
-                .body("Missing required field: itemName");
+        // 1) Extract the required fields from the JSON payload
+        String itemName = (String) payload.get("itemName"); // Extract itemName
+        if (itemName == null || itemName.isBlank()) {
+            return ResponseEntity
+                    .badRequest()
+                    .body("Missing required field: itemName");
+        }
+
+        // 2) Get the current user from Spring Security context
+        String email = authentication.getName();
+        System.out.println("[DEBUG] Email: " + email);
+        Users user = userRepository.findByEmail(email);
+        if (user == null) {
+            return ResponseEntity
+                    .status(HttpStatus.UNAUTHORIZED)
+                    .body("User not found");
+        }
+
+        // 3) Retrieve tdee value from the database for the current user
+        Double tdee = user.getTdee(); // Assuming getTdee() returns the tdee value from user's diet
+        if (tdee == 0 || tdee <= 0) {
+            return ResponseEntity
+                    .badRequest()
+                    .body("Invalid tdee value for user.");
+        }
+
+        String userId = user.getId().toString();
+        System.out.println(
+                "[DEBUG] change-item called for userId=" + userId + ", itemName=" + itemName + ", tdee=" + tdee);
+
+        // 4) Delegate to the service method and pass the tdee
+        boolean replaced = userServices.changeItemFromCluster(userId, itemName, tdee);
+
+        if (replaced) {
+            return ResponseEntity.ok("Item successfully changed from cluster.");
+        } else {
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Failed to change item.");
+        }
+    }
+    @PutMapping("/resubmit-data")
+    public ResponseEntity<Users> updateUserFromForm(
+            @RequestBody Users updatedUser,
+            Authentication authentication) {
+    
+        // 1) Load the currently authenticated user
+        String email = authentication.getName();
+        Users existingUser = userRepository.findByEmail(email);
+        if (existingUser == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        String userId = existingUser.getId().toString();
+    
+        // 2) Delete existing diet & workout plan
+        try {
+            userServices.deleteUserDietAndRemoveReference(userId);
+            userServices.deleteUserWorkoutPlanAndRemoveReference(userId);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    
+        // 3) Copy form values onto existingUser
+        updateUserDetails(existingUser, updatedUser);
+    
+        // 4) Recalculate BMI/TDEE/etc.
+        try {
+            userServices.validateAndResubmitUserInfo(existingUser);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    
+        // 5) Any post‐update hook
+        afterSettingUserData(existingUser);
+    
+        // 6) Persist the updated user
+        userRepository.save(existingUser);
+    
+        // ──────────────────────────────────────────────────────────
+        // 7) NOW: regenerate both plans before final return
+        try {
+            // a) workout plan
+            WorkoutPlan newWorkout = workoutPlanServices.generateWorkoutPlan(userId);
+            existingUser.setCurrentWorkoutPlan(newWorkout);
+    
+            // b) diet plan via Flask
+            Map<String, Object> flaskResponse = userServices.sendUserDataToFlask(existingUser);
+            Diet newDiet = userServices.addDietPlanFromFlaskResponse(userId, flaskResponse);
+            existingUser.setCurrentDiet(newDiet);
+    
+            // c) save the new references
+            userRepository.save(existingUser);
+        } catch (Exception ex) {
+            // You can choose to log and continue, or fail here:
+            System.err.println("[ERROR] regenerating plans: " + ex.getMessage());
+        }
+    
+        // 8) Return the fully updated user
+        return ResponseEntity.ok(existingUser);
+    }
+    
+
+    // Helper method to update user details
+    private void updateUserDetails(Users existingUser, Users updatedUser) {
+        if (updatedUser.getHeightFt() != null) {
+            existingUser.setHeightFt(updatedUser.getHeightFt());
+        }
+        if (updatedUser.getWeightKg() != null) {
+            existingUser.setWeightKg(updatedUser.getWeightKg());
+        }
+        if (updatedUser.getGender() != null) {
+            existingUser.setGender(updatedUser.getGender());
+        }
+        if (updatedUser.getDob() != null) {
+            existingUser.setDob(updatedUser.getDob());
+        }
+        if (updatedUser.getOccupation() != null) {
+            existingUser.setOccupation(updatedUser.getOccupation());
+        }
+        if (updatedUser.getReligion() != null) {
+            existingUser.setReligion(updatedUser.getReligion());
+        }
+        if (updatedUser.getExerciseLevel() != null) {
+            existingUser.setExerciseLevel(updatedUser.getExerciseLevel());
+        }
+        if (updatedUser.getSleepHours() != null) {
+            existingUser.setSleepHours(updatedUser.getSleepHours());
+        }
+        if (updatedUser.getMedicalHistory() != null) {
+            existingUser.setMedicalHistory(updatedUser.getMedicalHistory());
+        }
     }
 
-    // 2) Get the current user from Spring Security context
-    String email = authentication.getName();
-    System.out.println("[DEBUG] Email: " + email);
-    Users user = userRepository.findByEmail(email);
-    if (user == null) {
-        return ResponseEntity
-                .status(HttpStatus.UNAUTHORIZED)
-                .body("User not found");
+    // You can implement any additional logic here
+    private void afterSettingUserData(Users user) {
+        // Example: Logging or sending notifications
+        System.out.println("User data updated: " + user.toString());
     }
-
-    // 3) Retrieve tdee value from the database for the current user
-    Double tdee = user.getTdee(); // Assuming getTdee() returns the tdee value from user's diet
-    if (tdee == 0 || tdee <= 0) {
-        return ResponseEntity
-                .badRequest()
-                .body("Invalid tdee value for user.");
-    }
-
-    String userId = user.getId().toString();
-    System.out.println("[DEBUG] change-item called for userId=" + userId + ", itemName=" + itemName + ", tdee=" + tdee);
-
-    // 4) Delegate to the service method and pass the tdee
-    boolean replaced = userServices.changeItemFromCluster(userId, itemName, tdee);
-
-    if (replaced) {
-        return ResponseEntity.ok("Item successfully changed from cluster.");
-    } else {
-        return ResponseEntity
-                .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body("Failed to change item.");
-    }
-}
 
 }
