@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -35,18 +34,6 @@ public class AdminController {
             ? new ResponseEntity<>(HttpStatus.NOT_FOUND)
             : new ResponseEntity<>(allUsers, HttpStatus.OK);
     }
-
-    // Endpoint to create an admin user
-    @PostMapping("/create-admin")
-    public ResponseEntity<String> createAdminUser(@RequestBody Users user) {
-        try {
-            userServices.createAdmin(user);
-            return new ResponseEntity<>("Admin user created successfully", HttpStatus.CREATED);
-        } catch (Exception e) {
-            return new ResponseEntity<>("Failed to create admin: " + e.getMessage(), HttpStatus.BAD_REQUEST);
-        }
-    }
-
     // Endpoint to update a user's information
     @PutMapping("/update-user/{id}")
     public ResponseEntity<String> updateUser(@PathVariable String id, @RequestBody Users user) {
