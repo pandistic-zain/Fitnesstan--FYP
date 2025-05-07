@@ -357,9 +357,9 @@ def change_item_in_cluster():
     # 5) Prepare the minimal data for scaling
     # We will process the item just like in the user endpoint
     item_data = {
-        col: float(re.sub(r'[^\d.]')) 
+        col: float(re.sub(r'[^\d.]', '', str(new_row[col]))) if str(new_row[col]).strip() != '' else 0.0
         for col in MANDATORY_NUM + OPTIONAL_NUM
-    }
+    }  
 
     # Ensure the category column is populated
     if CATEGORY_COL in new_row.index:

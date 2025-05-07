@@ -647,7 +647,16 @@ public class UserServices {
     
         // 5) Save the updated user and meal plan
         if (replaced) {
+            // Save updated diet plan
+            Diet updatedDiet = user.getCurrentDiet();
+            updatedDiet.setMealPlan(mealPlan); // Save the modified meal plan
+    
+            // Persist updated diet
+            dietRepository.save(updatedDiet);
+    
+            // Save the updated user with the modified diet plan
             userRepository.save(user);
+    
             System.out.println("[DEBUG] Meal plan updated and saved in MongoDB");
             return true;
         } else {

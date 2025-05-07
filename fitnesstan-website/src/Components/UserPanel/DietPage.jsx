@@ -211,8 +211,7 @@ const handleItemChange = async (mealType, itemIndex) => {
   try {
       // include the tdee we saved above
        const res = await changeItemFromCluster({
-         itemName: currentItem.name,
-         tdee:      tdee
+         itemName: currentItem.name
        });
     console.log("[DEBUG] change-item response:", res.data);
 

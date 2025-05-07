@@ -174,46 +174,49 @@ public class UserController {
     }
 
     @PostMapping("/change-item")
-    public ResponseEntity<String> changeItemFromCluster(
-            @RequestBody Map<String, Object> payload, // Use Object to accept numbers as well
-            Authentication authentication) {
-    
-        // 1) Extract the required fields from the JSON payload
-        String itemName = (String) payload.get("itemName"); // Use get() to extract itemName
-        Double tdee = (Double) payload.get("tdee"); // Cast tdee to Double for correct type
-        if (itemName == null || itemName.isBlank()) {
-            return ResponseEntity
-                    .badRequest()
-                    .body("Missing required field: itemName");
-        }
-        if (tdee == null || tdee <= 0) {
-            return ResponseEntity
-                    .badRequest()
-                    .body("Missing or invalid field: tdee");
-        }
-    
-        // 2) Get current user from Spring Security context
-        String email = authentication.getName();
-        System.out.println("[DEBUG] Email: " + email);
-        Users user = userRepository.findByEmail(email);
-        if (user == null) {
-            return ResponseEntity
-                    .status(HttpStatus.UNAUTHORIZED)
-                    .body("User not found");
-        }
-        String userId = user.getId().toString();
-        System.out.println("[DEBUG] change-item called for userId=" + userId + ", itemName=" + itemName);
-    
-        // 3) Delegate to service (we now pass tdee to the service method)
-        boolean replaced = userServices.changeItemFromCluster(userId, itemName, tdee);
-    
-        if (replaced) {
-            return ResponseEntity.ok("Item successfully changed from cluster.");
-        } else {
-            return ResponseEntity
-                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Failed to change item.");
-        }
-    }    
+public ResponseEntity<String> changeItemFromCluster(
+        @RequestBody Map<String, Object> payload, // Use Object to accept numbers as well
+        Authentication authentication) {
+
+    // 1) Extract the required fields from the JSON payload
+    String itemName = (String) payload.get("itemName"); // Extract itemName
+    if (itemName == null || itemName.isBlank()) {
+        return ResponseEntity
+                .badRequest()
+                .body("Missing required field: itemName");
+    }
+
+    // 2) Get the current user from Spring Security context
+    String email = authentication.getName();
+    System.out.println("[DEBUG] Email: " + email);
+    Users user = userRepository.findByEmail(email);
+    if (user == null) {
+        return ResponseEntity
+                .status(HttpStatus.UNAUTHORIZED)
+                .body("User not found");
+    }
+
+    // 3) Retrieve tdee value from the database for the current user
+    Double tdee = user.getTdee(); // Assuming getTdee() returns the tdee value from user's diet
+    if (tdee == 0 || tdee <= 0) {
+        return ResponseEntity
+                .badRequest()
+                .body("Invalid tdee value for user.");
+    }
+
+    String userId = user.getId().toString();
+    System.out.println("[DEBUG] change-item called for userId=" + userId + ", itemName=" + itemName + ", tdee=" + tdee);
+
+    // 4) Delegate to the service method and pass the tdee
+    boolean replaced = userServices.changeItemFromCluster(userId, itemName, tdee);
+
+    if (replaced) {
+        return ResponseEntity.ok("Item successfully changed from cluster.");
+    } else {
+        return ResponseEntity
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body("Failed to change item.");
+    }
+}
 
 }
