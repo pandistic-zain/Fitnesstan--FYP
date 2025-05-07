@@ -151,7 +151,10 @@ const DietPage = () => {
       setForcedMeal2Unlocked(false);
     }, 10000);
   };
-
+// Updated handler for Meal 2 unlock logic
+const isMeal2Clickable = () => {
+  return meal1Completed && (meal2RemainingTime <= 0 || forcedMeal2Unlocked);
+};
  // Fetch & compute the plan
  const reloadDayPlans = useCallback(async () => {
   setLoading(true);
@@ -361,23 +364,19 @@ if (loading) return <Loader />;
                             <thead>
                               <tr>
                                 <th>Name</th>
+                                <th>Change</th>
                                 <th>Protein (g)</th>
                                 <th>Carbs (g)</th>
                                 <th>Fats (g)</th>
                                 <th>Calories</th>
                                 <th>Weight (g)</th>
-                                <th>Change</th>
+                                
                               </tr>
                             </thead>
                             <tbody>
                               {selectedDay.meal1.map((item, i) => (
                                 <tr key={i}>
                                   <td>{item.name}</td>
-                                  <td>{item.protein}</td>
-                                  <td>{item.carbs}</td>
-                                  <td>{item.fats}</td>
-                                  <td>{item.calories}</td>
-                                  <td>{item.weight}</td>
                                   <td>
                                     <button
                                       className={styles.changeButton}
@@ -388,6 +387,12 @@ if (loading) return <Loader />;
                                       Change
                                     </button>
                                   </td>
+                                  <td>{item.protein}</td>
+                                  <td>{item.carbs}</td>
+                                  <td>{item.fats}</td>
+                                  <td>{item.calories}</td>
+                                  <td>{item.weight}</td>
+                                 
                                 </tr>
                               ))}
                             </tbody>
@@ -428,23 +433,19 @@ if (loading) return <Loader />;
                               <thead>
                                 <tr>
                                   <th>Name</th>
+                                  <th>Change</th>
                                   <th>Protein (g)</th>
                                   <th>Carbs (g)</th>
                                   <th>Fats (g)</th>
                                   <th>Calories</th>
                                   <th>Weight (g)</th>
-                                  <th>Change</th>
+                                  
                                 </tr>
                               </thead>
                               <tbody>
                                 {selectedDay.meal2.map((item, i) => (
                                   <tr key={i}>
                                     <td>{item.name}</td>
-                                    <td>{item.protein}</td>
-                                    <td>{item.carbs}</td>
-                                    <td>{item.fats}</td>
-                                    <td>{item.calories}</td>
-                                    <td>{item.weight}</td>
                                     <td>
                                       <button
                                         className={styles.changeButton}
@@ -455,6 +456,12 @@ if (loading) return <Loader />;
                                         Change
                                       </button>
                                     </td>
+                                    <td>{item.protein}</td>
+                                    <td>{item.carbs}</td>
+                                    <td>{item.fats}</td>
+                                    <td>{item.calories}</td>
+                                    <td>{item.weight}</td>
+                                    
                                   </tr>
                                 ))}
                               </tbody>
@@ -473,7 +480,7 @@ if (loading) return <Loader />;
                               className={styles.forceUnlockButton}
                               onClick={handleForceUnlockMeal2}
                             >
-                              View Full Diet Plan
+                              UnLock Meal for 10-Sec
                             </button>
                           </div>
                         ) : (

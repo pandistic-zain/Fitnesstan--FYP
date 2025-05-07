@@ -402,6 +402,8 @@ body {
   display: flex;
   flex-direction: column;
   justify-content: center;
+  z-index: 0; 
+  position:relative;
 }
 
 /* Meal Section */
@@ -445,6 +447,7 @@ body {
   height: 350px;
   width: auto; /* Ensure fixed height */
 }
+/* .blurOverlay: Keeps the overlay on top, but allows clicks through */
 .blurOverlay {
   position: absolute;
   top: 0;
@@ -454,10 +457,9 @@ body {
   backdrop-filter: blur(5px);
   background-color: rgba(255, 0, 0, 0.4);
   border-radius: 8px;
-  z-index: 1; /* Lower z-index so button is clickable */
+  z-index: 2; /* Overlay stays above the button */
 }
 
-/* Ensure the Change button is above the blur overlay */
 .changeButton {
   background-color: #1a1a1a;
   color: #ff0000;
@@ -466,8 +468,15 @@ body {
   border-radius: 5px;
   cursor: pointer;
   transition: background-color 0.3s, color 0.3s;
-  position: relative; /* Ensure it's positioned above other elements */
-  z-index: 2; /* Add z-index to ensure it stays above other elements */
+  position: relative;
+  z-index: 1; /* Ensure it's visually under the overlay */
+}
+
+/* Hide the carousel arrows but keep them clickable */
+.carousel-control-next-icon,
+.carousel-control-prev-icon {
+  visibility: hidden; /* Hide the arrows */
+  pointer-events: auto; /* Allow the buttons to still be clickable */
 }
 
 
