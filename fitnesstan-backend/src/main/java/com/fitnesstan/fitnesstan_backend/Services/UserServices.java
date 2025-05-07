@@ -372,7 +372,6 @@ public class UserServices {
 
             // Send the request to the Flask server
             HttpEntity<Map<String, Object>> request = new HttpEntity<>(userData, headers);
-            @SuppressWarnings("rawtypes")
             ResponseEntity<Map> response = restTemplate.postForEntity(flaskUrl, request, Map.class);
 
             //  System.out.println("[DEBUG] Response received from Flask: " + response.getBody());
@@ -421,25 +420,20 @@ public class UserServices {
                 .orElseThrow(() -> new Exception("User not found with id: " + userId));
 
         // 2) Extract mealPlan
-        @SuppressWarnings("unchecked")
         Map<String, Object> flaskMealPlan = (Map<String, Object>) flaskResponse.get("mealPlan");
         if (flaskMealPlan == null) {
             throw new Exception("MealPlan is missing in the Flask response.");
         }
-
-        // 3) Convert into our structure: Map<day, Map<"breakfast"/"dinner",
         // List<MealItem>>>
         Map<Integer, Map<String, List<MealItem>>> mealPlan = new HashMap<>();
 
         for (var dayEntry : flaskMealPlan.entrySet()) {
             Integer day = Integer.valueOf(dayEntry.getKey());
-            @SuppressWarnings("unchecked")
             Map<String, Object> mealsMap = (Map<String, Object>) dayEntry.getValue();
 
             Map<String, List<MealItem>> mealsForDay = new HashMap<>();
             for (var mealEntry : mealsMap.entrySet()) {
                 String mealName = mealEntry.getKey(); // "breakfast" or "dinner"
-                @SuppressWarnings("unchecked")
                 List<Map<String, Object>> items = (List<Map<String, Object>>) mealEntry.getValue();
 
                 List<MealItem> list = new ArrayList<>(items.size());
@@ -559,6 +553,7 @@ public class UserServices {
         userRepository.save(user);
     }
 
+    @SuppressWarnings({ "unchecked", "null" })
     @Transactional
     public boolean changeItemFromCluster(String userIdStr, String itemName) {
         // 1) Prepare the JSON you’ll send to Flask
