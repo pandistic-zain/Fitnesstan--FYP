@@ -121,7 +121,7 @@ export const changeItemFromCluster = async (payload) => {
 };
 
 // API for resubmitting user data
-export const reSubmitUserData = async (userData) => {
+export const reSubmitData = async (userData) => {
   try {
     console.debug("[DEBUG] Resubmitting user data:", userData);
     const response = await axios.post(`${USER_API_URL}/resubmit-data`, userData);

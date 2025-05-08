@@ -65,17 +65,17 @@ const ReSubmitData = () => {
   };
 
   return (
-    <div className={styles.backgroundDiv}>
+    <div className={styles.resubmitBackgroundDiv}>
       {loading && <Loader />}
-      <Container className={styles.container}>
+      <Container className={styles.resubmitContainer}>
         <Row className="justify-content-center">
           <Col>
-            <h2 className={styles.textCenter}>ReSubmit Data</h2>
+            <h2 className={styles.resubmitTextCenter}>ReSubmit Data</h2>
             <Form onSubmit={handleSubmit}>
               <Form.Group controlId="heightFt" className="mb-3">
-                <Form.Label>Height (ft)</Form.Label>
+                <Form.Label className={styles.resubmitFormLabel}>Height (ft)</Form.Label>
                 <Form.Control
-                  className={styles.formControl}
+                  className={styles.resubmitFormControl}
                   type="number"
                   step="0.1"
                   name="heightFt"
@@ -87,9 +87,9 @@ const ReSubmitData = () => {
               </Form.Group>
 
               <Form.Group controlId="dob" className="mb-3">
-                <Form.Label>Date of Birth</Form.Label>
+                <Form.Label className={styles.resubmitFormLabel}>Date of Birth</Form.Label>
                 <Form.Control
-                  className={styles.formControl}
+                  className={styles.resubmitFormControl}
                   type="date"
                   name="dob"
                   value={formData.dob}
@@ -99,9 +99,9 @@ const ReSubmitData = () => {
               </Form.Group>
 
               <Form.Group controlId="weightKg" className="mb-3">
-                <Form.Label>Weight (kg)</Form.Label>
+                <Form.Label className={styles.resubmitFormLabel}>Weight (kg)</Form.Label>
                 <Form.Control
-                  className={styles.formControl}
+                  className={styles.resubmitFormControl}
                   type="number"
                   step="0.1"
                   name="weightKg"
@@ -113,7 +113,7 @@ const ReSubmitData = () => {
               </Form.Group>
 
               <Form.Group controlId="gender" className="mb-3">
-                <Form.Label>Gender</Form.Label>
+                <Form.Label className={styles.resubmitFormLabel}>Gender</Form.Label>
                 <div>
                   {["Male", "Female", "Other"].map((gender) => (
                     <Form.Check
@@ -132,9 +132,9 @@ const ReSubmitData = () => {
               </Form.Group>
 
               <Form.Group controlId="occupation" className="mb-3">
-                <Form.Label>Occupation</Form.Label>
+                <Form.Label className={styles.resubmitFormLabel}>Occupation</Form.Label>
                 <Form.Select
-                  className={styles.formSelect}
+                  className={styles.resubmitFormSelect}
                   name="occupation"
                   value={formData.occupation}
                   onChange={handleChange}
@@ -152,7 +152,7 @@ const ReSubmitData = () => {
               </Form.Group>
 
               <Form.Group controlId="religion" className="mb-3">
-                <Form.Label>Religion</Form.Label>
+                <Form.Label className={styles.resubmitFormLabel}>Religion</Form.Label>
                 <div>
                   {["Muslim", "Non Muslim"].map((religion) => (
                     <Form.Check
@@ -171,24 +171,24 @@ const ReSubmitData = () => {
               </Form.Group>
 
               <Form.Group controlId="exerciseLevel" className="mb-3">
-                <Form.Label>Exercise Level</Form.Label>
+                <Form.Label className={styles.resubmitFormLabel}>Exercise Level</Form.Label>
                 <Form.Select
-                  className={styles.formSelect}
+                  className={styles.resubmitFormSelect}
                   name="exerciseLevel"
                   value={formData.exerciseLevel}
                   onChange={handleChange}
                   required
                 >
                   <option value="">Select your exercise level</option>
-                  {[
-                    "No Exercise",
-                    "1 day a week",
-                    "2 days a week",
-                    "3 days a week",
-                    "4 days a week",
-                    "5 days a week",
-                    "6 days a week",
-                    "7 days a week",
+                  {[ 
+                    "No Exercise", 
+                    "1 day a week", 
+                    "2 days a week", 
+                    "3 days a week", 
+                    "4 days a week", 
+                    "5 days a week", 
+                    "6 days a week", 
+                    "7 days a week" 
                   ].map((level) => (
                     <option key={level} value={level}>
                       {level}
@@ -198,9 +198,9 @@ const ReSubmitData = () => {
               </Form.Group>
 
               <Form.Group controlId="sleepHours" className="mb-3">
-                <Form.Label>Sleep Hours</Form.Label>
+                <Form.Label className={styles.resubmitFormLabel}>Sleep Hours</Form.Label>
                 <Form.Select
-                  className={styles.formSelect}
+                  className={styles.resubmitFormSelect}
                   name="sleepHours"
                   value={formData.sleepHours}
                   onChange={handleChange}
@@ -216,7 +216,7 @@ const ReSubmitData = () => {
               </Form.Group>
 
               <Form.Group controlId="medicalHistory" className="mb-3">
-                <Form.Label>Medical History</Form.Label>
+                <Form.Label className={styles.resubmitFormLabel}>Medical History</Form.Label>
                 <div>
                   {["None", "Diabetic", "Heart Disease"].map((condition) => (
                     <Form.Check
@@ -243,13 +243,13 @@ const ReSubmitData = () => {
 
               <Button
                 type="submit"
-                className={styles.btnPrimary}
+                className={styles.resubmitBtnPrimary}
                 disabled={loading}
               >
                 Submit
               </Button>
               {errorMessage && (
-                <p className={styles.textDanger}>{errorMessage}</p>
+                <p className={styles.resubmitTextDanger}>{errorMessage}</p>
               )}
             </Form>
           </Col>
