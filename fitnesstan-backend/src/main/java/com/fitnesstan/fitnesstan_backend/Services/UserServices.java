@@ -519,8 +519,8 @@ public class UserServices {
             HttpEntity<Map<String, Object>> request = new HttpEntity<>(userData, headers);
             ResponseEntity<Map> response = restTemplate.postForEntity(flaskUrl, request, Map.class);
 
-            // System.out.println("[DEBUG] Response received from Flask: " +
-            // response.getBody());
+            System.out.println("[DEBUG] Response received from Flask: " +
+            response.getBody());
 
             if (response.getStatusCode() == HttpStatus.OK) {
                 // Return the response body (model's output)
