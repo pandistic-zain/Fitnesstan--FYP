@@ -371,19 +371,21 @@ def change_item_in_cluster():
 
     new_row = pool.sample(1).iloc[0]
 
-    # Helper function to check if a string is a valid float
+   # Helper function to check if a string can be safely converted to a float
     def is_float(value):
         try:
-            float(value)
+            # Try converting to float after removing non-numeric characters except the dot
+            float_value = float(re.sub(r'[^\d.]', '', str(value)))
             return True
         except ValueError:
             return False
 
     # Prepare the minimal data for scaling
     item_data = {
-        col: float(re.sub(r'[^\d.]', '', str(new_row[col]))) if str(new_row[col]).strip() != '' and is_float(str(new_row[col])) else 0.0
+        col: (float(re.sub(r'[^\d.]', '', str(new_row[col]))) if str(new_row[col]).strip() != '' and is_float(str(new_row[col])) else 0.0)
         for col in MANDATORY_NUM + OPTIONAL_NUM
     }
+
 
     # Ensure the category column is populated
     if CATEGORY_COL in new_row.index:
