@@ -272,11 +272,28 @@ def process_user():
         secondary_pred = secondary_meta.predict(meta_s)[0]
         app.logger.debug(f"Secondary cluster: {secondary_pred}")
 
+        # 6) Handle out-of-range cluster prediction
+        try:
+            if secondary_pred < 0 or secondary_pred > 13:
+                secondary_pred = 4  # Assign to cluster 4 if out of range
+                app.logger.debug(f"Secondary cluster out of range, assigned to cluster 4")
+        except Exception as e:
+            app.logger.error(f"Error occurred while checking secondary cluster: {e}")
+
+
         # 6) Select item pools
         prim_items = items_df[items_df['KMeans_Cluster_14'] == primary_pred]
-        sec_items  = items_df[items_df['KMeans_Cluster_14'] == secondary_pred]
-        app.logger.debug(f"Primary pool size={len(prim_items)}, Secondary pool size={len(sec_items)}")
 
+        # Handle out-of-range primary cluster prediction
+        try:
+            if primary_pred < 0 or primary_pred > 13:
+                primary_pred = 4  # Assign to cluster 4 if out of range
+                app.logger.debug(f"Primary cluster out of range, assigned to cluster 4")
+        except Exception as e:
+            app.logger.error(f"Error occurred while checking primary cluster: {e}")
+
+        sec_items = items_df[items_df['KMeans_Cluster_14'] == secondary_pred]
+        app.logger.debug(f"Primary pool size={len(prim_items)}, Secondary pool size={len(sec_items)}")
         # 7) Compute per-item calorie target
         tdee         = float(user_data['tdee'])
         half         = tdee / 2
@@ -357,9 +374,9 @@ def change_item_in_cluster():
     # 5) Prepare the minimal data for scaling
     # We will process the item just like in the user endpoint
     item_data = {
-        col: float(re.sub(r'[^\d.]', '', str(new_row[col]))) if str(new_row[col]).strip() != '' else 0.0
+        col: float(re.sub(r'[^\d.]', '', str(new_row[col]))) if str(new_row[col]).strip() != '' and str(new_row[col]).replace('.', '', 1).isdigit() else 0.0
         for col in MANDATORY_NUM + OPTIONAL_NUM
-    }  
+    }
 
     # Ensure the category column is populated
     if CATEGORY_COL in new_row.index:

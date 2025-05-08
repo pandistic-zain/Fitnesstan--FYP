@@ -4,6 +4,7 @@ import { Row, Col } from "react-bootstrap";
 import { MdDashboard } from "react-icons/md";
 import { FaAppleAlt, FaDumbbell, FaKey } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
+import { getFullUserData } from "../../API/RegisterAPI";
 
 import Footer from "../../Components/Footer";
 import BMIGauge from "./BMIGauge";
@@ -44,43 +45,42 @@ const UserDashboard = () => {
   }, []);
 
   useEffect(() => {
-    const checkPlansEndDate = async () => {
-      const storedUserData = localStorage.getItem("userData");
-  
-      if (storedUserData) {
-        try {
-          const parsedData = JSON.parse(storedUserData);
-  
-          const currentDate = new Date();
-  
-          // Check if currentDiet exists and has a valid endDate
-          if (parsedData.currentDiet && parsedData.currentDiet.endDate) {
-            const dietEndDate = new Date(parsedData.currentDiet.endDate);
-  
-            // Compare the diet end date with the current date
-            if (dietEndDate <= currentDate) {
-              navigate("/resubmit-data");
-              return;
-            }
-          }
-  
-          // Check if currentWorkoutPlan exists and has a valid endDate
-          if (parsedData.currentWorkoutPlan && parsedData.currentWorkoutPlan.endDate) {
-            const workoutEndDate = new Date(parsedData.currentWorkoutPlan.endDate);
-  
-            // Compare the workout end date with the current date
-            if (workoutEndDate <= currentDate) {
-              navigate("/resubmit-data");
-              return;
-            }
-          }
-        } catch (error) {
-          console.error("Error parsing userData or checking plans:", error);
+    getFullUserData()
+      .then((dto) => {
+
+        // Check if the necessary objects exist
+        if (!dto || !dto.diet || !dto.diet.mealPlan || !dto.workoutPlan) {
+          console.warn("[WARN] No diet or mealPlan/workoutPlan found in user data.");
+          return;
         }
-      }
-    };
-  
-    checkPlansEndDate(); // Call the function to check end dates
+
+        // Check if the endDate for the current diet exists and is valid
+        if (dto.diet && dto.diet.endDate) {
+          const dietEndDate = new Date(dto.diet.endDate);
+          const currentDate = new Date();
+          console.log("Checking currentDiet endDate:", dietEndDate);
+
+          if (dietEndDate <= currentDate) {
+            navigate("/ReSubmitData"); // Redirect to resubmit page if the date has passed
+            return;
+          }
+        }
+
+        // Check if the endDate for the current workout plan exists and is valid
+        if (dto.workoutPlan && dto.workoutPlan.endDate) {
+          const workoutEndDate = new Date(dto.workoutPlan.endDate);
+          const currentDate = new Date();
+          console.log("Checking currentWorkoutPlan endDate:", workoutEndDate);
+
+          if (workoutEndDate <= currentDate) {
+            navigate("/ReSubmitData"); // Redirect to resubmit page if the date has passed
+            return;
+          }
+        }
+      })
+      .catch((err) => {
+        console.error("[ERROR] Fetching user data failed:", err);
+      });
   }, [navigate]);
 
   // Hide sidebar on scroll
