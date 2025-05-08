@@ -297,7 +297,7 @@ if (loading) return <Loader />;
               </a>
             </li>
             <li className={styles.sidebarItem}>
-              <a href="/settings">
+              <a href="/ChangePassword">
                 <FaKey className={styles.icon} /> Change Password
               </a>
             </li>

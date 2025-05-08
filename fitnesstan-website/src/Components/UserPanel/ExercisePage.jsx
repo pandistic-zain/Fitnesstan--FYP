@@ -138,7 +138,7 @@ const ExercisePage = () => {
               </Link>
             </li>
             <li className={styles.sidebarItem}>
-              <Link to="/settings" className={styles.link}>
+              <Link to="/ChangePassword" className={styles.link}>
                 <FaKey className={styles.icon} />
                 Change Password
               </Link>
