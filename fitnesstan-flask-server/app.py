@@ -371,10 +371,17 @@ def change_item_in_cluster():
 
     new_row = pool.sample(1).iloc[0]
 
-    # 5) Prepare the minimal data for scaling
-    # We will process the item just like in the user endpoint
+    # Helper function to check if a string is a valid float
+    def is_float(value):
+        try:
+            float(value)
+            return True
+        except ValueError:
+            return False
+
+    # Prepare the minimal data for scaling
     item_data = {
-        col: float(re.sub(r'[^\d.]', '', str(new_row[col]))) if str(new_row[col]).strip() != '' and str(new_row[col]).replace('.', '', 1).isdigit() else 0.0
+        col: float(re.sub(r'[^\d.]', '', str(new_row[col]))) if str(new_row[col]).strip() != '' and is_float(str(new_row[col])) else 0.0
         for col in MANDATORY_NUM + OPTIONAL_NUM
     }
 
