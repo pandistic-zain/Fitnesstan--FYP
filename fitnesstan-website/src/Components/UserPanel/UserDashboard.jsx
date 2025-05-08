@@ -28,23 +28,7 @@ const UserDashboard = () => {
 
   // On mount, read userData from localStorage.
   useEffect(() => {
-    const storedUserData = localStorage.getItem("userData");
-    if (storedUserData) {
-      try {
-        const parsedData = JSON.parse(storedUserData);
-        setMeasurements({
-          bmi: parsedData.bmi || "--",
-          ree: parsedData.ree || "--",
-          tdee: parsedData.tdee || "--",
-          dob: parsedData.dob || null,
-        });
-      } catch (error) {
-        console.error("Error parsing userData from localStorage:", error);
-      }
-    }
-  }, []);
 
-  useEffect(() => {
     getFullUserData()
       .then((dto) => {
 
@@ -81,7 +65,23 @@ const UserDashboard = () => {
       .catch((err) => {
         console.error("[ERROR] Fetching user data failed:", err);
       });
-  }, [navigate]);
+
+
+    const storedUserData = localStorage.getItem("userData");
+    if (storedUserData) {
+      try {
+        const parsedData = JSON.parse(storedUserData);
+        setMeasurements({
+          bmi: parsedData.bmi || "--",
+          ree: parsedData.ree || "--",
+          tdee: parsedData.tdee || "--",
+          dob: parsedData.dob || null,
+        });
+      } catch (error) {
+        console.error("Error parsing userData from localStorage:", error);
+      }
+    }
+  }, []);
 
   // Hide sidebar on scroll
   useEffect(() => {
