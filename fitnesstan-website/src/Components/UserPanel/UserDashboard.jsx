@@ -43,6 +43,46 @@ const UserDashboard = () => {
     }
   }, []);
 
+  useEffect(() => {
+    const checkPlansEndDate = async () => {
+      const storedUserData = localStorage.getItem("userData");
+  
+      if (storedUserData) {
+        try {
+          const parsedData = JSON.parse(storedUserData);
+  
+          const currentDate = new Date();
+  
+          // Check if currentDiet exists and has a valid endDate
+          if (parsedData.currentDiet && parsedData.currentDiet.endDate) {
+            const dietEndDate = new Date(parsedData.currentDiet.endDate);
+  
+            // Compare the diet end date with the current date
+            if (dietEndDate <= currentDate) {
+              navigate("/resubmit-data");
+              return;
+            }
+          }
+  
+          // Check if currentWorkoutPlan exists and has a valid endDate
+          if (parsedData.currentWorkoutPlan && parsedData.currentWorkoutPlan.endDate) {
+            const workoutEndDate = new Date(parsedData.currentWorkoutPlan.endDate);
+  
+            // Compare the workout end date with the current date
+            if (workoutEndDate <= currentDate) {
+              navigate("/resubmit-data");
+              return;
+            }
+          }
+        } catch (error) {
+          console.error("Error parsing userData or checking plans:", error);
+        }
+      }
+    };
+  
+    checkPlansEndDate(); // Call the function to check end dates
+  }, [navigate]);
+
   // Hide sidebar on scroll
   useEffect(() => {
     const handleScroll = () => setSidebarVisible(false);
