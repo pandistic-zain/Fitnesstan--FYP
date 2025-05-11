@@ -132,14 +132,28 @@ const HomePage = () => {
     setForm((f) => ({ ...f, [id]: value }));
   };
 
+// clear success after 5 seconds
+  useEffect(() => {
+    if (!success) return;
+    const timer = setTimeout(() => setSuccess(""), 5000);
+    return () => clearTimeout(timer);
+  }, [success]);
+
+  // clear error after 5 seconds
+  useEffect(() => {
+    if (!error) return;
+    const timer = setTimeout(() => setError(""), 5000);
+    return () => clearTimeout(timer);
+  }, [error]);
+
   const handleSubmit = async e => {
     e.preventDefault();
-    setError(""); setSuccess("");
+    setError("");
+    setSuccess("");
     try {
       await submitFeedback(form);
       setSuccess("Thank you for your feedback!");
-      setForm({ name:"", email:"", feedback:"" });
-      // re-fetch the testimonials?
+      setForm({ name: "", email: "", feedback: "" });
       const fresh = await fetchFeedbacks();
       setFeedbacks(fresh);
     } catch {
