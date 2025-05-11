@@ -36,8 +36,22 @@ const Register = () => {
 
   const handleSignUpChange = (e) => {
     const { name, value } = e.target;
+      // now allows letters, spaces, or underscores
+     if (name === "username") {
+    // allow only letters/spaces/_/- AND disallow leading/trailing _ or -
+    const validSoFar =
+      /^[A-Za-z _-]*$/.test(value) &&   // only allowed chars
+      !/^[_-]/.test(value) &&           // no leading _ or -
+      !/[_-]$/.test(value);             // no trailing _ or -
+    if (validSoFar || value === "") {
+      setSignUpData({ ...signUpData, [name]: value });
+    }
+  }
+    else {
     setSignUpData({ ...signUpData, [name]: value });
-  };
+  }
+};
+
 
   const handleLoginSubmit = async (e) => {
     e.preventDefault();
@@ -82,7 +96,11 @@ const Register = () => {
         }
       } else {
         // Non-200 login
-        console.error("Login failed with status:", response.status, response.data);
+        console.error(
+          "Login failed with status:",
+          response.status,
+          response.data
+        );
         setErrorMessage(
           response.data?.message || "Login failed. Please try again."
         );
@@ -102,8 +120,10 @@ const Register = () => {
   // -----------------------------------------
   const handleSignUpSubmit = async (e) => {
     e.preventDefault();
-    if (signUpData.password !== signUpData.confirmPassword) {
-      setErrorMessage("Passwords do not match.");
+    if (!/^[A-Za-z_ ]+$/.test(signUpData.username)) {
+      setErrorMessage(
+        "Full Name must use letters, spaces or underscores only."
+      );
       return;
     }
     // We store the email/password so that the next steps
@@ -169,7 +189,8 @@ const Register = () => {
                 <input
                   type="text"
                   name="username"
-                  placeholder="Username"
+                  placeholder="Full Name"
+                  pattern="^(?![_-])[A-Za-z _-]+(?<![_-])$"
                   value={signUpData.username}
                   onChange={handleSignUpChange}
                   required
