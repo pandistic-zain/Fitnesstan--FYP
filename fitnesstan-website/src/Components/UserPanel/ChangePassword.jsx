@@ -86,6 +86,7 @@ const ChangePassword = () => {
             placeholder="New Password"
             className={styles.inputField}
             value={newPassword}
+            minLength={6}
             onChange={(e) => setNewPassword(e.target.value)}
             required
           />

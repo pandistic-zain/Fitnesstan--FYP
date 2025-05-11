@@ -285,6 +285,9 @@ const Register = () => {
                     />
                   </span>
                 </div>
+                <a href="/forgetpassword" className="forgot-password-link">
+                  Forgot password?
+                </a>
               </div>
               <button type="submit">Login</button>
               {errorMessage && <p className="error">{errorMessage}</p>}

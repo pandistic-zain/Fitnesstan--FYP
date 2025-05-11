@@ -11,6 +11,8 @@ import ExercisePage from './Components/UserPanel/ExercisePage';
 import DietPage from './Components/UserPanel/DietPage';
 import ChangePassword from './Components/UserPanel/ChangePassword';
 import ReSubmitData from './Components/Pages/ReSubmitData';
+import ForgetPassword from './Components/Pages/ForgetPassword';
+import ResetPassword from './Components/Pages/ResetPassword';
 
 function App() {
   return (
@@ -27,6 +29,8 @@ function App() {
         <Route path="/DietPage" element={<DietPage />} />
         <Route path="/ChangePassword" element={<ChangePassword />} />
         <Route path="/ReSubmitData" element={<ReSubmitData />} />
+        <Route path="/forgetpassword" element={<ForgetPassword />} />
+        <Route path="/resetpassword" element={<ResetPassword />} />
       </Routes>
     </Router>
   );

@@ -163,3 +163,35 @@ export const fetchFeedbacks = async () => {
     throw err;
   }
 };
+
+export const requestPasswordReset = async ({ email }) => {
+  try {
+    console.debug("[DEBUG] Requesting password reset for:", email);
+    const response = await axios.post(`${API_URL}/forgot-password`, { email });
+    console.debug("[DEBUG] Password reset request response:", response.data);
+    return response;
+  } catch (err) {
+    console.error("[ERROR] Password reset request failed:", err);
+    throw err;
+  }
+};
+
+// 2) Confirm the reset by supplying OTP + new password
+// @param {{ email: string, otp: string, newPassword: string }}
+export const resetPassword = async ({ email, otp, newPassword }) => {
+  try {
+    console.debug(
+      "[DEBUG] Confirming password reset for:",
+      email,
+      "OTP:",
+      otp
+    );
+    const url = `${API_URL}/reset-password?email=${encodeURIComponent(email)}`;
+    const response = await axios.post(url, { otp, newPassword });
+    console.debug("[DEBUG] Password reset confirmation response:", response.data);
+    return response;
+  } catch (err) {
+    console.error("[ERROR] Password reset confirmation failed:", err);
+    throw err;
+  }
+};

@@ -62,6 +62,7 @@ public class UserServices {
 
     private static final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
     private final ConcurrentHashMap<String, Users> otpStore = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<String, String> resetOtpStore = new ConcurrentHashMap<>();
 
     public List<Users> getAllUsers() {
         return userRepository.findAll();
@@ -848,6 +849,37 @@ public class UserServices {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         return headers;
+    }
+
+    // 1) Send an OTP for password reset
+    public void sendPasswordResetOtp(String email) throws Exception {
+        Users user = userRepository.findByEmail(email);
+        if (user == null) {
+            throw new Exception("No user with that email");
+        }
+        String otp = generateOTP(); // your existing 6-digit generator
+        resetOtpStore.put(email, otp);
+        // reuse your existing mailer:
+        sendVerificationEmail(email, otp);
+    }
+
+    // 2) Verify OTP and update password
+    @Transactional
+    public void resetPasswordWithOtp(String email, String otp, String newPassword) throws Exception {
+        String stored = resetOtpStore.get(email);
+        if (stored == null || !stored.equals(otp)) {
+            throw new Exception("Invalid or expired OTP");
+        }
+        // remove so it can’t be reused
+        resetOtpStore.remove(email);
+
+        Users user = userRepository.findByEmail(email);
+        if (user == null) {
+            throw new Exception("User not found");
+        }
+        user.setPassword(passwordEncoder.encode(newPassword));
+        user.setUpdatedAt(LocalDateTime.now());
+        userRepository.save(user);
     }
 
 }

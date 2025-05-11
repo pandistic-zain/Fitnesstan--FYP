@@ -149,4 +149,51 @@ public ResponseEntity<?> verifyEmail(@RequestParam("email") String email, @Reque
             .collect(Collectors.toList());
         return ResponseEntity.ok(feedbacks);
     }
+
+    @PostMapping("/forgot-password")
+    public ResponseEntity<?> forgotPassword(@RequestBody Map<String,String> body) {
+        String email = body.get("email");
+        if (email == null || email.isBlank()) {
+            return ResponseEntity
+              .badRequest()
+              .body("Email is required");
+        }
+        try {
+            // call into UserServices to generate & send an OTP
+            userServices.sendPasswordResetOtp(email);
+            return ResponseEntity.ok("OTP sent to your email");
+        } catch (Exception e) {
+            return ResponseEntity
+              .status(HttpStatus.INTERNAL_SERVER_ERROR)
+              .body("Could not send OTP: " + e.getMessage());
+        }
+    }
+
+    // NEW: actually reset the password
+    // email is in the URL, otp + newPassword in the JSON body
+    @PostMapping("/reset-password")
+    public ResponseEntity<?> resetPassword(
+            @RequestParam("email") String email,
+            @RequestBody Map<String,String> body) {
+
+        String otp        = body.get("otp");
+        String newPassword= body.get("newPassword");
+
+        if (otp == null || otp.isBlank()
+         || newPassword == null || newPassword.length() < 6) {
+            return ResponseEntity
+              .badRequest()
+              .body("OTP and newPassword(min 6 chars) are required");
+        }
+
+        try {
+            // verify OTP and update the user’s password
+            userServices.resetPasswordWithOtp(email, otp, newPassword);
+            return ResponseEntity.ok("Password reset successfully");
+        } catch (Exception e) {
+            return ResponseEntity
+              .status(HttpStatus.BAD_REQUEST)
+              .body("Reset failed: " + e.getMessage());
+        }
+    }
 }
