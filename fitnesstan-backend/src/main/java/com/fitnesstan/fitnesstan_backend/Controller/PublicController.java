@@ -54,7 +54,7 @@ public class PublicController {
 
     // Email verification endpoint
     @GetMapping("/verify-email")
-    public ResponseEntity<?> verifyEmail(@RequestParam("email") String email, @RequestParam("otp") String otp) {
+public ResponseEntity<?> verifyEmail(@RequestParam("email") String email, @RequestParam("otp") String otp) {
         System.out.println("[DEBUG] Inside verifyEmail method"); // Debug line
         System.out.println("[DEBUG] Email: " + email + ", OTP: " + otp); // Debug line
 
