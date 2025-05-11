@@ -51,7 +51,7 @@ public class UserServices {
     // Injecting the WorkoutPlanServices to generate workout plans.
     @Autowired
     private WorkoutPlanServices workoutPlanServices;
-    
+
     @Autowired
     private WorkoutPlanRepository workoutPlanRepository;
 
@@ -200,7 +200,9 @@ public class UserServices {
         // Calculate TDEE based on the user's exercise level
         double tdee;
         switch (additionalInfo.getExerciseLevel().toLowerCase()) {
-            case "no exercise":
+            case "0 day a week":
+                tdee = ree * 1;
+                break;
             case "1 days a week":
                 tdee = ree * 1.1;
                 break;
@@ -456,7 +458,7 @@ public class UserServices {
     }
 
     @Transactional
-   public void verifyEmail(String email, String otp) throws Exception {
+    public void verifyEmail(String email, String otp) throws Exception {
         // Retrieve user from otpStore and verify OTP.
         Users user = otpStore.get(email);
         if (user == null || !user.getVerificationToken().equals(otp)) {
@@ -520,7 +522,7 @@ public class UserServices {
             ResponseEntity<Map> response = restTemplate.postForEntity(flaskUrl, request, Map.class);
 
             System.out.println("[DEBUG] Response received from Flask: " +
-            response.getBody());
+                    response.getBody());
 
             if (response.getStatusCode() == HttpStatus.OK) {
                 // Return the response body (model's output)
@@ -534,53 +536,55 @@ public class UserServices {
             return Map.of("error", "Error sending user data to Flask: " + e.getMessage());
         }
     }
+
     @Transactional
     public void deleteUserDietAndRemoveReference(String userId) throws Exception {
         // Step 1: Fetch the user from the user repository by the user ID
         Users user = userRepository.findById(new ObjectId(userId))
                 .orElseThrow(() -> new Exception("User not found with id: " + userId));
-        
+
         // Step 2: Check if the user has an associated current diet
         Diet currentDiet = user.getCurrentDiet();
         if (currentDiet == null) {
             throw new Exception("User does not have a current diet.");
         }
-    
+
         // Step 3: Delete the diet from the diet repository
-        dietRepository.delete(currentDiet);  // Delete diet record from Diet repository
-    
+        dietRepository.delete(currentDiet); // Delete diet record from Diet repository
+
         // Step 4: Remove the reference from the user's diet
-        user.setCurrentDiet(null);  // Nullify the diet reference in the user entity
-    
+        user.setCurrentDiet(null); // Nullify the diet reference in the user entity
+
         // Step 5: Save the updated user entity to the user repository
-        userRepository.save(user);  // Save the user with the updated (null) diet reference
-    
+        userRepository.save(user); // Save the user with the updated (null) diet reference
+
         System.out.println("[DEBUG] Current diet deleted and reference removed for user: " + userId);
     }
+
     @Transactional
     public void deleteUserWorkoutPlanAndRemoveReference(String userId) throws Exception {
         // Step 1: Fetch the user from the user repository by the user ID
         Users user = userRepository.findById(new ObjectId(userId))
                 .orElseThrow(() -> new Exception("User not found with id: " + userId));
-        
+
         // Step 2: Check if the user has an associated current workout plan
         WorkoutPlan currentWorkoutPlan = user.getCurrentWorkoutPlan();
         if (currentWorkoutPlan == null) {
             throw new Exception("User does not have a current workout plan.");
         }
-    
+
         // Step 3: Delete the workout plan from the workout plan repository
-        workoutPlanRepository.delete(currentWorkoutPlan);  // Delete workout plan record from WorkoutPlan repository
-    
+        workoutPlanRepository.delete(currentWorkoutPlan); // Delete workout plan record from WorkoutPlan repository
+
         // Step 4: Remove the reference from the user's workout plan
-        user.setCurrentWorkoutPlan(null);  // Nullify the workout plan reference in the user entity
-    
+        user.setCurrentWorkoutPlan(null); // Nullify the workout plan reference in the user entity
+
         // Step 5: Save the updated user entity to the user repository
-        userRepository.save(user);  // Save the user with the updated (null) workout plan reference
-    
+        userRepository.save(user); // Save the user with the updated (null) workout plan reference
+
         System.out.println("[DEBUG] Current workout plan deleted and reference removed for user: " + userId);
     }
-        
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // ============================================

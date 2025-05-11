@@ -197,7 +197,7 @@ const AdditionalInfoForm = () => {
                 >
                   <option value="">Select your exercise level</option>
                   {[
-                    "No Exercise",
+                    "0 day a week",
                     "1 days a week",
                     "2 days a week",
                     "3 days a week",
