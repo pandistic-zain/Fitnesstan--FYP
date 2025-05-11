@@ -1,14 +1,18 @@
 package com.fitnesstan.fitnesstan_backend.Controller;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import com.fitnesstan.fitnesstan_backend.DAO.FeedbackRepository;
 import com.fitnesstan.fitnesstan_backend.DAO.UserRepository;
+import com.fitnesstan.fitnesstan_backend.Entity.Feedback;
 import com.fitnesstan.fitnesstan_backend.Entity.Users;
 import com.fitnesstan.fitnesstan_backend.Services.UserServices;
 
@@ -23,6 +27,9 @@ public class PublicController {
     @Autowired
     private UserRepository userRepository;
 
+     // ←— inject your new feedback repo
+    @Autowired
+    private FeedbackRepository feedbackRepository;
     // Health check endpoint
     @GetMapping("/health-check")
     public ResponseEntity<String> healthCheck() {
@@ -112,5 +119,34 @@ public ResponseEntity<?> verifyEmail(@RequestParam("email") String email, @Reque
             return new ResponseEntity<>("Failed to save user: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    @PostMapping("/feedback")
+    public ResponseEntity<?> submitFeedback(@RequestBody Feedback fb) {
+        try {
+            // stamp the time if the client hasn't
+            if (fb.getSubmittedAt() == null) {
+                fb.setSubmittedAt(java.time.LocalDateTime.now());
+            }
+            Feedback saved = feedbackRepository.save(fb);
+            return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(saved);
+        } catch (Exception e) {
+            return ResponseEntity
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body("Failed to save feedback: " + e.getMessage());
+        }
+    }
     
+
+     @GetMapping("/feedbacks")
+    public ResponseEntity<List<Map<String, String>>> getAllFeedbacks() {
+        List<Map<String,String>> feedbacks = feedbackRepository.findAll().stream()
+            .map(fb -> Map.of(
+                "name",     fb.getName(),
+                "feedback", fb.getFeedback()  // or fb.getMessage() if you used @JsonProperty("feedback") on a field named 'message'
+            ))
+            .collect(Collectors.toList());
+        return ResponseEntity.ok(feedbacks);
+    }
 }

@@ -1,4 +1,4 @@
-import { React, useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Container, Row, Col } from "react-bootstrap";
 // import { Link } from 'react-router-dom';
 import workoutImage from "../../Assets/workout-image.jpg";
@@ -8,6 +8,9 @@ import SupplementsImage from "../../Assets/supplement-image.jpg";
 import DataPrivacyImage from "../../Assets/data-privacy-image.jpg";
 import ProgressTrackingImage from "../../Assets/progress-tracking-image.jpg";
 import styles from "./Home.module.css"; // Custom CSS for styling
+
+import { submitFeedback, fetchFeedbacks } from "../../API/RegisterAPI.jsx";
+
 import {
   FaDumbbell,
   FaHeartbeat,
@@ -84,34 +87,6 @@ const supplementsData = [
     ],
   },
 ];
-const testimonialsData = [
-  {
-    message: "Fitnesstan helped me achieve my fitness goals faster than ever!",
-    author: "Sarah Johnson",
-  },
-  {
-    message:
-      "The personalized plans really made a difference in my daily routine.",
-    author: "Michael Smith",
-  },
-  {
-    message: "Highly recommend this app for anyone serious about fitness!",
-    author: "Emily Davis",
-  },
-  {
-    message: "A fantastic app with amazing AI trainers. I'm so impressed!",
-    author: "James Brown",
-  },
-  {
-    message: "The nutrition and workout plans are exactly what I needed!",
-    author: "Jessica Wilson",
-  },
-  {
-    message:
-      "The nutrition advice has completely changed my eating habits! I never realized how important it was to balance my macros until I started following the personalized plan. Now I feel more energized, and my cravings have significantly decreased. It's amazing how the right guidance can lead to such positive changes in my life!",
-    author: "Zain Ul Abdeen",
-  },
-];
 
 const HomePage = () => {
   const navigate = useNavigate();
@@ -131,12 +106,47 @@ const HomePage = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
+  const [feedbacks, setFeedbacks] = useState([]);
+  const [form,    setForm]    = useState({ name:"", email:"", feedback:"" });
+  const [error,   setError]   = useState("");
+  const [success, setSuccess] = useState("");
+
+
+  // 2) then the effect
+  useEffect(() => {
+    console.log("🏷️ HomePage mount, fetching feedbacks…");
+    fetchFeedbacks()
+      .then(data => {
+        console.log("✅ fetched feedbacks:", data);
+        setFeedbacks(data);
+      })
+      .catch(err => console.error("❌ fetchFeedbacks error:", err));
+  }, []);
   // eslint-disable-next-line no-unused-vars
   const [currentSupplement, setCurrentSupplement] = useState(
     supplementsData[0]
   );
-  // eslint-disable-next-line no-unused-vars
-  const [testimonials, setTestimonials] = useState(testimonialsData);
+
+  const handleChange = (e) => {
+    const { id, value } = e.target;
+    setForm((f) => ({ ...f, [id]: value }));
+  };
+
+  const handleSubmit = async e => {
+    e.preventDefault();
+    setError(""); setSuccess("");
+    try {
+      await submitFeedback(form);
+      setSuccess("Thank you for your feedback!");
+      setForm({ name:"", email:"", feedback:"" });
+      // re-fetch the testimonials?
+      const fresh = await fetchFeedbacks();
+      setFeedbacks(fresh);
+    } catch {
+      setError("Failed to send feedback. Please try again.");
+    }
+  };
+
   return (
     <div className={styles["home-page"]}>
       {/* Hero Section */}
@@ -385,16 +395,16 @@ const HomePage = () => {
       <section className={styles.testimonialsSection} id="testimonials">
         <h2 className={styles.sectionTitle}>What Our Users Say !!!</h2>
         <div className={styles.testimonialRow}>
-          {testimonialsData.map((testimonial, index) => (
-            <div className={styles.card} key={index}>
+          {feedbacks.length === 0 && <p>Loading testimonials…</p>}
+          {feedbacks.map((fb,i) => (
+            <div className={styles.card} key={i}>
               <div className={styles.bg}></div>
               <div className={styles.blob}></div>
-              <p className={styles.testimonialText}>{testimonial.message}</p>
-              <p className={styles.testimonialAuthor}>- {testimonial.author}</p>
+              <p className={styles.testimonialText}>{fb.feedback}</p>
+              <p className={styles.testimonialAuthor}>- {fb.name}</p>
             </div>
           ))}
         </div>
-        {/* <div className={styles.horizontalDividerFinalfeedback}></div> */}
       </section>
       {/* Team Section */}
       <section className={styles["team-section"]} id="team">
@@ -439,7 +449,7 @@ const HomePage = () => {
           <p>
             We value your feedback! Please share your thoughts about Fitnesstan.
           </p>
-          <form className={styles["feedback-form"]}>
+          <form className={styles["feedback-form"]} onSubmit={handleSubmit}>
             <div className="form-group">
               <label htmlFor="name">Name</label>
               <input
@@ -447,6 +457,8 @@ const HomePage = () => {
                 id="name"
                 className="form-control"
                 placeholder="Your Name"
+                value={form.name}
+                onChange={handleChange}
                 required
               />
             </div>
@@ -457,6 +469,8 @@ const HomePage = () => {
                 id="email"
                 className="form-control"
                 placeholder="Your Email"
+                value={form.email}
+                onChange={handleChange}
                 required
               />
             </div>
@@ -467,9 +481,13 @@ const HomePage = () => {
                 className="form-control"
                 rows="4"
                 placeholder="Your Feedback"
+                value={form.feedback}
+                onChange={handleChange}
                 required
-              ></textarea>
+              />
             </div>
+            {success && <p className={styles.success}>{success}</p>}
+            {error && <p className={styles.error}>{error}</p>}
             <button type="submit" className={styles["submit-button"]}>
               Submit
             </button>

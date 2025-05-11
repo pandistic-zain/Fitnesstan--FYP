@@ -132,3 +132,34 @@ export const reSubmitData = async (userData) => {
     throw error;
   }
 };
+
+
+// @param {{ name: string, email: string, feedback: string }} feedbackData
+export const submitFeedback = async (feedbackData) => {
+  try {
+    console.debug("[DEBUG] Submitting feedback:", feedbackData);
+    // hits POST http://localhost:8080/register/feedback
+    const response = await axios.post(`${API_URL}/feedback`, feedbackData);
+    console.debug("[DEBUG] Feedback response:", response.data);
+    return response.data;
+  } catch (err) {
+    console.error("[ERROR] Feedback submission failed:", err);
+    throw err;
+  }
+};
+
+/**
+ * Fetch all feedback entries (name + message) from the server
+ * @returns {Promise<Array<{ name: string, feedback: string }>>}
+ */
+export const fetchFeedbacks = async () => {
+  try {
+    console.debug("[DEBUG] Fetching all feedbacks");
+    const response = await axios.get(`${API_URL}/feedbacks`);
+    console.debug("[DEBUG] Feedbacks fetched:", response.data);
+    return response.data;
+  } catch (err) {
+    console.error("[ERROR] Fetching feedbacks failed:", err);
+    throw err;
+  }
+};
