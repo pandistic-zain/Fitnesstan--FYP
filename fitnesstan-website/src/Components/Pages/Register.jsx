@@ -36,22 +36,20 @@ const Register = () => {
 
   const handleSignUpChange = (e) => {
     const { name, value } = e.target;
-      // now allows letters, spaces, or underscores
-     if (name === "username") {
-    // allow only letters/spaces/_/- AND disallow leading/trailing _ or -
-    const validSoFar =
-      /^[A-Za-z _-]*$/.test(value) &&   // only allowed chars
-      !/^[_-]/.test(value) &&           // no leading _ or -
-      !/[_-]$/.test(value);             // no trailing _ or -
-    if (validSoFar || value === "") {
+    // now allows letters, spaces, or underscores
+    if (name === "username") {
+      // allow only letters/spaces/_/- AND disallow leading/trailing _ or -
+      const validSoFar =
+        /^[A-Za-z _-]*$/.test(value) && // only allowed chars
+        !/^[_-]/.test(value) && // no leading _ or -
+        !/[_-]$/.test(value); // no trailing _ or -
+      if (validSoFar || value === "") {
+        setSignUpData({ ...signUpData, [name]: value });
+      }
+    } else {
       setSignUpData({ ...signUpData, [name]: value });
     }
-  }
-    else {
-    setSignUpData({ ...signUpData, [name]: value });
-  }
-};
-
+  };
 
   const handleLoginSubmit = async (e) => {
     e.preventDefault();
@@ -124,6 +122,14 @@ const Register = () => {
       setErrorMessage(
         "Full Name must use letters, spaces or underscores only."
       );
+      return;
+    }
+    if (signUpData.password.length < 6) {
+      setErrorMessage("Password must be at least 6 characters long.");
+      return;
+    }
+    if (signUpData.password !== signUpData.confirmPassword) {
+      setErrorMessage("Passwords do not match.");
       return;
     }
     // We store the email/password so that the next steps
@@ -212,6 +218,7 @@ const Register = () => {
                   value={signUpData.password}
                   onChange={handleSignUpChange}
                   required
+                  minLength={6}
                   autoComplete="new-password"
                 />
                 <input
