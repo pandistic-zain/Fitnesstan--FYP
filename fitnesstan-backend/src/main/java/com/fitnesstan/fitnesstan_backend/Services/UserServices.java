@@ -456,7 +456,7 @@ public class UserServices {
     }
 
     @Transactional
-    public void verifyEmail(String email, String otp) throws Exception {
+   public void verifyEmail(String email, String otp) throws Exception {
         // Retrieve user from otpStore and verify OTP.
         Users user = otpStore.get(email);
         if (user == null || !user.getVerificationToken().equals(otp)) {
