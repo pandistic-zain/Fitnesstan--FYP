@@ -55,20 +55,32 @@
 .parentcard {
   position: relative; /* Positioning context for child elements */
   flex: 1 1 calc(25% - 20px);
-  max-width: 100%; /* Ensure the width is responsive */
-  min-height: 200px; /* Provide a minimum height to start */
-  height: auto; /* Let the height increase based on content */
+  max-width: auto;
+  height: 350px; /* Fixed height for the card */
+  overflow-y: auto; /* Enable vertical scroll when content exceeds height */
   border-radius: 14px;
-  overflow: hidden;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: flex-start; /* Allow the content to be aligned at the top */
+  justify-content: flex-start; /* Align content at the top */
   box-shadow: 20px 20px 60px rgba(100, 0, 0, 0.5), 
               -20px -20px 60px rgba(100, 0, 0, 0.5);
   transition: transform 0.3s, box-shadow 0.3s;
-  padding: 20px; /* Ensure there's padding inside the card */
-  padding-bottom: 100px;
+  padding: 20px; /* Internal padding for spacing around content */
+}
+
+/* Optional scroll bar style */
+.parentcard::-webkit-scrollbar {
+  width: 8px;
+}
+
+.parentcard::-webkit-scrollbar-thumb {
+  background: #ff0000; /* Red color for scrollbar thumb */
+  border-radius: 10px;
+}
+
+.parentcard::-webkit-scrollbar-track {
+  background: #1a1a1a; /* Dark background for scrollbar track */
 }
 
 .card {
