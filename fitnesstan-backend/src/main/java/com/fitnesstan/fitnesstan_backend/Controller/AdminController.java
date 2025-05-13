@@ -34,24 +34,13 @@ public class AdminController {
     @GetMapping("/all-users")
     public ResponseEntity<List<Users>> getAllUsers() {
         List<Users> allUsers = userServices.getAllUsers();
-        return allUsers.isEmpty() 
-            ? new ResponseEntity<>(HttpStatus.NOT_FOUND)
-            : new ResponseEntity<>(allUsers, HttpStatus.OK);
-    }
-    // Endpoint to update a user's information
-    @PutMapping("/update-user/{id}")
-    public ResponseEntity<String> updateUser(@PathVariable String id, @RequestBody Users user) {
-        try {
-            boolean updated = userServices.updateUser(id, user);
-            return updated
-                ? new ResponseEntity<>("User updated successfully", HttpStatus.OK)
-                : new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
-        } catch (Exception e) {
-            return new ResponseEntity<>("Failed to update user: " + e.getMessage(), HttpStatus.BAD_REQUEST);
-        }
+        return allUsers.isEmpty()
+                ? new ResponseEntity<>(HttpStatus.NOT_FOUND)
+                : new ResponseEntity<>(allUsers, HttpStatus.OK);
     }
 
-     // Endpoint to deactivate (delete) a user    // Endpoint to deactivate (delete) a user
+    // Endpoint to deactivate (delete) a user // Endpoint to deactivate (delete) a
+    // user
     @DeleteMapping("/deactivate-user/{id}")
     public ResponseEntity<String> deactivateUser(@PathVariable String id) {
         try {
@@ -64,16 +53,18 @@ public class AdminController {
             Users currentUser = userRepository.findById(objectId).orElse(null);
 
             if (currentUser == null) {
-                return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);  // Handle user not found
+                return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND); // Handle user not found
             }
 
             // Check if the current user has the 'ADMIN' role
             if (currentUser.getRoles().contains("ADMIN")) {
-                return new ResponseEntity<>("Admin users cannot be deactivated", HttpStatus.FORBIDDEN); // Prevent deactivating admin
+                return new ResponseEntity<>("Admin users cannot be deactivated", HttpStatus.FORBIDDEN); // Prevent
+                                                                                                        // deactivating
+                                                                                                        // admin
             }
 
             // Proceed with deactivating the user if the role is 'USER'
-            boolean deleted = userServices.deleteUser(id);  // Call the service to delete the user
+            boolean deleted = userServices.deleteUser(id); // Call the service to delete the user
 
             if (deleted) {
                 return new ResponseEntity<>("User deactivated successfully", HttpStatus.OK); // Success
@@ -81,11 +72,13 @@ public class AdminController {
                 return new ResponseEntity<>("Failed to deactivate user", HttpStatus.BAD_REQUEST); // Failure
             }
         } catch (Exception e) {
-            return new ResponseEntity<>("Failed to deactivate user: " + e.getMessage(), HttpStatus.BAD_REQUEST); // Error handling
+            return new ResponseEntity<>("Failed to deactivate user: " + e.getMessage(), HttpStatus.BAD_REQUEST); // Error
+                                                                                                                 // handling
         }
     }
-        // Endpoint to delete feedback by ID
-// Endpoint to delete feedback by ID
+
+    // Endpoint to delete feedback by ID
+    // Endpoint to delete feedback by ID
     @DeleteMapping("/feedback/{id}")
     public ResponseEntity<String> deleteFeedback(@PathVariable String id) {
         try {
@@ -102,4 +95,13 @@ public class AdminController {
         }
     }
 
+    @PutMapping("/update-user/{id}")
+    public ResponseEntity<String> updateUser(
+            @PathVariable String id,
+            @RequestBody Users user) {
+        boolean ok = userServices.updateUser(id, user);
+        return ok
+                ? ResponseEntity.ok("User updated successfully")
+                : ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
+    }
 }

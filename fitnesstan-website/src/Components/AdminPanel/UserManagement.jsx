@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Table, Button, Form, Modal } from "react-bootstrap";
 import Sidebar from "./Sidebar";
-import Loader from "../Loader"; // Import your custom loader
+import Loader from "../Loader";
 import {
   fetchAllUsers,
   updateUser,
@@ -11,47 +11,44 @@ import styles from "./UserManagement.module.css";
 
 const UserManagement = () => {
   const [users, setUsers] = useState([]);
-  const [search, setSearch] = useState("");
   const [filteredUsers, setFilteredUsers] = useState([]);
+  const [search, setSearch] = useState("");
   const [selectedUser, setSelectedUser] = useState(null);
   const [showEditModal, setShowEditModal] = useState(false);
-  const [loading, setLoading] = useState(true); // Loading state
+  const [loading, setLoading] = useState(true);
+
+  // A single “reload everything” helper that flips loading on/off
+  const refreshUsers = async () => {
+    setLoading(true);
+    try {
+      const data = await fetchAllUsers();
+      if (Array.isArray(data)) {
+        setUsers(data);
+        setFilteredUsers(data);
+      } else {
+        console.error("Expected an array, got:", data);
+      }
+    } catch (err) {
+      console.error("Error loading users:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const getUsers = async () => {
-      setLoading(true);
-      try {
-        const response = await fetchAllUsers();
-
-        // Since response is an array, we set users directly
-        if (Array.isArray(response)) {
-          setUsers(response);
-          setFilteredUsers(response);
-        } else {
-          console.error(
-            "Unexpected response format: data is not an array",
-            response
-          );
-        }
-      } catch (error) {
-        console.error("Error fetching users", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    getUsers();
+    refreshUsers();
   }, []);
 
   const handleSearch = (e) => {
-    const value = e.target.value;
-    setSearch(value);
-    const filtered = users.filter(
-      (user) =>
-        (user.username &&
-          user.username.toLowerCase().includes(value.toLowerCase())) ||
-        (user.email && user.email.toLowerCase().includes(value.toLowerCase()))
+    const q = e.target.value.toLowerCase();
+    setSearch(q);
+    setFilteredUsers(
+      users.filter(
+        (u) =>
+          (u.username || "").toLowerCase().includes(q) ||
+          (u.email || "").toLowerCase().includes(q)
+      )
     );
-    setFilteredUsers(filtered);
   };
 
   const handleEdit = (user) => {
@@ -60,41 +57,42 @@ const UserManagement = () => {
   };
 
   const handleSaveChanges = async () => {
+    if (!selectedUser) return;
+    setLoading(true);
     try {
-      await updateUser(selectedUser.id, selectedUser);
+      // build payload of only the fields we actually edited
+      const payload = {
+        username: selectedUser.username,
+        email: selectedUser.email,
+        roles: selectedUser.roles,
+        status: selectedUser.status,
+      };
+      // call API and get full response
+      const response = await updateUser(selectedUser.id, payload);
+      await refreshUsers();
       setShowEditModal(false);
-      const response = await fetchAllUsers();
-      if (Array.isArray(response)) {
-        setUsers(response);
-        setFilteredUsers(response);
-      }
-    } catch (error) {
-      console.error("Error updating user", error);
+      // if (response.status === 200) {
+      //   setShowEditModal(false);
+      // } else {
+      //   console.error("Update failed with status:", response.status);
+      // }
+    } catch (err) {
+      console.error("🔥 Error updating user:", err);
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleDeactivate = async (userId) => {
-    console.debug("Attempting to deactivate user with ID:", { userId }); // Debugging log
-
+    console.debug("Deactivating user:", userId);
+    setLoading(true);
     try {
-      // Call the API to deactivate the user, passing the user ID
-      const response = await deactivateUser(userId); // Send userId to deactivateUser API
-
-      console.debug("Deactivation response:", response); // Debug: log response from deactivateUser API
-
-      // Check if the response indicates success
-      if (response.status === "success") {
-        console.log("User deactivated successfully:", userId); // Debug: log successful deactivation
-
-        // After deactivating the user, refresh the list of users
-        const refreshedUsers = await fetchAllUsers();
-        setUsers(refreshedUsers);
-        setFilteredUsers(refreshedUsers);
-      } else {
-        console.error("Failed to deactivate user", response); // Debug: failure log
-      }
-    } catch (error) {
-      console.error("Error deactivating user", error); // Error handling
+      await deactivateUser(userId);
+      await refreshUsers();
+    } catch (err) {
+      console.error("Error deactivating:", err);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -105,11 +103,10 @@ const UserManagement = () => {
       <Sidebar />
       <div className={styles.userManagementContent}>
         <h2>User Management</h2>
-
         <Form.Group className="mb-3">
           <Form.Control
             type="text"
-            placeholder="Search by username or email..."
+            placeholder="Search by username or email…"
             value={search}
             onChange={handleSearch}
           />
@@ -127,28 +124,23 @@ const UserManagement = () => {
           </thead>
           <tbody>
             {filteredUsers.length > 0 ? (
-              filteredUsers.map((user) => (
-                <tr key={user.id.timestamp}>
-                  {" "}
-                  {/* Assuming id is an object, use a unique property */}
-                  <td>{user.username || "N/A"}</td>
-                  <td>{user.email || "N/A"}</td>
-                  <td>{user.roles ? user.roles.join(", ") : "No roles"}</td>
-                  <td>{user.status || "N/A"}</td>
+              filteredUsers.map((u) => (
+                <tr key={u.id.timestamp}>
+                  <td>{u.username}</td>
+                  <td>{u.email}</td>
+                  <td>{u.roles?.join(", ")}</td>
+                  <td>{u.status}</td>
                   <td>
                     <Button
                       variant="info"
-                      onClick={() => handleEdit(user)}
                       className="me-2"
+                      onClick={() => handleEdit(u)}
                     >
                       Edit
                     </Button>
                     <Button
                       variant="danger"
-                      onClick={() => {
-                        console.log("Deactivating user with ID:", user.id); // Debug: log user ID and role for deactivation
-                        handleDeactivate(user.id);
-                      }}
+                      onClick={() => handleDeactivate(u.id)}
                     >
                       Deactivate
                     </Button>
@@ -157,7 +149,7 @@ const UserManagement = () => {
               ))
             ) : (
               <tr>
-                <td colSpan="5" className="text-center">
+                <td colSpan={5} className="text-center">
                   No users found.
                 </td>
               </tr>
@@ -167,14 +159,14 @@ const UserManagement = () => {
 
         <Modal show={showEditModal} onHide={() => setShowEditModal(false)}>
           <Modal.Header closeButton>
-            <Modal.Title>Edit User Profile</Modal.Title>
+            <Modal.Title>Edit User</Modal.Title>
           </Modal.Header>
           <Modal.Body>
             <Form>
+              {/** Username **/}
               <Form.Group className="mb-3">
                 <Form.Label>Username</Form.Label>
                 <Form.Control
-                  type="text"
                   value={selectedUser?.username || ""}
                   onChange={(e) =>
                     setSelectedUser({
@@ -184,36 +176,49 @@ const UserManagement = () => {
                   }
                 />
               </Form.Group>
+              {/** Email **/}
               <Form.Group className="mb-3">
                 <Form.Label>Email</Form.Label>
                 <Form.Control
                   type="email"
                   value={selectedUser?.email || ""}
                   onChange={(e) =>
-                    setSelectedUser({ ...selectedUser, email: e.target.value })
-                  }
-                />
-              </Form.Group>
-              <Form.Group className="mb-3">
-                <Form.Label>Roles</Form.Label>
-                <Form.Control
-                  type="text"
-                  value={selectedUser?.roles?.join(", ") || ""}
-                  onChange={(e) =>
                     setSelectedUser({
                       ...selectedUser,
-                      roles: e.target.value.split(", "),
+                      email: e.target.value,
                     })
                   }
                 />
               </Form.Group>
+              {/** Roles (disabled for ADMIN) **/}
+              <Form.Group className="mb-3">
+                <Form.Label>Roles</Form.Label>
+                <Form.Control
+                  value={selectedUser?.roles?.join(", ") || ""}
+                  onChange={(e) =>
+                    setSelectedUser({
+                      ...selectedUser,
+                      roles: e.target.value.split(","),
+                    })
+                  }
+                  disabled={selectedUser?.roles?.includes("ADMIN")} // Disable if role is ADMIN
+                />
+                {selectedUser?.roles?.includes("ADMIN") && (
+                  <Form.Text className="text-muted">
+                    You cannot edit the role of an ADMIN user.
+                  </Form.Text>
+                )}
+              </Form.Group>
+              {/** Status **/}
               <Form.Group className="mb-3">
                 <Form.Label>Status</Form.Label>
                 <Form.Control
-                  type="text"
                   value={selectedUser?.status || ""}
                   onChange={(e) =>
-                    setSelectedUser({ ...selectedUser, status: e.target.value })
+                    setSelectedUser({
+                      ...selectedUser,
+                      status: e.target.value,
+                    })
                   }
                 />
               </Form.Group>

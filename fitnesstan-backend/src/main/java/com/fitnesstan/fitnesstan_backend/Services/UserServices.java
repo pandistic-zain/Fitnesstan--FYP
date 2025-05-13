@@ -675,21 +675,6 @@ public class UserServices {
         return null;
     }
 
-    public boolean updateUser(String id, Users user) {
-        Optional<Users> existingUser = userRepository.findById(new ObjectId(id));
-        if (existingUser.isPresent()) {
-            Users userToUpdate = existingUser.get();
-            userToUpdate.setUsername(user.getUsername());
-            userToUpdate.setEmail(user.getEmail());
-            userToUpdate.setRoles(user.getRoles());
-            userToUpdate.setStatus(user.getStatus());
-            userToUpdate.setUpdatedAt(LocalDateTime.now());
-            userRepository.save(userToUpdate);
-            return true;
-        }
-        return false;
-    }
-
     /**
      * Fetches the current workout and diet plans for a user on login.
      * Returns a map with keys "diet" and "workoutPlan".
@@ -943,4 +928,27 @@ public class UserServices {
             return false; // Error occurred
         }
     }
+
+    @Transactional
+    public boolean updateUser(String id, Users incoming) {
+        Optional<Users> opt = userRepository.findById(new ObjectId(id));
+        if (opt.isEmpty())
+            return false;
+
+        Users stored = opt.get();
+        // only overwrite fields that front-end actually sent
+        if (incoming.getUsername() != null)
+            stored.setUsername(incoming.getUsername());
+        if (incoming.getEmail() != null)
+            stored.setEmail(incoming.getEmail());
+        if (incoming.getRoles() != null)
+            stored.setRoles(incoming.getRoles());
+        if (incoming.getStatus() != null)
+            stored.setStatus(incoming.getStatus());
+        // you could add more if you expose extra fields later
+
+        userRepository.save(stored);
+        return true;
+    }
+
 }
