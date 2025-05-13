@@ -2,6 +2,7 @@ package com.fitnesstan.fitnesstan_backend.Controller;
 
 import java.util.List;
 
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fitnesstan.fitnesstan_backend.DAO.UserRepository;
 import com.fitnesstan.fitnesstan_backend.Entity.Users;
 import com.fitnesstan.fitnesstan_backend.Services.UserServices;
 
@@ -25,6 +27,8 @@ public class AdminController {
 
     @Autowired
     private UserServices userServices;
+    @Autowired
+    private UserRepository userRepository;
 
     // Endpoint to get all users
     @GetMapping("/all-users")
@@ -47,19 +51,40 @@ public class AdminController {
         }
     }
 
-    // Endpoint to deactivate or delete a user
-    @DeleteMapping("/delete-user/{id}")
-    public ResponseEntity<String> deleteUser(@PathVariable String id) {
+     // Endpoint to deactivate (delete) a user
+    @DeleteMapping("/deactivate-user/{id}")
+    public ResponseEntity<String> deactivateUser(@PathVariable String id) {
         try {
-            boolean deleted = userServices.deleteUser(id);
-            return deleted
-                ? new ResponseEntity<>("User deactivated successfully", HttpStatus.OK)
-                : new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
+            System.out.println("Deactivating user with ID: " + id); // Log the incoming userId
+
+            // Convert the string userId (id from the frontend) to MongoDB ObjectId
+            ObjectId objectId = new ObjectId(id);
+
+            // Fetch the user by ID directly using the userRepository
+            Users currentUser = userRepository.findById(objectId).orElse(null);
+
+            if (currentUser == null) {
+                return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);  // Handle user not found
+            }
+
+            // Check if the current user has the 'ADMIN' role
+            if (currentUser.getRoles().contains("ADMIN")) {
+                // If the role contains 'ADMIN', we cannot deactivate or delete this user
+                return new ResponseEntity<>("Admin users cannot be deactivated", HttpStatus.FORBIDDEN);
+            }
+
+            // Proceed with deactivating the user if the role is 'USER'
+            boolean deleted = userServices.deleteUser(id);  // Call the service to delete the user
+
+            if (deleted) {
+                return new ResponseEntity<>("User deactivated successfully", HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>("Failed to deactivate user", HttpStatus.BAD_REQUEST);
+            }
         } catch (Exception e) {
             return new ResponseEntity<>("Failed to deactivate user: " + e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
-
         // Endpoint to delete feedback by ID
 // Endpoint to delete feedback by ID
     @DeleteMapping("/feedback/{id}")

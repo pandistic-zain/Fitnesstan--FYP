@@ -690,14 +690,6 @@ public class UserServices {
         return false;
     }
 
-    public boolean deleteUser(String id) {
-        if (userRepository.existsById(new ObjectId(id))) {
-            userRepository.deleteById(new ObjectId(id));
-            return true;
-        }
-        return false;
-    }
-
     /**
      * Fetches the current workout and diet plans for a user on login.
      * Returns a map with keys "diet" and "workoutPlan".
@@ -887,8 +879,7 @@ public class UserServices {
         userRepository.save(user);
     }
 
-
-@Transactional
+    @Transactional
     public boolean deleteFeedbackById(String id) throws Exception {
         try {
             // Convert string id to ObjectId
@@ -902,6 +893,54 @@ public class UserServices {
             return false; // Feedback not found
         } catch (Exception e) {
             throw new Exception("Failed to delete feedback: " + e.getMessage());
+        }
+    }
+
+    @Transactional
+    public boolean deleteUser(String userId) {
+        try {
+            // Debug: log the deletion attempt
+            System.out.println("Attempting to delete user with ID: " + userId);
+            // Convert the userId string to ObjectId
+            ObjectId objectId = new ObjectId(userId); // Convert the string userId to ObjectId
+
+            // Debug: log the deactivation attempt
+            System.out.println("Attempting to delete user with ID: " + objectId);
+            // Retrieve the user by their ID
+            Users user = userRepository.findById(objectId).orElse(null);
+
+            if (user == null) {
+                return false; // User not found
+            }
+
+            // Step 1: Delete the user's associated diet
+            Diet currentDiet = user.getCurrentDiet();
+            if (currentDiet != null) {
+                // Delete the diet from the Diet repository
+                dietRepository.delete(currentDiet);
+                // Remove the reference to the diet from the user
+                user.setCurrentDiet(null);
+            }
+
+            // Step 2: Delete the user's associated workout plan
+            WorkoutPlan currentWorkoutPlan = user.getCurrentWorkoutPlan();
+            if (currentWorkoutPlan != null) {
+                // Delete the workout plan from the WorkoutPlan repository
+                workoutPlanRepository.delete(currentWorkoutPlan);
+                // Remove the reference to the workout plan from the user
+                user.setCurrentWorkoutPlan(null);
+            }
+
+            // Step 3: Delete the user from the User repository
+            userRepository.delete(user);
+
+            System.out.println("User and associated data deleted successfully: " + userId);
+            return true; // Successfully deleted user and associated data
+
+        } catch (Exception e) {
+            // Log and handle the exception
+            System.err.println("Error deleting user: " + e.getMessage());
+            return false; // Error occurred
         }
     }
 }

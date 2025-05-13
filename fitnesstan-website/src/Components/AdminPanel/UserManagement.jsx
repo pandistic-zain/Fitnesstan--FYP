@@ -1,9 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { Table, Button, Form, Modal } from "react-bootstrap";
-import Sidebar from './Sidebar';
-import Loader from '../Loader'; // Import your custom loader
-import { fetchAllUsers, updateUser, deleteUser } from "../../API/AdminAPI.jsx";
-import styles from './UserManagement.module.css';
+import Sidebar from "./Sidebar";
+import Loader from "../Loader"; // Import your custom loader
+import {
+  fetchAllUsers,
+  updateUser,
+  deactivateUser,
+} from "../../API/AdminAPI.jsx";
+import styles from "./UserManagement.module.css";
 
 const UserManagement = () => {
   const [users, setUsers] = useState([]);
@@ -18,13 +22,16 @@ const UserManagement = () => {
       setLoading(true);
       try {
         const response = await fetchAllUsers();
-        
+
         // Since response is an array, we set users directly
         if (Array.isArray(response)) {
           setUsers(response);
           setFilteredUsers(response);
         } else {
-          console.error("Unexpected response format: data is not an array", response);
+          console.error(
+            "Unexpected response format: data is not an array",
+            response
+          );
         }
       } catch (error) {
         console.error("Error fetching users", error);
@@ -38,9 +45,11 @@ const UserManagement = () => {
   const handleSearch = (e) => {
     const value = e.target.value;
     setSearch(value);
-    const filtered = users.filter((user) =>
-      (user.username && user.username.toLowerCase().includes(value.toLowerCase())) ||
-      (user.email && user.email.toLowerCase().includes(value.toLowerCase()))
+    const filtered = users.filter(
+      (user) =>
+        (user.username &&
+          user.username.toLowerCase().includes(value.toLowerCase())) ||
+        (user.email && user.email.toLowerCase().includes(value.toLowerCase()))
     );
     setFilteredUsers(filtered);
   };
@@ -65,13 +74,28 @@ const UserManagement = () => {
   };
 
   const handleDeactivate = async (userId) => {
+    console.log("Attempting to deactivate user:", { userId }); // Debug: log user ID before API call
+
     try {
-      await deleteUser(userId);
-      const updatedUsers = users.filter(user => user.id !== userId);
-      setUsers(updatedUsers);
-      setFilteredUsers(updatedUsers);
+      // Call the API to deactivate the user, passing the user ID
+      const response = await deactivateUser(userId);
+
+      // Debugging response
+      console.log("Deactivation response:", response); // Debug: log response from deactivateUser API
+
+      // Check if the response indicates success
+      if (response.status === "success") {
+        console.log("User deactivated successfully: ", userId); // Debug: successful deactivation log
+
+        // After deactivating the user, fetch the updated list of users
+        const refreshedUsers = await fetchAllUsers();
+        setUsers(refreshedUsers);
+        setFilteredUsers(refreshedUsers);
+      } else {
+        console.error("Failed to deactivate user", response); // Debug: failure log
+      }
     } catch (error) {
-      console.error("Error deactivating user", error);
+      console.error("Error deactivating user", error); // Debug: log any errors during deactivation
     }
   };
 
@@ -105,7 +129,9 @@ const UserManagement = () => {
           <tbody>
             {filteredUsers.length > 0 ? (
               filteredUsers.map((user) => (
-                <tr key={user.id.timestamp}> {/* Assuming id is an object, use a unique property */}
+                <tr key={user.id.timestamp}>
+                  {" "}
+                  {/* Assuming id is an object, use a unique property */}
                   <td>{user.username || "N/A"}</td>
                   <td>{user.email || "N/A"}</td>
                   <td>{user.roles ? user.roles.join(", ") : "No roles"}</td>
@@ -120,7 +146,10 @@ const UserManagement = () => {
                     </Button>
                     <Button
                       variant="danger"
-                      onClick={() => handleDeactivate(user.id.timestamp)} // Adjust if id is not a simple value
+                      onClick={() => {
+                        console.log("Deactivating user with ID:", user.id); // Debug: log user ID and role for deactivation
+                        handleDeactivate(user.id);
+                      }}
                     >
                       Deactivate
                     </Button>
@@ -149,7 +178,10 @@ const UserManagement = () => {
                   type="text"
                   value={selectedUser?.username || ""}
                   onChange={(e) =>
-                    setSelectedUser({ ...selectedUser, username: e.target.value })
+                    setSelectedUser({
+                      ...selectedUser,
+                      username: e.target.value,
+                    })
                   }
                 />
               </Form.Group>
@@ -169,7 +201,10 @@ const UserManagement = () => {
                   type="text"
                   value={selectedUser?.roles?.join(", ") || ""}
                   onChange={(e) =>
-                    setSelectedUser({ ...selectedUser, roles: e.target.value.split(", ") })
+                    setSelectedUser({
+                      ...selectedUser,
+                      roles: e.target.value.split(", "),
+                    })
                   }
                 />
               </Form.Group>

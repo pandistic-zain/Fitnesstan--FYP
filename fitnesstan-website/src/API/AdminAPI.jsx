@@ -41,18 +41,25 @@ export const updateUser = async (userId, updatedUserData) => {
   }
 };
 
-// Delete user with authentication
-export const deleteUser = async (userId) => {
-  const token = getAuthHeader();
+// Deactivate (Delete) user with authentication
+export const deactivateUser = async (userId) => {
+  const token = getAuthHeader(); // Get the token for authorization
   try {
-    const response = await axios.delete(`${ADMIN_API_URL}/delete-user/${userId}`, {
+    console.log("Deactivating user with ID: ", userId); // Debug: log user ID
+
+    // Sending a DELETE request to deactivate the user
+    const response = await axios.delete(`${ADMIN_API_URL}/deactivate-user/${userId}`, {
       headers: {
-        Authorization: token,
+        Authorization: token, // Authorization header with the token
+        'Content-Type': 'application/json', // Ensure proper content type
       },
     });
-    return response.data;
+
+    console.log("Response from deactivation: ", response.data); // Debug: log the response
+    return response.data; // Return the response data after deactivation
   } catch (error) {
-    throw error.response?.data || { message: "An error occurred while deleting the user." };
+    console.error("Error deactivating user:", error); // Error logging
+    throw error.response?.data || { message: "An error occurred while deactivating the user." };
   }
 };
 
