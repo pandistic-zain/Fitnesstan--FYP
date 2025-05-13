@@ -37,17 +37,12 @@ const AdditionalInfoForm = () => {
   const handleMedicalHistoryChange = (e, value) => {
     const isChecked = e.target.checked;
 
-    if (value === "None") {
-      // If "None" is checked, clear the other selected conditions
-      setFormData({ ...formData, medicalHistory: isChecked ? ["None"] : [] });
+    if (isChecked) {
+      // If the condition is checked, set it as the only value
+      setFormData({ ...formData, medicalHistory: [value] });
     } else {
-      // For other conditions, add/remove based on checkbox state
-      setFormData({
-        ...formData,
-        medicalHistory: isChecked
-          ? [...formData.medicalHistory, value]
-          : formData.medicalHistory.filter((item) => item !== value),
-      });
+      // If unchecked, clear the medical history
+      setFormData({ ...formData, medicalHistory: [] });
     }
   };
 
@@ -243,15 +238,10 @@ const AdditionalInfoForm = () => {
                       checked={formData.medicalHistory.includes(condition)}
                       onChange={(e) => handleMedicalHistoryChange(e, condition)}
                       disabled={
-                        formData.medicalHistory.includes("None") &&
-                        condition !== "None"
-                      }
-                      className={
                         formData.medicalHistory.length === 1 &&
                         formData.medicalHistory[0] !== condition
-                          ? styles.blurred
-                          : ""
-                      }
+                      } // Disable others if one is selected
+                      required
                     />
                   ))}
                 </div>

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Table, Button, Form, Modal } from "react-bootstrap";
 import Sidebar from "./Sidebar";
-import Loader from "../Loader"; // Import your custom loader
+import Loader from "../Loader";
 import {
   fetchAllUsers,
   updateUser,
@@ -11,47 +11,68 @@ import styles from "./UserManagement.module.css";
 
 const UserManagement = () => {
   const [users, setUsers] = useState([]);
-  const [search, setSearch] = useState("");
   const [filteredUsers, setFilteredUsers] = useState([]);
+  const [search, setSearch] = useState("");
   const [selectedUser, setSelectedUser] = useState(null);
   const [showEditModal, setShowEditModal] = useState(false);
-  const [loading, setLoading] = useState(true); // Loading state
+  const [loading, setLoading] = useState(true);
+  const [showAdminAlert, setShowAdminAlert] = useState(false);
 
+  // Fetch all users when the page loads (useEffect)
   useEffect(() => {
-    const getUsers = async () => {
+    const fetchUsers = async () => {
       setLoading(true);
       try {
-        const response = await fetchAllUsers();
-
-        // Since response is an array, we set users directly
-        if (Array.isArray(response)) {
-          setUsers(response);
-          setFilteredUsers(response);
+        const data = await fetchAllUsers();
+        console.log("Users after fetching:", data); // Log to verify
+        if (Array.isArray(data)) {
+          setUsers(data);
+          setFilteredUsers(data);
         } else {
-          console.error(
-            "Unexpected response format: data is not an array",
-            response
-          );
+          console.error("Expected an array, got:", data);
         }
-      } catch (error) {
-        console.error("Error fetching users", error);
+      } catch (err) {
+        console.error("Error loading users:", err);
       } finally {
         setLoading(false);
       }
     };
-    getUsers();
-  }, []);
+
+    fetchUsers();
+  }, []); // Runs once when the component mounts
+
+  const refreshUsers = async () => {
+    setLoading(true);
+    try {
+      const data = await fetchAllUsers();
+      console.log("Users after fetching:", data); // Log the response to verify
+      if (Array.isArray(data)) {
+        setUsers(data);
+        setFilteredUsers(data);
+      } else {
+        console.error("Expected an array, got:", data);
+      }
+    } catch (err) {
+      console.error("Error loading users:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    console.log("Users after fetching:", users); // Log state after setting users
+  }, [users]);
 
   const handleSearch = (e) => {
-    const value = e.target.value;
-    setSearch(value);
-    const filtered = users.filter(
-      (user) =>
-        (user.username &&
-          user.username.toLowerCase().includes(value.toLowerCase())) ||
-        (user.email && user.email.toLowerCase().includes(value.toLowerCase()))
+    const q = e.target.value.toLowerCase();
+    setSearch(q);
+    setFilteredUsers(
+      users.filter(
+        (u) =>
+          (u.username || "").toLowerCase().includes(q) ||
+          (u.email || "").toLowerCase().includes(q)
+      )
     );
-    setFilteredUsers(filtered);
   };
 
   const handleEdit = (user) => {
@@ -60,42 +81,55 @@ const UserManagement = () => {
   };
 
   const handleSaveChanges = async () => {
+    if (!selectedUser) return;
+    setLoading(true);
     try {
-      await updateUser(selectedUser.id, selectedUser);
+      // build payload of only the fields we actually edited
+      const payload = {
+        username: selectedUser.username,
+        email: selectedUser.email,
+        roles: selectedUser.roles,
+        status: selectedUser.status,
+      };
+      // call API and get full response
+      const response = await updateUser(selectedUser.id, payload);
+      await refreshUsers();
       setShowEditModal(false);
-      const response = await fetchAllUsers();
-      if (Array.isArray(response)) {
-        setUsers(response);
-        setFilteredUsers(response);
+      if (response.status === 200) {
+        setShowEditModal(false);
+      } else {
+        console.error("Update failed with status:", response.status);
       }
-    } catch (error) {
-      console.error("Error updating user", error);
+    } catch (err) {
+      console.error("🔥 Error updating user:", err);
+    } finally {
+      setLoading(false);
     }
   };
 
-  const handleDeactivate = async (userId) => {
-    console.log("Attempting to deactivate user:", { userId }); // Debug: log user ID before API call
+  const handleDeactivate = async (userId, userRoles) => {
+    // Ensure roles is an array before calling includes
+    if (!Array.isArray(userRoles)) {
+      console.error("User roles are undefined or not an array:", userRoles);
+      return;
+    }
 
+    console.debug("Deactivating user:", userId);
+
+    // If the user is an admin, show an alert
+    if (userRoles.includes("ADMIN")) {
+      setShowAdminAlert(true); // Show alert if trying to deactivate an admin
+      return;
+    }
+
+    setLoading(true);
     try {
-      // Call the API to deactivate the user, passing the user ID
-      const response = await deactivateUser(userId);
-
-      // Debugging response
-      console.log("Deactivation response:", response); // Debug: log response from deactivateUser API
-
-      // Check if the response indicates success
-      if (response.status === "success") {
-        console.log("User deactivated successfully: ", userId); // Debug: successful deactivation log
-
-        // After deactivating the user, fetch the updated list of users
-        const refreshedUsers = await fetchAllUsers();
-        setUsers(refreshedUsers);
-        setFilteredUsers(refreshedUsers);
-      } else {
-        console.error("Failed to deactivate user", response); // Debug: failure log
-      }
-    } catch (error) {
-      console.error("Error deactivating user", error); // Debug: log any errors during deactivation
+      await deactivateUser(userId);
+      await refreshUsers(); // Refresh user list after deactivation
+    } catch (err) {
+      console.error("Error deactivating:", err);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -105,18 +139,17 @@ const UserManagement = () => {
     <div className={styles.userManagement}>
       <Sidebar />
       <div className={styles.userManagementContent}>
-        <h2>User Management</h2>
-
-        <Form.Group className="mb-3">
+        <h2 class="text-center fs-2 fw-bold">User Management</h2>
+        <Form.Group className="mb-3 form-dark ">
           <Form.Control
             type="text"
-            placeholder="Search by username or email..."
+            placeholder="Search by username or email…"
             value={search}
             onChange={handleSearch}
           />
         </Form.Group>
 
-        <Table striped bordered hover responsive>
+        <Table striped bordered hover responsive className="table-dark">
           <thead>
             <tr>
               <th>Username</th>
@@ -129,36 +162,31 @@ const UserManagement = () => {
           <tbody>
             {filteredUsers.length > 0 ? (
               filteredUsers.map((user) => (
-                <tr key={user.id.timestamp}>
-                  {" "}
-                  {/* Assuming id is an object, use a unique property */}
-                  <td>{user.username || "N/A"}</td>
-                  <td>{user.email || "N/A"}</td>
-                  <td>{user.roles ? user.roles.join(", ") : "No roles"}</td>
-                  <td>{user.status || "N/A"}</td>
+                <tr key={user.id}>
+                  <td>{user.username}</td>
+                  <td>{user.email}</td>
+                  <td>{user.roles?.join(", ")}</td>
+                  <td>{user.status}</td>
                   <td>
                     <Button
                       variant="info"
-                      onClick={() => handleEdit(user)}
                       className="me-2"
+                      onClick={() => handleEdit(user)}
                     >
                       Edit
                     </Button>
                     <Button
                       variant="danger"
-                      onClick={() => {
-                        console.log("Deactivating user with ID:", user.id); // Debug: log user ID and role for deactivation
-                        handleDeactivate(user.id);
-                      }}
+                      onClick={() => handleDeactivate(user.id, user.roles)}
                     >
-                      Deactivate
+                      Delete
                     </Button>
                   </td>
                 </tr>
               ))
             ) : (
               <tr>
-                <td colSpan="5" className="text-center">
+                <td colSpan={5} className="text-center">
                   No users found.
                 </td>
               </tr>
@@ -168,14 +196,14 @@ const UserManagement = () => {
 
         <Modal show={showEditModal} onHide={() => setShowEditModal(false)}>
           <Modal.Header closeButton>
-            <Modal.Title>Edit User Profile</Modal.Title>
+            <Modal.Title>Edit User</Modal.Title>
           </Modal.Header>
           <Modal.Body>
             <Form>
+              {/** Username **/}
               <Form.Group className="mb-3">
                 <Form.Label>Username</Form.Label>
                 <Form.Control
-                  type="text"
                   value={selectedUser?.username || ""}
                   onChange={(e) =>
                     setSelectedUser({
@@ -185,36 +213,49 @@ const UserManagement = () => {
                   }
                 />
               </Form.Group>
+              {/** Email **/}
               <Form.Group className="mb-3">
                 <Form.Label>Email</Form.Label>
                 <Form.Control
                   type="email"
                   value={selectedUser?.email || ""}
                   onChange={(e) =>
-                    setSelectedUser({ ...selectedUser, email: e.target.value })
-                  }
-                />
-              </Form.Group>
-              <Form.Group className="mb-3">
-                <Form.Label>Roles</Form.Label>
-                <Form.Control
-                  type="text"
-                  value={selectedUser?.roles?.join(", ") || ""}
-                  onChange={(e) =>
                     setSelectedUser({
                       ...selectedUser,
-                      roles: e.target.value.split(", "),
+                      email: e.target.value,
                     })
                   }
                 />
               </Form.Group>
+              {/** Roles (disabled for ADMIN) **/}
+              <Form.Group className="mb-3">
+                <Form.Label>Roles</Form.Label>
+                <Form.Control
+                  value={selectedUser?.roles?.join(", ") || ""}
+                  onChange={(e) =>
+                    setSelectedUser({
+                      ...selectedUser,
+                      roles: e.target.value.split(","),
+                    })
+                  }
+                  disabled={selectedUser?.roles?.includes("ADMIN")} // Disable if role is ADMIN
+                />
+                {selectedUser?.roles?.includes("ADMIN") && (
+                  <Form.Text className="text-muted">
+                    You cannot edit the role of an ADMIN user.
+                  </Form.Text>
+                )}
+              </Form.Group>
+              {/** Status **/}
               <Form.Group className="mb-3">
                 <Form.Label>Status</Form.Label>
                 <Form.Control
-                  type="text"
                   value={selectedUser?.status || ""}
                   onChange={(e) =>
-                    setSelectedUser({ ...selectedUser, status: e.target.value })
+                    setSelectedUser({
+                      ...selectedUser,
+                      status: e.target.value,
+                    })
                   }
                 />
               </Form.Group>
@@ -226,6 +267,29 @@ const UserManagement = () => {
             </Button>
             <Button variant="primary" onClick={handleSaveChanges}>
               Save Changes
+            </Button>
+          </Modal.Footer>
+        </Modal>
+
+        {/* Admin Deletion Alert */}
+        <Modal
+          show={showAdminAlert}
+          onHide={() => setShowAdminAlert(false)}
+          centered
+        >
+          <Modal.Header closeButton>
+            <Modal.Title>Warning</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            You cannot delete an Admin user. Please choose another user to
+            deactivate.
+          </Modal.Body>
+          <Modal.Footer>
+            <Button
+              variant="secondary"
+              onClick={() => setShowAdminAlert(false)}
+            >
+              Close
             </Button>
           </Modal.Footer>
         </Modal>

@@ -33,25 +33,16 @@ public class AdminController {
     // Endpoint to get all users
     @GetMapping("/all-users")
     public ResponseEntity<List<Users>> getAllUsers() {
+        System.out.println("Entered the Function for Getting All users");
         List<Users> allUsers = userServices.getAllUsers();
-        return allUsers.isEmpty() 
-            ? new ResponseEntity<>(HttpStatus.NOT_FOUND)
-            : new ResponseEntity<>(allUsers, HttpStatus.OK);
-    }
-    // Endpoint to update a user's information
-    @PutMapping("/update-user/{id}")
-    public ResponseEntity<String> updateUser(@PathVariable String id, @RequestBody Users user) {
-        try {
-            boolean updated = userServices.updateUser(id, user);
-            return updated
-                ? new ResponseEntity<>("User updated successfully", HttpStatus.OK)
-                : new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
-        } catch (Exception e) {
-            return new ResponseEntity<>("Failed to update user: " + e.getMessage(), HttpStatus.BAD_REQUEST);
+        if (allUsers.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
+        return new ResponseEntity<>(allUsers, HttpStatus.OK); // Make sure this sends an array of users
     }
 
-     // Endpoint to deactivate (delete) a user
+    // Endpoint to deactivate (delete) a user // Endpoint to deactivate (delete) a
+    // user
     @DeleteMapping("/deactivate-user/{id}")
     public ResponseEntity<String> deactivateUser(@PathVariable String id) {
         try {
@@ -60,33 +51,36 @@ public class AdminController {
             // Convert the string userId (id from the frontend) to MongoDB ObjectId
             ObjectId objectId = new ObjectId(id);
 
-            // Fetch the user by ID directly using the userRepository
+            // Fetch the user by ID using the userRepository
             Users currentUser = userRepository.findById(objectId).orElse(null);
 
             if (currentUser == null) {
-                return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);  // Handle user not found
+                return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND); // Handle user not found
             }
 
             // Check if the current user has the 'ADMIN' role
             if (currentUser.getRoles().contains("ADMIN")) {
-                // If the role contains 'ADMIN', we cannot deactivate or delete this user
-                return new ResponseEntity<>("Admin users cannot be deactivated", HttpStatus.FORBIDDEN);
+                return new ResponseEntity<>("Admin users cannot be deactivated", HttpStatus.FORBIDDEN); // Prevent
+                                                                                                        // deactivating
+                                                                                                        // admin
             }
 
             // Proceed with deactivating the user if the role is 'USER'
-            boolean deleted = userServices.deleteUser(id);  // Call the service to delete the user
+            boolean deleted = userServices.deleteUser(id); // Call the service to delete the user
 
             if (deleted) {
-                return new ResponseEntity<>("User deactivated successfully", HttpStatus.OK);
+                return new ResponseEntity<>("User deactivated successfully", HttpStatus.OK); // Success
             } else {
-                return new ResponseEntity<>("Failed to deactivate user", HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>("Failed to deactivate user", HttpStatus.BAD_REQUEST); // Failure
             }
         } catch (Exception e) {
-            return new ResponseEntity<>("Failed to deactivate user: " + e.getMessage(), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("Failed to deactivate user: " + e.getMessage(), HttpStatus.BAD_REQUEST); // Error
+                                                                                                                 // handling
         }
     }
-        // Endpoint to delete feedback by ID
-// Endpoint to delete feedback by ID
+
+    // Endpoint to delete feedback by ID
+    // Endpoint to delete feedback by ID
     @DeleteMapping("/feedback/{id}")
     public ResponseEntity<String> deleteFeedback(@PathVariable String id) {
         try {
@@ -103,4 +97,13 @@ public class AdminController {
         }
     }
 
+    @PutMapping("/update-user/{id}")
+    public ResponseEntity<String> updateUser(
+            @PathVariable String id,
+            @RequestBody Users user) {
+        boolean ok = userServices.updateUser(id, user);
+        return ok
+                ? ResponseEntity.ok("User updated successfully")
+                : ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
+    }
 }

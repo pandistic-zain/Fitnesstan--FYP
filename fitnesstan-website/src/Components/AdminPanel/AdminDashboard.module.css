@@ -63,8 +63,6 @@
   flex-direction: column;
   align-items: center;
   justify-content: flex-start; /* Align content at the top */
-  box-shadow: 20px 20px 60px rgba(100, 0, 0, 0.5), 
-              -20px -20px 60px rgba(100, 0, 0, 0.5);
   transition: transform 0.3s, box-shadow 0.3s;
   padding: 20px; /* Internal padding for spacing around content */
 }
@@ -108,8 +106,8 @@
 }
 .parentcard:hover {
   transform: scale(1.01);
-  box-shadow: 25px 25px 70px rgba(150, 0, 0, 0.5), 
-              -25px -25px 70px rgba(150, 0, 0, 0.5);
+  box-shadow: 25px 25px 70px rgba(100, 100, 100, 0.5), 
+              -25px -25px 70px rgba(100, 100, 100, 0.5);
 }
 
 .bg {

@@ -4,6 +4,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.ToString;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
@@ -24,6 +26,7 @@ import java.util.List;
 public class Users {
 
     @Id
+    @JsonSerialize(using = ToStringSerializer.class)
     private ObjectId id; // MongoDB ObjectId for user
 
     private String username;
