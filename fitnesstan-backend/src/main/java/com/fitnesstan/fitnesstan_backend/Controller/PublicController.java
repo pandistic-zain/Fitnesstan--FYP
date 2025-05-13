@@ -27,9 +27,10 @@ public class PublicController {
     @Autowired
     private UserRepository userRepository;
 
-     // ←— inject your new feedback repo
+    // ←— inject your new feedback repo
     @Autowired
     private FeedbackRepository feedbackRepository;
+
     // Health check endpoint
     @GetMapping("/health-check")
     public ResponseEntity<String> healthCheck() {
@@ -61,7 +62,7 @@ public class PublicController {
 
     // Email verification endpoint
     @GetMapping("/verify-email")
-public ResponseEntity<?> verifyEmail(@RequestParam("email") String email, @RequestParam("otp") String otp) {
+    public ResponseEntity<?> verifyEmail(@RequestParam("email") String email, @RequestParam("otp") String otp) {
         System.out.println("[DEBUG] Inside verifyEmail method"); // Debug line
         System.out.println("[DEBUG] Email: " + email + ", OTP: " + otp); // Debug line
 
@@ -129,34 +130,36 @@ public ResponseEntity<?> verifyEmail(@RequestParam("email") String email, @Reque
             }
             Feedback saved = feedbackRepository.save(fb);
             return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(saved);
+                    .status(HttpStatus.CREATED)
+                    .body(saved);
         } catch (Exception e) {
             return ResponseEntity
-                .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body("Failed to save feedback: " + e.getMessage());
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Failed to save feedback: " + e.getMessage());
         }
     }
-    
 
-     @GetMapping("/feedbacks")
+    @GetMapping("/feedbacks")
     public ResponseEntity<List<Map<String, String>>> getAllFeedbacks() {
-        List<Map<String,String>> feedbacks = feedbackRepository.findAll().stream()
-            .map(fb -> Map.of(
-                "name",     fb.getName(),
-                "feedback", fb.getFeedback()  // or fb.getMessage() if you used @JsonProperty("feedback") on a field named 'message'
-            ))
-            .collect(Collectors.toList());
+        List<Map<String, String>> feedbacks = feedbackRepository.findAll().stream()
+                .map(fb -> {
+                    Map<String, String> feedbackMap = new HashMap<>();
+                    feedbackMap.put("id", fb.getId().toString()); // Assuming id is a Long or Integer
+                    feedbackMap.put("name", fb.getName());
+                    feedbackMap.put("feedback", fb.getFeedback());
+                    return feedbackMap;
+                })
+                .collect(Collectors.toList());
         return ResponseEntity.ok(feedbacks);
     }
 
     @PostMapping("/forgot-password")
-    public ResponseEntity<?> forgotPassword(@RequestBody Map<String,String> body) {
+    public ResponseEntity<?> forgotPassword(@RequestBody Map<String, String> body) {
         String email = body.get("email");
         if (email == null || email.isBlank()) {
             return ResponseEntity
-              .badRequest()
-              .body("Email is required");
+                    .badRequest()
+                    .body("Email is required");
         }
         try {
             // call into UserServices to generate & send an OTP
@@ -164,8 +167,8 @@ public ResponseEntity<?> verifyEmail(@RequestParam("email") String email, @Reque
             return ResponseEntity.ok("OTP sent to your email");
         } catch (Exception e) {
             return ResponseEntity
-              .status(HttpStatus.INTERNAL_SERVER_ERROR)
-              .body("Could not send OTP: " + e.getMessage());
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Could not send OTP: " + e.getMessage());
         }
     }
 
@@ -174,16 +177,16 @@ public ResponseEntity<?> verifyEmail(@RequestParam("email") String email, @Reque
     @PostMapping("/reset-password")
     public ResponseEntity<?> resetPassword(
             @RequestParam("email") String email,
-            @RequestBody Map<String,String> body) {
+            @RequestBody Map<String, String> body) {
 
-        String otp        = body.get("otp");
-        String newPassword= body.get("newPassword");
+        String otp = body.get("otp");
+        String newPassword = body.get("newPassword");
 
         if (otp == null || otp.isBlank()
-         || newPassword == null || newPassword.length() < 6) {
+                || newPassword == null || newPassword.length() < 6) {
             return ResponseEntity
-              .badRequest()
-              .body("OTP and newPassword(min 6 chars) are required");
+                    .badRequest()
+                    .body("OTP and newPassword(min 6 chars) are required");
         }
 
         try {
@@ -192,8 +195,8 @@ public ResponseEntity<?> verifyEmail(@RequestParam("email") String email, @Reque
             return ResponseEntity.ok("Password reset successfully");
         } catch (Exception e) {
             return ResponseEntity
-              .status(HttpStatus.BAD_REQUEST)
-              .body("Reset failed: " + e.getMessage());
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body("Reset failed: " + e.getMessage());
         }
     }
 }

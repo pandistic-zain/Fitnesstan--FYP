@@ -59,4 +59,23 @@ public class AdminController {
             return new ResponseEntity<>("Failed to deactivate user: " + e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
+
+        // Endpoint to delete feedback by ID
+// Endpoint to delete feedback by ID
+    @DeleteMapping("/feedback/{id}")
+    public ResponseEntity<String> deleteFeedback(@PathVariable String id) {
+        try {
+            // Pass id to service, delete feedback
+            boolean deleted = userServices.deleteFeedbackById(id);
+            if (deleted) {
+                return new ResponseEntity<>("Feedback deleted successfully", HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>("Feedback not found", HttpStatus.NOT_FOUND);
+            }
+        } catch (Exception e) {
+            // Error handling in case of failure
+            return new ResponseEntity<>("Failed to delete feedback: " + e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+
 }

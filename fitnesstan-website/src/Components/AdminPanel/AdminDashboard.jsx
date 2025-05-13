@@ -18,14 +18,24 @@ const AdminDashboard = () => {
       .catch(err => console.error('Error fetching feedbacks:', err));
   }, []);
 
-  const handleDelete = async (id) => {
-    try {
-      await deleteFeedback(id); // assuming the delete API is set up
-      setFeedbacks(feedbacks.filter(fb => fb.id !== id)); // remove deleted feedback from state
-    } catch (error) {
-      console.error('Error deleting feedback:', error);
-    }
-  };
+const handleDelete = async (id) => {
+  console.debug("Deleting feedback with ID:", id);  // Debug line to trace which feedback is being deleted
+  
+  try {
+    // Send the request to delete the feedback
+    const response = await deleteFeedback(id);
+    console.debug("Delete feedback response:", response);  // Debug line to check the response from the API
+    
+    // Filter out the deleted feedback from the state
+    setFeedbacks(feedbacks.filter(fb => fb.id !== id)); 
+    console.debug("Updated feedbacks state:", feedbacks);  // Debug line to check the updated state after deletion
+    
+  } catch (error) {
+    console.error("Error deleting feedback:", error);  // Log error if deletion fails
+    console.debug("Error details:", error.response ? error.response.data : error); // Debugging error response details
+  }
+};
+
 
   return (
     <div className={styles.adminDashboard}>

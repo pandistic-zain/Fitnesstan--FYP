@@ -33,10 +33,12 @@ import org.springframework.web.client.RestTemplate;
 import com.fitnesstan.fitnesstan_backend.Entity.Users;
 import com.fitnesstan.fitnesstan_backend.Entity.WorkoutPlan;
 import com.fitnesstan.fitnesstan_backend.Entity.Diet;
+import com.fitnesstan.fitnesstan_backend.Entity.Feedback;
 import com.fitnesstan.fitnesstan_backend.Entity.MealItem;
 import com.fitnesstan.fitnesstan_backend.DAO.UserRepository;
 import com.fitnesstan.fitnesstan_backend.DAO.WorkoutPlanRepository;
 import com.fitnesstan.fitnesstan_backend.DAO.DietRepository;
+import com.fitnesstan.fitnesstan_backend.DAO.FeedbackRepository;
 
 @Service
 public class UserServices {
@@ -59,6 +61,9 @@ public class UserServices {
     private MongoTemplate mongoTemplate;
     @Autowired
     private JavaMailSender mailSender;
+
+    @Autowired
+    private FeedbackRepository feedbackRepository;
 
     private static final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
     private final ConcurrentHashMap<String, Users> otpStore = new ConcurrentHashMap<>();
@@ -882,4 +887,21 @@ public class UserServices {
         userRepository.save(user);
     }
 
+
+@Transactional
+    public boolean deleteFeedbackById(String id) throws Exception {
+        try {
+            // Convert string id to ObjectId
+            ObjectId objectId = new ObjectId(id);
+            // Find the feedback by ID
+            Feedback feedback = feedbackRepository.findById(objectId).orElse(null);
+            if (feedback != null) {
+                feedbackRepository.delete(feedback); // Delete the feedback
+                return true; // Successfully deleted
+            }
+            return false; // Feedback not found
+        } catch (Exception e) {
+            throw new Exception("Failed to delete feedback: " + e.getMessage());
+        }
+    }
 }

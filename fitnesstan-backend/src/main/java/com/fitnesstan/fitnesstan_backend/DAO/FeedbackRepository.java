@@ -8,5 +8,4 @@ import org.bson.types.ObjectId;
 
 @Repository
 public interface FeedbackRepository extends MongoRepository<Feedback, ObjectId> {
-    // No extra methods needed for basic save/findAll/etc.
 }
