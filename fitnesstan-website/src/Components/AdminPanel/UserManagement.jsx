@@ -16,8 +16,9 @@ const UserManagement = () => {
   const [selectedUser, setSelectedUser] = useState(null);
   const [showEditModal, setShowEditModal] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [showAdminAlert, setShowAdminAlert] = useState(false);
 
-   // Fetch all users when the page loads (useEffect)
+  // Fetch all users when the page loads (useEffect)
   useEffect(() => {
     const fetchUsers = async () => {
       setLoading(true);
@@ -39,24 +40,24 @@ const UserManagement = () => {
 
     fetchUsers();
   }, []); // Runs once when the component mounts
-  
+
   const refreshUsers = async () => {
-  setLoading(true);
-  try {
-    const data = await fetchAllUsers();
-    console.log("Users after fetching:", data); // Log the response to verify
-    if (Array.isArray(data)) {
-      setUsers(data);
-      setFilteredUsers(data);
-    } else {
-      console.error("Expected an array, got:", data);
+    setLoading(true);
+    try {
+      const data = await fetchAllUsers();
+      console.log("Users after fetching:", data); // Log the response to verify
+      if (Array.isArray(data)) {
+        setUsers(data);
+        setFilteredUsers(data);
+      } else {
+        console.error("Expected an array, got:", data);
+      }
+    } catch (err) {
+      console.error("Error loading users:", err);
+    } finally {
+      setLoading(false);
     }
-  } catch (err) {
-    console.error("Error loading users:", err);
-  } finally {
-    setLoading(false);
-  }
-};
+  };
 
   useEffect(() => {
     console.log("Users after fetching:", users); // Log state after setting users
@@ -106,12 +107,25 @@ const UserManagement = () => {
     }
   };
 
-  const handleDeactivate = async (userId) => {
+  const handleDeactivate = async (userId, userRoles) => {
+    // Ensure roles is an array before calling includes
+    if (!Array.isArray(userRoles)) {
+      console.error("User roles are undefined or not an array:", userRoles);
+      return;
+    }
+
     console.debug("Deactivating user:", userId);
+
+    // If the user is an admin, show an alert
+    if (userRoles.includes("ADMIN")) {
+      setShowAdminAlert(true); // Show alert if trying to deactivate an admin
+      return;
+    }
+
     setLoading(true);
     try {
       await deactivateUser(userId);
-      await refreshUsers();
+      await refreshUsers(); // Refresh user list after deactivation
     } catch (err) {
       console.error("Error deactivating:", err);
     } finally {
@@ -135,7 +149,7 @@ const UserManagement = () => {
           />
         </Form.Group>
 
-       <Table striped bordered hover responsive className="table-dark">
+        <Table striped bordered hover responsive className="table-dark">
           <thead>
             <tr>
               <th>Username</th>
@@ -163,9 +177,9 @@ const UserManagement = () => {
                     </Button>
                     <Button
                       variant="danger"
-                      onClick={() => handleDeactivate(user.id)}
+                      onClick={() => handleDeactivate(user.id, user.roles)}
                     >
-                      Deactivate
+                      Delete
                     </Button>
                   </td>
                 </tr>
@@ -253,6 +267,29 @@ const UserManagement = () => {
             </Button>
             <Button variant="primary" onClick={handleSaveChanges}>
               Save Changes
+            </Button>
+          </Modal.Footer>
+        </Modal>
+
+        {/* Admin Deletion Alert */}
+        <Modal
+          show={showAdminAlert}
+          onHide={() => setShowAdminAlert(false)}
+          centered
+        >
+          <Modal.Header closeButton>
+            <Modal.Title>Warning</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            You cannot delete an Admin user. Please choose another user to
+            deactivate.
+          </Modal.Body>
+          <Modal.Footer>
+            <Button
+              variant="secondary"
+              onClick={() => setShowAdminAlert(false)}
+            >
+              Close
             </Button>
           </Modal.Footer>
         </Modal>

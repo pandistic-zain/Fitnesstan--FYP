@@ -33,7 +33,7 @@ public class AdminController {
     // Endpoint to get all users
     @GetMapping("/all-users")
     public ResponseEntity<List<Users>> getAllUsers() {
-        System.out.println("Entered the Function for Geting All users");
+        System.out.println("Entered the Function for Getting All users");
         List<Users> allUsers = userServices.getAllUsers();
         if (allUsers.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
