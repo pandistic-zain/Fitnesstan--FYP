@@ -711,6 +711,7 @@ public class UserServices {
         // Encode the new password and update the user record.
         user.setPassword(passwordEncoder.encode(newPassword));
         user.setUpdatedAt(LocalDateTime.now());
+        user.setVerificationToken(null);
         userRepository.save(user);
     }
 
@@ -861,6 +862,7 @@ public class UserServices {
         }
         user.setPassword(passwordEncoder.encode(newPassword));
         user.setUpdatedAt(LocalDateTime.now());
+        user.setVerificationToken(null);
         userRepository.save(user);
     }
 
