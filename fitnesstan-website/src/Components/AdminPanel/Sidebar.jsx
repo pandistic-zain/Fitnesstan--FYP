@@ -1,23 +1,26 @@
 // src/components/AdminDashboard/Sidebar.jsx
-import React, { useState } from "react";
+import React from "react";
+import { useNavigate } from "react-router-dom";
 import SidebarMenu from "react-bootstrap-sidebar-menu";
 import { Link } from "react-router-dom";
-import styles from "./Sidebar.module.css"; 
-import logo from '../../Assets/FIRNESSTAN_BARA_LOGO.png'; 
+import styles from "./Sidebar.module.css";
+import logo from "../../Assets/FIRNESSTAN_BARA_LOGO.png";
 
 const Sidebar = () => {
-  const [mlPlansOpen, setMlPlansOpen] = useState(false);
-
-  const toggleMlPlans = () => {
-    setMlPlansOpen(!mlPlansOpen); // Toggle state
+  const navigate = useNavigate();
+  const signOut = () => {
+    localStorage.removeItem("userData");
+    localStorage.removeItem("username");
+    localStorage.removeItem("password");
+    navigate("/", { replace: true });
   };
 
   return (
     <SidebarMenu className={styles.sidebar}>
       <SidebarMenu.Header className={styles.header}>
-      <SidebarMenu.Brand className={styles.brand}>
-        <img src={logo} alt="Fitnesstan Admin Logo" className={styles.logo} />
-      </SidebarMenu.Brand>
+        <SidebarMenu.Brand className={styles.brand}>
+          <img src={logo} alt="Fitnesstan Admin Logo" className={styles.logo} />
+        </SidebarMenu.Brand>
         <SidebarMenu.Toggle />
       </SidebarMenu.Header>
       <SidebarMenu.Body className={styles.body}>
@@ -58,6 +61,9 @@ const Sidebar = () => {
               Settings
             </SidebarMenu.Nav.Title>
           </SidebarMenu.Nav.Link>
+          <button className={styles.button} onClick={signOut}>
+            SIGN OUT
+          </button>
         </SidebarMenu.Nav>
       </SidebarMenu.Body>
     </SidebarMenu>
