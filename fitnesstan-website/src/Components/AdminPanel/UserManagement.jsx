@@ -17,27 +17,31 @@ const UserManagement = () => {
   const [showEditModal, setShowEditModal] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  // A single “reload everything” helper that flips loading on/off
-  const refreshUsers = async () => {
-    setLoading(true);
-    try {
-      const data = await fetchAllUsers();
-      if (Array.isArray(data)) {
-        setUsers(data);
-        setFilteredUsers(data);
-      } else {
-        console.error("Expected an array, got:", data);
-      }
-    } catch (err) {
-      console.error("Error loading users:", err);
-    } finally {
-      setLoading(false);
+ const refreshUsers = async () => {
+  setLoading(true);
+  try {
+    const data = await fetchAllUsers();
+    console.log("Users after fetching:", data); // Log the response to verify
+    if (Array.isArray(data)) {
+      setUsers(data);
+      setFilteredUsers(data);
+    } else {
+      console.error("Expected an array, got:", data);
     }
-  };
+  } catch (err) {
+    console.error("Error loading users:", err);
+  } finally {
+    setLoading(false);
+  }
+};
 
   useEffect(() => {
     refreshUsers();
   }, []);
+
+  useEffect(() => {
+    console.log("Users after fetching:", users); // Log state after setting users
+  }, [users]);
 
   const handleSearch = (e) => {
     const q = e.target.value.toLowerCase();
@@ -71,11 +75,11 @@ const UserManagement = () => {
       const response = await updateUser(selectedUser.id, payload);
       await refreshUsers();
       setShowEditModal(false);
-      // if (response.status === 200) {
-      //   setShowEditModal(false);
-      // } else {
-      //   console.error("Update failed with status:", response.status);
-      // }
+      if (response.status === 200) {
+        setShowEditModal(false);
+      } else {
+        console.error("Update failed with status:", response.status);
+      }
     } catch (err) {
       console.error("🔥 Error updating user:", err);
     } finally {
@@ -103,7 +107,7 @@ const UserManagement = () => {
       <Sidebar />
       <div className={styles.userManagementContent}>
         <h2>User Management</h2>
-        <Form.Group className="mb-3">
+        <Form.Group className="mb-3 form-dark ">
           <Form.Control
             type="text"
             placeholder="Search by username or email…"
@@ -112,7 +116,7 @@ const UserManagement = () => {
           />
         </Form.Group>
 
-        <Table striped bordered hover responsive>
+       <Table striped bordered hover responsive className="table-dark">
           <thead>
             <tr>
               <th>Username</th>
@@ -124,23 +128,23 @@ const UserManagement = () => {
           </thead>
           <tbody>
             {filteredUsers.length > 0 ? (
-              filteredUsers.map((u) => (
-                <tr key={u.id.timestamp}>
-                  <td>{u.username}</td>
-                  <td>{u.email}</td>
-                  <td>{u.roles?.join(", ")}</td>
-                  <td>{u.status}</td>
+              filteredUsers.map((user) => (
+                <tr key={user.id}>
+                  <td>{user.username}</td>
+                  <td>{user.email}</td>
+                  <td>{user.roles?.join(", ")}</td>
+                  <td>{user.status}</td>
                   <td>
                     <Button
                       variant="info"
                       className="me-2"
-                      onClick={() => handleEdit(u)}
+                      onClick={() => handleEdit(user)}
                     >
                       Edit
                     </Button>
                     <Button
                       variant="danger"
-                      onClick={() => handleDeactivate(u.id)}
+                      onClick={() => handleDeactivate(user.id)}
                     >
                       Deactivate
                     </Button>

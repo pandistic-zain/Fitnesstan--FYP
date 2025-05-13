@@ -34,9 +34,10 @@ public class AdminController {
     @GetMapping("/all-users")
     public ResponseEntity<List<Users>> getAllUsers() {
         List<Users> allUsers = userServices.getAllUsers();
-        return allUsers.isEmpty()
-                ? new ResponseEntity<>(HttpStatus.NOT_FOUND)
-                : new ResponseEntity<>(allUsers, HttpStatus.OK);
+        if (allUsers.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(allUsers, HttpStatus.OK); // Make sure this sends an array of users
     }
 
     // Endpoint to deactivate (delete) a user // Endpoint to deactivate (delete) a

@@ -20,13 +20,9 @@ export const fetchAllUsers = async () => {
         Authorization: token,
       },
     });
-    return response.data; // Return the data for use in your component
+    return response.data; // Return the response data for use in your component
   } catch (error) {
-    throw (
-      error.response?.data || {
-        message: "An error occurred while fetching users.",
-      }
-    );
+    throw error.response?.data || { message: "An error occurred while fetching users." };
   }
 };
 
