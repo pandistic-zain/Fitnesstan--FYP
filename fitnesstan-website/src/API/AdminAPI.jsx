@@ -46,6 +46,9 @@ export const deactivateUser = async (userId) => {
   const token = getAuthHeader(); // Get the token for authorization
   try {
     console.log("Deactivating user with ID: ", userId); // Debug: log user ID
+    
+    
+    console.log("Calling BackEnd API"); // Debug: log user ID
 
     // Sending a DELETE request to deactivate the user
     const response = await axios.delete(`${ADMIN_API_URL}/deactivate-user/${userId}`, {
