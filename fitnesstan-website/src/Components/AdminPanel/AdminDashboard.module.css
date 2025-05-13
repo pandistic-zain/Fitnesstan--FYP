@@ -1,26 +1,247 @@
-/* src/components/AdminDashboard/AdminDashboard.module.css */
-
+/* Admin Dashboard */
 .adminDashboard {
   display: flex;
   background-color: #1a1a1a; /* Light Grey */
   color: #ffffff;
   height: 100vh;
+  position: relative; /* Allow positioning child elements inside */
 }
 
+/* Sidebar styles */
+.sidebar {
+  width: 250px;
+  background-color: #111; /* Dark background */
+  height: 100vh;
+  padding: 20px;
+}
+
+/* Dashboard Content */
 .dashboardContent {
   flex: 1;
   padding: 20px;
-  margin-left: 250px; /* Ensure content doesn't overlap the sidebar */
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  position: relative;
+}
+
+/* Testimonials Section */
+.testimonialsSection {
+  background: radial-gradient(circle at center, #1a1a1a 50%, #1a1a1a 100%); /* Subtle radial gradient for depth */
+  padding-top: 40px; /* Maintain padding for spacing */
+  padding-bottom: 150px;
+  position: relative; /* Necessary for any absolutely positioned child elements */
+  text-align: center; /* Center-align text */
+  color: #E0E0E0; /* Light grey for default text */
+}
+
+.sectionTitle {
+  font-size: 2.5rem; /* Title font size */
+  font-weight: bolder; /* Title weight */
+  color: #ff0000 !important; /* Title color */
+  margin-bottom: 40px; /* Space below the title */
+}
+
+.testimonialRow {
+  display: flex; /* Flexbox for layout */
+  flex-wrap: wrap; /* Allow wrapping of cards to the next line */
+  justify-content: center; /* Center cards horizontally */
+  align-items: stretch; /* Align cards to stretch to the same height */
+  gap: 20px; /* Space between cards */
+  margin-left: 30px;
+  margin-right: 30px;
+  margin-bottom: 30px;
+}
+.parentcard {
+  position: relative; /* Positioning context for child elements */
+  flex: 1 1 calc(25% - 20px);
+  max-width: auto;
+  height: 350px; /* Fixed height for the card */
+  overflow-y: auto; /* Enable vertical scroll when content exceeds height */
+  border-radius: 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start; /* Align content at the top */
+  box-shadow: 20px 20px 60px rgba(100, 0, 0, 0.5), 
+              -20px -20px 60px rgba(100, 0, 0, 0.5);
+  transition: transform 0.3s, box-shadow 0.3s;
+  padding: 20px; /* Internal padding for spacing around content */
+}
+
+/* Optional scroll bar style */
+.parentcard::-webkit-scrollbar {
+  width: 8px;
+}
+
+.parentcard::-webkit-scrollbar-thumb {
+  background: #ff0000; /* Red color for scrollbar thumb */
+  border-radius: 10px;
+}
+
+.parentcard::-webkit-scrollbar-track {
+  background: #1a1a1a; /* Dark background for scrollbar track */
 }
 
 .card {
-  background-color: #ff0000; /* White */
-  padding: 20px;
-  margin-bottom: 20px;
-  border-radius: 8px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  position: relative; /* Positioning context for child elements */
+  flex: 1 1 calc(25% - 20px);
+  max-width: 350px;
+  min-width: 30px;
+  height: auto !important;
+  border-radius: 14px;
+  z-index: 1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 20px 20px 60px rgba(100, 0, 0, 0.5), 
+              -20px -20px 60px rgba(100, 0, 0, 0.5);
+  transition: transform 0.3s, box-shadow 0.3s;
 }
 
-h2 {
-  color: #FF6347; /* Tomato */
+.card:hover {
+  transform: scale(1.05);
+  box-shadow: 25px 25px 70px rgba(150, 0, 0, 0.5), 
+              -25px -25px 70px rgba(150, 0, 0, 0.5);
+}
+.parentcard:hover {
+  transform: scale(1.01);
+  box-shadow: 25px 25px 70px rgba(150, 0, 0, 0.5), 
+              -25px -25px 70px rgba(150, 0, 0, 0.5);
+}
+
+.bg {
+  position: absolute;
+  top: 5px; /* Offset from the top */
+  left: 5px; /* Offset from the left */
+  width: calc(100% - 10px); 
+  height: calc(100% - 10px); 
+  z-index: -1; 
+  background: #1a1a1a;
+  
+  backdrop-filter: blur(24px);
+  border-radius: 14px; /* Match card's border radius */
+  overflow: hidden;
+  outline: 2px solid #1a1a1a;
+}
+
+.blob {
+  position: absolute; /* Positioning within the card */
+  z-index: -2; /* Behind the background */
+  top: 50%; /* Center vertically */
+  left: 50%; /* Center horizontally */
+  width: calc(100% - 30px); /* Responsive width based on card */
+  height: calc(100% - 30px); /* Responsive height based on card */
+  border-radius: 50%; /* Make it circular */
+  background-color: #ff0000; /* Blob color */
+  opacity: 1; /* Fully visible */
+  filter: blur(12px); /* Blur effect for soft edges */
+  animation: blob-bounce 5s infinite ease; /* Animation */
+  transform: translate(-50%, -50%); /* Center the blob */
+}
+
+@keyframes blob-bounce {
+  0% {
+    transform: translate(-50%, -50%) translate(0%, 0%); /* Start at center */
+  }
+  25% {
+    transform: translate(-50%, -50%) translate(30%, -30%); /* Move to top right */
+  }
+  50% {
+    transform: translate(-50%, -50%) translate(30%, 30%); /* Move to bottom right */
+  }
+  75% {
+    transform: translate(-50%, -50%) translate(-30%, 30%); /* Move to bottom left */
+  }
+  100% {
+    transform: translate(-50%, -50%) translate(0%, 0%); /* Back to center */
+  }
+}
+
+.testimonialText {
+  font-size: 1.1rem; /* Text size for testimonials */
+  font-style: italic; /* Italic text */
+  margin: 10px 0; /* Vertical margin */
+  color: #ffffff; /* Text color */
+  padding: 0 10px; /* Padding around text */
+  text-align: center; /* Center-align text */
+}
+
+.testimonialAuthor {
+  font-size: 1.2rem; /* Author text size */
+  font-weight: bold; /* Author text weight */
+  color: #ff0000; /* Author text color */
+}
+
+@media (max-width: 768px) {
+  .testimonialRow {
+    flex-direction: column; /* Stack cards vertically */
+    gap: 30px; /* Increased gap */
+  }
+
+  .card {
+    width: 100%; /* Full width on smaller screens */
+  }
+
+  .blob {
+    width: 100px; /* Smaller blob on mobile */
+    height: 100px; /* Smaller blob on mobile */
+  }
+}
+
+.horizontalDividerFinalfeedback {
+  height: 40px;
+  background-color: #ff0000;
+  position: absolute; /* Positioned at the bottom of the previous section */
+  bottom: 0;
+  width: 95%; /* 90% of the parent section's width */
+  left: 50%; /* Center horizontally */
+  transform: translateX(-50%); /* Adjust for centering */
+  z-index: 1; /* Behind overlapping elements */
+  border-radius: 25px; /* Makes the divider rounded */
+  box-shadow: 0 0 20px 5px rgba(255, 0, 0, 0.8); /* Initial glowing effect */
+  animation: glow-infinity 2s infinite alternate; /* Infinite glowing animation */
+}
+
+/* Glowing effect keyframes */
+@keyframes glow-infinity {
+  0% {
+    box-shadow: 0 0 20px 5px rgba(255, 0, 0, 0.8);
+  }
+  50% {
+    box-shadow: 0 0 30px 10px rgba(255, 0, 0, 1);
+  }
+  100% {
+    box-shadow: 0 0 20px 5px rgba(255, 0, 0, 0.8);
+  }
+}
+/* Delete Button Styles */
+.deleteButton {
+  background-color: #ff0000; /* Red background */
+  color: white; /* White text */
+  padding: 8px 16px; /* Add padding for button */
+  font-size: 1rem; /* Font size */
+  font-weight: bold; /* Make text bold */
+  border: none; /* Remove default border */
+  border-radius: 5px; /* Rounded corners */
+  cursor: pointer; /* Pointer cursor on hover */
+  transition: background-color 0.3s ease, transform 0.2s ease; /* Smooth transition for hover effects */
+  margin-top: 10px; /* Add space above the button */
+  margin-bottom: 10px;
+}
+
+.deleteButton:hover {
+  background-color: #ff3333; /* Lighter red on hover */
+  transform: scale(1.1); /* Slight scale effect on hover */
+}
+
+.deleteButton:active {
+  background-color: #e60000; /* Even darker red when clicked */
+}
+
+.deleteButton:focus {
+  outline: none; /* Remove default focus outline */
+  box-shadow: 0 0 5px rgba(255, 0, 0, 0.8); /* Add a subtle shadow effect when focused */
 }

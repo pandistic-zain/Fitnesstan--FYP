@@ -46,7 +46,7 @@ const ChangePassword = () => {
       if (response.status === 200) {
         setSuccessMessage('Password changed successfully.');
         setTimeout(() => {
-          navigate('/userdashboard');
+          navigate('/');
         }, 2000);
       } else {
         setErrorMessage(response.data?.message || 'Failed to change password.');

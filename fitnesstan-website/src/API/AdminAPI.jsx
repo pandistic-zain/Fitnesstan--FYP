@@ -22,7 +22,6 @@ export const fetchAllUsers = async () => {
     });
     return response.data; // Return the data for use in your component
   } catch (error) {
-    // Handle error here
     throw error.response?.data || { message: "An error occurred while fetching users." };
   }
 };
@@ -54,5 +53,20 @@ export const deleteUser = async (userId) => {
     return response.data;
   } catch (error) {
     throw error.response?.data || { message: "An error occurred while deleting the user." };
+  }
+};
+
+// Delete feedback by ID
+export const deleteFeedback = async (feedbackId) => {
+  const token = getAuthHeader();
+  try {
+    const response = await axios.delete(`${ADMIN_API_URL}/feedback/${feedbackId}`, {
+      headers: {
+        Authorization: token,
+      },
+    });
+    return response.data; // Return the response from the backend
+  } catch (error) {
+    throw error.response?.data || { message: "An error occurred while deleting the feedback." };
   }
 };
