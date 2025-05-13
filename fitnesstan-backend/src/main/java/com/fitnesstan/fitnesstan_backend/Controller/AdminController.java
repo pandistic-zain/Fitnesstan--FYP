@@ -51,7 +51,7 @@ public class AdminController {
         }
     }
 
-     // Endpoint to deactivate (delete) a user
+     // Endpoint to deactivate (delete) a user    // Endpoint to deactivate (delete) a user
     @DeleteMapping("/deactivate-user/{id}")
     public ResponseEntity<String> deactivateUser(@PathVariable String id) {
         try {
@@ -60,7 +60,7 @@ public class AdminController {
             // Convert the string userId (id from the frontend) to MongoDB ObjectId
             ObjectId objectId = new ObjectId(id);
 
-            // Fetch the user by ID directly using the userRepository
+            // Fetch the user by ID using the userRepository
             Users currentUser = userRepository.findById(objectId).orElse(null);
 
             if (currentUser == null) {
@@ -69,20 +69,19 @@ public class AdminController {
 
             // Check if the current user has the 'ADMIN' role
             if (currentUser.getRoles().contains("ADMIN")) {
-                // If the role contains 'ADMIN', we cannot deactivate or delete this user
-                return new ResponseEntity<>("Admin users cannot be deactivated", HttpStatus.FORBIDDEN);
+                return new ResponseEntity<>("Admin users cannot be deactivated", HttpStatus.FORBIDDEN); // Prevent deactivating admin
             }
 
             // Proceed with deactivating the user if the role is 'USER'
             boolean deleted = userServices.deleteUser(id);  // Call the service to delete the user
 
             if (deleted) {
-                return new ResponseEntity<>("User deactivated successfully", HttpStatus.OK);
+                return new ResponseEntity<>("User deactivated successfully", HttpStatus.OK); // Success
             } else {
-                return new ResponseEntity<>("Failed to deactivate user", HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>("Failed to deactivate user", HttpStatus.BAD_REQUEST); // Failure
             }
         } catch (Exception e) {
-            return new ResponseEntity<>("Failed to deactivate user: " + e.getMessage(), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("Failed to deactivate user: " + e.getMessage(), HttpStatus.BAD_REQUEST); // Error handling
         }
     }
         // Endpoint to delete feedback by ID

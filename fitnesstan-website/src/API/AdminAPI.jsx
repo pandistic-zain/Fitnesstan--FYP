@@ -47,8 +47,10 @@ export const deactivateUser = async (userId) => {
   try {
     console.log("Deactivating user with ID: ", userId); // Debug: log user ID
     
-    
-    console.log("Calling BackEnd API"); // Debug: log user ID
+    // Debug: Ensure the userId is in the correct format
+    console.log("User ID to send to backend:", userId); 
+
+    console.log("Calling BackEnd API"); // Debug: log API call
 
     // Sending a DELETE request to deactivate the user
     const response = await axios.delete(`${ADMIN_API_URL}/deactivate-user/${userId}`, {

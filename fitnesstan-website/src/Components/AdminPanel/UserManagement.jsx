@@ -74,20 +74,19 @@ const UserManagement = () => {
   };
 
   const handleDeactivate = async (userId) => {
-    console.log("Attempting to deactivate user:", { userId }); // Debug: log user ID before API call
+    console.debug("Attempting to deactivate user with ID:", { userId }); // Debugging log
 
     try {
       // Call the API to deactivate the user, passing the user ID
-      const response = await deactivateUser(userId);
+      const response = await deactivateUser(userId); // Send userId to deactivateUser API
 
-      // Debugging response
-      console.log("Deactivation response:", response); // Debug: log response from deactivateUser API
+      console.debug("Deactivation response:", response); // Debug: log response from deactivateUser API
 
       // Check if the response indicates success
       if (response.status === "success") {
-        console.log("User deactivated successfully: ", userId); // Debug: successful deactivation log
+        console.log("User deactivated successfully:", userId); // Debug: log successful deactivation
 
-        // After deactivating the user, fetch the updated list of users
+        // After deactivating the user, refresh the list of users
         const refreshedUsers = await fetchAllUsers();
         setUsers(refreshedUsers);
         setFilteredUsers(refreshedUsers);
@@ -95,7 +94,7 @@ const UserManagement = () => {
         console.error("Failed to deactivate user", response); // Debug: failure log
       }
     } catch (error) {
-      console.error("Error deactivating user", error); // Debug: log any errors during deactivation
+      console.error("Error deactivating user", error); // Error handling
     }
   };
 
