@@ -32,8 +32,7 @@ const AdminDashboard = () => {
       <Sidebar />
       <Container className={styles.dashboardContent}>
         <h2>Admin Dashboard</h2>
-        <div className={styles.card}>
-          <h3>Testimonials</h3>
+        <div className={styles.parentcard}>
           <section className={styles.testimonialsSection} id="testimonials">
             <h2 className={styles.sectionTitle}>What Our Users Say !!!</h2>
             <div className={styles.testimonialRow}>

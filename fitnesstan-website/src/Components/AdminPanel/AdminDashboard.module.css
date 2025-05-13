@@ -19,7 +19,6 @@
 .dashboardContent {
   flex: 1;
   padding: 20px;
-  margin-left: 250px; /* Ensure content doesn't overlap the sidebar */
   display: flex;
   flex-direction: column;
   gap: 20px;
@@ -34,12 +33,8 @@
   position: relative; /* Necessary for any absolutely positioned child elements */
   text-align: center; /* Center-align text */
   color: #E0E0E0; /* Light grey for default text */
-  margin-left: 250px; /* Make sure the testimonial section starts after the sidebar */
-  flex: 1;
-  z-index: 2; /* Ensure it's on top of the sidebar */
 }
 
-/* Testimonials section title */
 .sectionTitle {
   font-size: 2.5rem; /* Title font size */
   font-weight: bolder; /* Title weight */
@@ -47,7 +42,6 @@
   margin-bottom: 40px; /* Space below the title */
 }
 
-/* Row to hold the testimonial cards */
 .testimonialRow {
   display: flex; /* Flexbox for layout */
   flex-wrap: wrap; /* Allow wrapping of cards to the next line */
@@ -58,14 +52,31 @@
   margin-right: 30px;
   margin-bottom: 30px;
 }
+.parentcard {
+  position: relative; /* Positioning context for child elements */
+  flex: 1 1 calc(25% - 20px);
+  max-width: 100%; /* Ensure the width is responsive */
+  min-height: 200px; /* Provide a minimum height to start */
+  height: auto; /* Let the height increase based on content */
+  border-radius: 14px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start; /* Allow the content to be aligned at the top */
+  box-shadow: 20px 20px 60px rgba(100, 0, 0, 0.5), 
+              -20px -20px 60px rgba(100, 0, 0, 0.5);
+  transition: transform 0.3s, box-shadow 0.3s;
+  padding: 20px; /* Ensure there's padding inside the card */
+  padding-bottom: 100px;
+}
 
-/* Testimonial card styles */
 .card {
   position: relative; /* Positioning context for child elements */
   flex: 1 1 calc(25% - 20px);
   max-width: 350px;
   min-width: 30px;
-  height: auto;
+  height: auto !important;
   border-radius: 14px;
   z-index: 1;
   overflow: hidden;
@@ -83,6 +94,11 @@
   box-shadow: 25px 25px 70px rgba(150, 0, 0, 0.5), 
               -25px -25px 70px rgba(150, 0, 0, 0.5);
 }
+.parentcard:hover {
+  transform: scale(1.01);
+  box-shadow: 25px 25px 70px rgba(150, 0, 0, 0.5), 
+              -25px -25px 70px rgba(150, 0, 0, 0.5);
+}
 
 .bg {
   position: absolute;
@@ -92,6 +108,7 @@
   height: calc(100% - 10px); 
   z-index: -1; 
   background: #1a1a1a;
+  
   backdrop-filter: blur(24px);
   border-radius: 14px; /* Match card's border radius */
   overflow: hidden;
@@ -146,7 +163,6 @@
   color: #ff0000; /* Author text color */
 }
 
-/* Adjustments for smaller screen sizes */
 @media (max-width: 768px) {
   .testimonialRow {
     flex-direction: column; /* Stack cards vertically */
@@ -163,7 +179,6 @@
   }
 }
 
-/* Horizontal divider to complete the testimonial section */
 .horizontalDividerFinalfeedback {
   height: 40px;
   background-color: #ff0000;
@@ -189,4 +204,32 @@
   100% {
     box-shadow: 0 0 20px 5px rgba(255, 0, 0, 0.8);
   }
+}
+/* Delete Button Styles */
+.deleteButton {
+  background-color: #ff0000; /* Red background */
+  color: white; /* White text */
+  padding: 8px 16px; /* Add padding for button */
+  font-size: 1rem; /* Font size */
+  font-weight: bold; /* Make text bold */
+  border: none; /* Remove default border */
+  border-radius: 5px; /* Rounded corners */
+  cursor: pointer; /* Pointer cursor on hover */
+  transition: background-color 0.3s ease, transform 0.2s ease; /* Smooth transition for hover effects */
+  margin-top: 10px; /* Add space above the button */
+  margin-bottom: 10px;
+}
+
+.deleteButton:hover {
+  background-color: #ff3333; /* Lighter red on hover */
+  transform: scale(1.1); /* Slight scale effect on hover */
+}
+
+.deleteButton:active {
+  background-color: #e60000; /* Even darker red when clicked */
+}
+
+.deleteButton:focus {
+  outline: none; /* Remove default focus outline */
+  box-shadow: 0 0 5px rgba(255, 0, 0, 0.8); /* Add a subtle shadow effect when focused */
 }
