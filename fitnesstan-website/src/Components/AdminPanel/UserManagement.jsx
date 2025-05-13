@@ -17,7 +17,30 @@ const UserManagement = () => {
   const [showEditModal, setShowEditModal] = useState(false);
   const [loading, setLoading] = useState(true);
 
- const refreshUsers = async () => {
+   // Fetch all users when the page loads (useEffect)
+  useEffect(() => {
+    const fetchUsers = async () => {
+      setLoading(true);
+      try {
+        const data = await fetchAllUsers();
+        console.log("Users after fetching:", data); // Log to verify
+        if (Array.isArray(data)) {
+          setUsers(data);
+          setFilteredUsers(data);
+        } else {
+          console.error("Expected an array, got:", data);
+        }
+      } catch (err) {
+        console.error("Error loading users:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUsers();
+  }, []); // Runs once when the component mounts
+  
+  const refreshUsers = async () => {
   setLoading(true);
   try {
     const data = await fetchAllUsers();
@@ -34,10 +57,6 @@ const UserManagement = () => {
     setLoading(false);
   }
 };
-
-  useEffect(() => {
-    refreshUsers();
-  }, []);
 
   useEffect(() => {
     console.log("Users after fetching:", users); // Log state after setting users
@@ -106,7 +125,7 @@ const UserManagement = () => {
     <div className={styles.userManagement}>
       <Sidebar />
       <div className={styles.userManagementContent}>
-        <h2>User Management</h2>
+        <h2 class="text-center fs-2 fw-bold">User Management</h2>
         <Form.Group className="mb-3 form-dark ">
           <Form.Control
             type="text"
