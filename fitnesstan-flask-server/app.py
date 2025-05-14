@@ -276,23 +276,31 @@ def process_user():
         try:
             if secondary_pred < 0 or secondary_pred > 13:
                 secondary_pred = 4  # Assign to cluster 4 if out of range
-                app.logger.debug(f"Secondary cluster out of range, assigned to cluster 4")
+                app.logger.debug(f"Primary cluster out of range, defaulting to cluster 4")
+        # Handle out-of-range secondary cluster prediction
         except Exception as e:
             app.logger.error(f"Error occurred while checking secondary cluster: {e}")
-
-
-        # 6) Select item pools
-        prim_items = items_df[items_df['KMeans_Cluster_14'] == primary_pred]
 
         # Handle out-of-range primary cluster prediction
         try:
             if primary_pred < 0 or primary_pred > 13:
                 primary_pred = 4  # Assign to cluster 4 if out of range
-                app.logger.debug(f"Primary cluster out of range, assigned to cluster 4")
+                app.logger.debug(f"Primary cluster out of range, defaulting to cluster 4")
         except Exception as e:
             app.logger.error(f"Error occurred while checking primary cluster: {e}")
 
+        # If either primary_pred or secondary_pred was out of range, select from cluster 4
+        prim_items = items_df[items_df['KMeans_Cluster_14'] == primary_pred]
         sec_items = items_df[items_df['KMeans_Cluster_14'] == secondary_pred]
+
+        # If the clusters are out of range, they will default to cluster 4, so we can select from there
+        if primary_pred == 4:
+            prim_items = items_df[items_df['KMeans_Cluster_14'] == 4]
+            app.logger.debug("Primary cluster was out of range, selecting from cluster 4")
+        if secondary_pred == 4:
+            sec_items = items_df[items_df['KMeans_Cluster_14'] == 4]
+            app.logger.debug("Secondary cluster was out of range, selecting from cluster 4")
+
         app.logger.debug(f"Primary pool size={len(prim_items)}, Secondary pool size={len(sec_items)}")
         # 7) Compute per-item calorie target
         tdee         = float(user_data['tdee'])
