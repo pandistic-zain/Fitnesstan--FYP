@@ -146,7 +146,7 @@ const ReSubmitData = () => {
                   required
                 >
                   <option value="">Select your occupation</option>
-                  {["Software Engineer", "Teacher", "Student"].map(
+                  {["Athlete","Software Engineer", "Teacher", "Student"].map(
                     (occupation) => (
                       <option key={occupation} value={occupation}>
                         {occupation}

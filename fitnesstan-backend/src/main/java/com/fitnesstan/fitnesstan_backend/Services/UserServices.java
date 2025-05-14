@@ -252,7 +252,7 @@ public class UserServices {
     }
 
     @Transactional
-    public void validateAndResubmitUserInfo(Users updatedInfo) throws Exception {
+    public Users validateAndResubmitUserInfo(Users updatedInfo) throws Exception {
         // Step 1: Fetch the authenticated user using the email from Spring Security
         String email = org.springframework.security.core.context.SecurityContextHolder
                 .getContext().getAuthentication().getName();
@@ -346,7 +346,9 @@ public class UserServices {
         // Step 9: Calculate TDEE based on the user's exercise level
         double tdee;
         switch (updatedInfo.getExerciseLevel().toLowerCase()) {
-            case "no exercise":
+            case "0 day a week":
+                tdee = ree * 1;
+                break;
             case "1 days a week":
                 tdee = ree * 1.1;
                 break;
@@ -389,7 +391,8 @@ public class UserServices {
         user.setTdee(tdee);
 
         // Step 12: Call the function after setting the new values
-        userRepository.save(user);
+        System.out.println("User after complete RESET : "+ user);
+        return userRepository.save(user);
     }
 
     // Helper method to calculate age from date of birth
@@ -515,6 +518,7 @@ public class UserServices {
             userData.put("bmi", user.getBmi());
             userData.put("ree", user.getRee());
             userData.put("tdee", user.getTdee());
+            userData.put("occupation", user.getOccupation());
             userData.put("exerciseLevel", user.getExerciseLevel());
             userData.put("sleepHours", user.getSleepHours());
             userData.put("medicalHistory", user.getMedicalHistory());
