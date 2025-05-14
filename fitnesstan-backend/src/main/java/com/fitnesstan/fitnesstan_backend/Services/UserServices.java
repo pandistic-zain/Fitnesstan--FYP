@@ -346,7 +346,9 @@ public class UserServices {
         // Step 9: Calculate TDEE based on the user's exercise level
         double tdee;
         switch (updatedInfo.getExerciseLevel().toLowerCase()) {
-            case "no exercise":
+            case "0 day a week":
+                tdee = ree * 1;
+                break;
             case "1 days a week":
                 tdee = ree * 1.1;
                 break;
@@ -389,6 +391,7 @@ public class UserServices {
         user.setTdee(tdee);
 
         // Step 12: Call the function after setting the new values
+        System.out.println("User after complete RESET : "+ user);
         userRepository.save(user);
     }
 

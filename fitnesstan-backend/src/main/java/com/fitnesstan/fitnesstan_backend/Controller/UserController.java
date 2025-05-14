@@ -245,6 +245,7 @@ public class UserController {
     
         // 3) Copy form values onto existingUser
         updateUserDetails(existingUser, updatedUser);
+        System.out.println("Updated User : "+ existingUser);
     
         // 4) Recalculate BMI/TDEE/etc.
         try {
