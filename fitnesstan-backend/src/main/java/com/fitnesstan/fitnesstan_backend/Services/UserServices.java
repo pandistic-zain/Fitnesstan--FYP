@@ -252,7 +252,7 @@ public class UserServices {
     }
 
     @Transactional
-    public void validateAndResubmitUserInfo(Users updatedInfo) throws Exception {
+    public Users validateAndResubmitUserInfo(Users updatedInfo) throws Exception {
         // Step 1: Fetch the authenticated user using the email from Spring Security
         String email = org.springframework.security.core.context.SecurityContextHolder
                 .getContext().getAuthentication().getName();
@@ -392,7 +392,7 @@ public class UserServices {
 
         // Step 12: Call the function after setting the new values
         System.out.println("User after complete RESET : "+ user);
-        userRepository.save(user);
+        return userRepository.save(user);
     }
 
     // Helper method to calculate age from date of birth

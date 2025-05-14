@@ -222,11 +222,12 @@ public class UserController {
                     .body("Failed to change item.");
         }
     }
+
     @PutMapping("/resubmit-data")
     public ResponseEntity<Users> updateUserFromForm(
             @RequestBody Users updatedUser,
             Authentication authentication) {
-    
+
         // 1) Load the currently authenticated user
         String email = authentication.getName();
         Users existingUser = userRepository.findByEmail(email);
@@ -234,7 +235,7 @@ public class UserController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         String userId = existingUser.getId().toString();
-    
+
         // 2) Delete existing diet & workout plan
         try {
             userServices.deleteUserDietAndRemoveReference(userId);
@@ -242,47 +243,47 @@ public class UserController {
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-    
+
         // 3) Copy form values onto existingUser
         updateUserDetails(existingUser, updatedUser);
-        System.out.println("Updated User : "+ existingUser);
-    
+        System.out.println("Updated User : " + existingUser);
+        Users reSubmitUser;
         // 4) Recalculate BMI/TDEE/etc.
         try {
-            userServices.validateAndResubmitUserInfo(existingUser);
+            reSubmitUser = userServices.validateAndResubmitUserInfo(existingUser);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-    
+
         // 5) Any post‐update hook
-        afterSettingUserData(existingUser);
-    
-        // 6) Persist the updated user
-        userRepository.save(existingUser);
-    
+        afterSettingUserData(reSubmitUser);
+
+        // // 6) Persist the updated user
+        // userRepository.save(existingUser);
+
         // ──────────────────────────────────────────────────────────
         // 7) NOW: regenerate both plans before final return
         try {
+            String reSubmitUserId = reSubmitUser.getId().toString();
             // a) workout plan
-            WorkoutPlan newWorkout = workoutPlanServices.generateWorkoutPlan(userId);
+            WorkoutPlan newWorkout = workoutPlanServices.generateWorkoutPlan(reSubmitUserId);
             existingUser.setCurrentWorkoutPlan(newWorkout);
-    
+
             // b) diet plan via Flask
-            Map<String, Object> flaskResponse = userServices.sendUserDataToFlask(existingUser);
+            Map<String, Object> flaskResponse = userServices.sendUserDataToFlask(reSubmitUser);
             Diet newDiet = userServices.addDietPlanFromFlaskResponse(userId, flaskResponse);
-            existingUser.setCurrentDiet(newDiet);
-    
+            reSubmitUser.setCurrentDiet(newDiet);
+
             // c) save the new references
-            userRepository.save(existingUser);
+            userRepository.save(reSubmitUser);
         } catch (Exception ex) {
             // You can choose to log and continue, or fail here:
             System.err.println("[ERROR] regenerating plans: " + ex.getMessage());
         }
-    
+
         // 8) Return the fully updated user
-        return ResponseEntity.ok(existingUser);
+        return ResponseEntity.ok(reSubmitUser);
     }
-    
 
     // Helper method to update user details
     private void updateUserDetails(Users existingUser, Users updatedUser) {
