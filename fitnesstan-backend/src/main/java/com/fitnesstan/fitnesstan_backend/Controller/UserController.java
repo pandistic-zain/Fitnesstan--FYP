@@ -267,7 +267,7 @@ public class UserController {
             String reSubmitUserId = reSubmitUser.getId().toString();
             // a) workout plan
             WorkoutPlan newWorkout = workoutPlanServices.generateWorkoutPlan(reSubmitUserId);
-            existingUser.setCurrentWorkoutPlan(newWorkout);
+            reSubmitUser.setCurrentWorkoutPlan(newWorkout);
 
             // b) diet plan via Flask
             Map<String, Object> flaskResponse = userServices.sendUserDataToFlask(reSubmitUser);

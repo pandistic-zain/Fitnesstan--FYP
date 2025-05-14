@@ -518,6 +518,7 @@ public class UserServices {
             userData.put("bmi", user.getBmi());
             userData.put("ree", user.getRee());
             userData.put("tdee", user.getTdee());
+            userData.put("0ccupation", user.getOccupation());
             userData.put("exerciseLevel", user.getExerciseLevel());
             userData.put("sleepHours", user.getSleepHours());
             userData.put("medicalHistory", user.getMedicalHistory());

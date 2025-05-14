@@ -205,7 +205,7 @@ def process_user():
             user_data[cat] = user_data[cat].lower()
     app.logger.debug(
         f"Lowercased categorical fields: "
-        f"{{'profession': {user_data.get('profession')}, "
+        f"{{'profession': {user_data.get('occupation')}, "
         f"'religion': {user_data.get('religion')}, "
         f"'gender': {user_data.get('gender')}, "
         f"'medicalHistory': {user_data['medicalHistory']}}}"
@@ -220,7 +220,7 @@ def process_user():
 
         # 2) Raw feature dict
         # — fall back empty profession/religion to the first encoder class —
-        prof = user_data.get('profession', '')
+        prof = user_data.get('occupation', '')
         le_prof = primary_label_encs.get('Profession') if primary_label_encs else None
         if le_prof and prof not in le_prof.classes_:
             prof = le_prof.classes_[0]
