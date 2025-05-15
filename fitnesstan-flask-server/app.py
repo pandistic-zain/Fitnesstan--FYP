@@ -255,22 +255,25 @@ def process_user():
 
         # 4) Scale & predict primary cluster
         # --- assemble a DataFrame with the exact feature names the scaler was trained on ---
-        scaler_cols = primary_scaler.feature_names_in_
-        X_df = pd.DataFrame([X_raw], columns=scaler_cols)
-        X_scaled = primary_scaler.transform(X_df)
-        rf_p, xgb_p = primary_rf.predict_proba(X_scaled), primary_xgb.predict_proba(X_scaled)
-        meta_p      = np.hstack([rf_p, xgb_p])
-        primary_pred= primary_meta.predict(meta_p)[0]
-        app.logger.debug(f"Primary cluster: {primary_pred}")
+        if secondary_scaler is not None:
+            scaler_cols = primary_scaler.feature_names_in_
+            X_df = pd.DataFrame([X_raw], columns=scaler_cols)
+            X_scaled = primary_scaler.transform(X_df)
+            rf_p, xgb_p = primary_rf.predict_proba(X_scaled), primary_xgb.predict_proba(X_scaled)
+            meta_p      = np.hstack([rf_p, xgb_p])
+            primary_pred= primary_meta.predict(meta_p)[0]
+            app.logger.debug(f"Primary cluster: {primary_pred}")
 
         # 5) Scale & predict secondary cluster
-        scaler_cols_s = secondary_scaler.feature_names_in_
-        X_df_s = pd.DataFrame([X_raw], columns=scaler_cols_s)
-        X_scaled_s     = secondary_scaler.transform(X_df_s)
-        rf_s, xgb_s    = secondary_rf.predict_proba(X_scaled_s), secondary_xgb.predict_proba(X_scaled_s)
-        meta_s         = np.hstack([rf_s, xgb_s])
-        secondary_pred = secondary_meta.predict(meta_s)[0]
-        app.logger.debug(f"Secondary cluster: {secondary_pred}")
+        if secondary_scaler is not None:
+            scaler_cols_s = secondary_scaler.feature_names_in_
+            X_df_s = pd.DataFrame([X_raw], columns=scaler_cols_s)
+            X_scaled_s     = secondary_scaler.transform(X_df_s)
+            rf_s, xgb_s    = secondary_rf.predict_proba(X_scaled_s), secondary_xgb.predict_proba(X_scaled_s)
+            meta_s         = np.hstack([rf_s, xgb_s])
+            secondary_pred = secondary_meta.predict(meta_s)[0]
+            app.logger.debug(f"Secondary cluster: {secondary_pred}")
+
 
         # 6) Handle out-of-range cluster prediction
         try:
