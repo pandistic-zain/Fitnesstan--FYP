@@ -148,7 +148,7 @@ def process_user():
         app.logger.error("No JSON body provided")
         return jsonify({'error': 'No user data provided'}), 400
 
-    app.logger.debug(f"Received user_data from Spring Boot: {user_data}")
+    # app.logger.debug(f"Received user_data from Spring Boot: {user_data}")
 
     # user_data = {
     #     'dob'            : '2004-01-18',
@@ -162,7 +162,7 @@ def process_user():
     #     'medicalHistory' : 'NON',
     #     'tdee'           : 2400
     # }
-    app.logger.debug(f"Received user_data: {user_data}")
+    # app.logger.debug(f"Received user_data: {user_data}")
 
     raw_dob = user_data.get('dob')
     if isinstance(raw_dob, list) and len(raw_dob) == 3:
@@ -211,7 +211,7 @@ def process_user():
         f"'medicalHistory': {user_data['medicalHistory']}}}"
     )
 
-    app.logger.debug(f"Normalized user_data: {user_data}")
+    # app.logger.debug(f"Normalized user_data: {user_data}")
 
     try:
         # 1) Compute age
