@@ -441,7 +441,7 @@ const HomePage = () => {
               </div>
               <h3>Zain Ul Abdeen</h3>
               <p>- Team Lead</p>
-              <p>- Java Web Developer</p>
+              <p>- Full Stack Developer</p>
             </Col>
 
             {/* Team Member 3 */}
@@ -450,7 +450,7 @@ const HomePage = () => {
                 <img src={HuzaifaImg} alt="Team Member 3" />
               </div>
               <h3>Huzaifa Khan</h3>
-              <p>- App Developer</p>
+              <p>- Ui-Ux Designer</p>
             </Col>
           </Row>
         </Container>
